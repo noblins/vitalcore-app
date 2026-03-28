@@ -1,540 +1,2258 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>VitalCore - Coach Sante IA</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f7fa;color:#2d3561;min-height:100vh;-webkit-text-size-adjust:100%}
-.c{max-width:430px;margin:0 auto;min-height:100vh;background:#fff;position:relative;overflow-x:hidden}
-.hdr{background:linear-gradient(135deg,#4fd1c5,#3b82f6);color:#fff;padding:18px 20px;display:flex;align-items:center;justify-content:space-between}
-.btn{background:#4fd1c5;color:#fff;border:none;padding:12px 24px;border-radius:12px;font-size:16px;cursor:pointer;width:100%;font-weight:600;-webkit-appearance:none}
-.btn:active{opacity:.8}
-.btn2{background:#3b82f6}
-.btnA{background:#ff6b6b}
-.inp{width:100%;padding:12px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;outline:none;-webkit-appearance:none}
-.inp:focus{border-color:#4fd1c5}
-.card{background:#fff;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;display:flex;background:#fff;border-top:1px solid #e2e8f0;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
-.tab{flex:1;padding:10px 0 14px;text-align:center;font-size:11px;color:#a0aec0;cursor:pointer;border:none;background:none;-webkit-appearance:none}
-.tab.a{color:#4fd1c5;font-weight:700}
-.tab span{display:block;font-size:20px;margin-bottom:2px}
-.chip{display:inline-block;padding:6px 14px;border-radius:20px;margin:4px;font-size:13px;cursor:pointer;border:2px solid #e2e8f0;background:#fff}
-.chip.a{border-color:#4fd1c5;background:#e6fffa;color:#4fd1c5}
-.msg{padding:10px 14px;border-radius:16px;margin:8px 0;max-width:85%;font-size:14px;line-height:1.5;word-wrap:break-word}
-.msg.u{background:#4fd1c5;color:#fff;margin-left:auto;border-bottom-right-radius:4px}
-.msg.b{background:#f1f5f9;margin-right:auto;border-bottom-left-radius:4px}
-.upgrade-card{background:linear-gradient(135deg,#3b82f6,#4fd1c5);color:#fff;border-radius:20px;padding:24px;text-align:center;margin:16px 0}
-.typing{display:inline-block;padding:10px 14px;border-radius:16px;background:#f1f5f9;margin:8px 0;border-bottom-left-radius:4px}
-.typing span{display:inline-block;width:8px;height:8px;background:#a0aec0;border-radius:50%;margin:0 2px;animation:bounce .6s infinite alternate}
-.typing span:nth-child(2){animation-delay:.2s}
-.typing span:nth-child(3){animation-delay:.4s}
-@keyframes bounce{to{transform:translateY(-6px);opacity:.3}}
-.content{padding:20px;padding-bottom:80px;overflow-y:auto}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalCore v2.0</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 430px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+        }
+        .header {
+            background: linear-gradient(135deg, #4fd1c5 0%, #3b82f6 100%);
+            color: white;
+            padding: 16px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .card-gradient {
+            background: linear-gradient(135deg, #4fd1c5 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+        }
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            border-bottom-color: #4fd1c5;
+            color: #4fd1c5;
+            font-weight: 600;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-around;
+            max-width: 430px;
+            margin: 0 auto;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-item {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .nav-item.active {
+            color: #4fd1c5;
+            font-weight: 600;
+        }
+        .splash {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #4fd1c5 0%, #3b82f6 100%);
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .auth-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 32px 16px;
+        }
+        .input {
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .input:focus {
+            outline: none;
+            border-color: #4fd1c5;
+        }
+        .btn {
+            background: #4fd1c5;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #2eb3a0;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #3b82f6;
+        }
+        .btn-secondary:hover {
+            background: #2563eb;
+        }
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+        .btn-block {
+            width: 100%;
+            margin: 8px 0;
+        }
+        .greeting {
+            font-size: 20px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .premium-banner {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 360px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .modal h2 {
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+        .modal-price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4fd1c5;
+            margin: 16px 0;
+        }
+        .onboarding {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 24px 16px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4fd1c5 0%, #3b82f6 100%);
+            transition: width 0.3s;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-group label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .select {
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        .select:focus {
+            outline: none;
+            border-color: #4fd1c5;
+        }
+        .meal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .meal-item {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+        .message {
+            display: flex;
+            gap: 8px;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        .message.user {
+            align-self: flex-end;
+            background: #4fd1c5;
+            color: white;
+            max-width: 80%;
+        }
+        .message.bot {
+            align-self: flex-start;
+            background: #e2e8f0;
+            color: #1e293b;
+            max-width: 80%;
+        }
+        .typing {
+            display: inline-flex;
+            gap: 4px;
+        }
+        .typing span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #64748b;
+            animation: bounce 1.4s infinite;
+        }
+        .typing span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes bounce {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+        .chip {
+            display: inline-block;
+            background: #e2e8f0;
+            color: #1e293b;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            margin: 4px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        .chip:hover {
+            background: #4fd1c5;
+            color: white;
+        }
+        .input-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .input-bar input {
+            flex: 1;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .stat-box {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4fd1c5;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .locked-card {
+            position: relative;
+            opacity: 0.6;
+            filter: blur(4px);
+            pointer-events: none;
+        }
+        .locked-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.8);
+            border-radius: 12px;
+            font-weight: 600;
+            color: #f59e0b;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        .macros-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .macro-box {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .macro-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .macro-label {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin: 0 auto 16px;
+        }
+        .progress-circle svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-weight: bold;
+        }
+        .progress-text-large {
+            font-size: 24px;
+            color: #4fd1c5;
+        }
+        .progress-text-small {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            margin-bottom: 16px;
+            color: #4fd1c5;
+        }
+        .protocol-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .protocol-btn {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .protocol-btn.active {
+            background: #4fd1c5;
+            color: white;
+            border-color: #4fd1c5;
+        }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .photo-card {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+        }
+        .photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .photo-date {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 8px;
+            font-size: 12px;
+        }
+        .comparison {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .comparison-photo {
+            flex: 1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .comparison-photo img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .injection-site-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .injection-btn {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .injection-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .injection-log {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .hidden-file {
+            display: none;
+        }
+        .ai-analysis {
+            background: #e0f2fe;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+        .scan-preview {
+            width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            object-fit: cover;
+        }
+        .feature-card {
+            background: linear-gradient(135deg, #dbeafe 0%, #dbeafe 100%);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .feature-card h3 {
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+        .feature-card p {
+            font-size: 13px;
+            color: #0c4a6e;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #dc2626;
+        }
+    </style>
 </head>
 <body>
-<div id="root"></div>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script type="text/babel">
-const{useState,useEffect,useRef}=React;
-const SUPA_URL='https://mnzvexnaemdetznxeeuo.supabase.co';
-const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uenZleG5hZW1kZXR6bnhlZXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MjQxMTksImV4cCI6MjA5MDIwMDExOX0.3GizLSrEKjqrMeL88V1CNyHw9_L0f13t5SA_jk9REq0';
-const _ms={};const _memStorage={getItem:(k)=>_ms[k]||null,setItem:(k,v)=>{_ms[k]=v},removeItem:(k)=>{delete _ms[k]}};const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
+    <div id="root"></div>
 
-function App(){
-const[sc,setSc]=useState('splash');
-const[user,setUser]=useState(null);
-const[session,setSession]=useState(null);
-const[profile,setProfile]=useState(null);
-const[tab,setTab]=useState(0);
-const[email,setEmail]=useState("");
-const[pwd,setPwd]=useState("");
-const[name,setName]=useState("");
-const[err,setErr]=useState("");
-const[step,setStep]=useState(0);
-const[gender,setGender]=useState("");
-const[dob,setDob]=useState("");
-const[age,setAge]=useState("");
-const[height,setHeight]=useState("");
-const[weight,setWeight]=useState("");
-const[goal,setGoal]=useState("");
-const[targW,setTargW]=useState("");
-const[activity,setActivity]=useState("");
-const[med,setMed]=useState('none');
-const[diet,setDiet]=useState('Standard');
-const[meals,setMeals]=useState([]);
-const[chatHist,setChatHist]=useState([]);
-const[chatMsg,setChatMsg]=useState("");
-const[typing,setTyping]=useState(false);
-const[mealName,setMealName]=useState("");
-const[mealCal,setMealCal]=useState("");
-const[mealProt,setMealProt]=useState("");
-const[mealCarb,setMealCarb]=useState("");
-const[mealFat,setMealFat]=useState("");
-const[showMeal,setShowMeal]=useState(false);
-const[profView,setProfView]=useState('main');
-const[journalMood,setJournalMood]=useState(3);
-const[journalNote,setJournalNote]=useState("");
-const[tickets,setTickets]=useState([]);
-const[ticketSubj,setTicketSubj]=useState("");
-const[showUpgrade,setShowUpgrade]=useState(false);
-const chatEnd=useRef(null);
-const isPremium=profile&&profile.subscription_plan==='premium';
-const FREE_MEAL_LIMIT=3;
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback } = React;
 
-useEffect(()=>{
-setTimeout(()=>setSc('welcome'),2000);
-sb.auth.getSession().then(({data})=>{
-if(data.session){setSession(data.session);setUser(data.session.user);loadProfile(data.session.user.id);loadChatHistory(data.session.user.id)}
-});
-},[]);
+        // Supabase setup
+        const SUPA_URL = 'https://mnzvexnaemdetznxeeuo.supabase.co';
+        const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uenZleG5hZW1kZXR6bnhlZXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MjQxMTksImV4cCI6MjA5MDIwMDExOX0.3GizLSrEKjqrMeL88V1CNyHw9_L0f13t5SA_jk9REq0';
+        const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-useEffect(()=>{
-if(chatEnd.current)chatEnd.current.scrollIntoView({behavior:'smooth'});
-},[chatHist,typing]);
+        // TDEE calculation
+        const calcBMR = (gender, weight, height, age) => {
+            if (gender === 'male') return 10 * weight + 6.25 * height - 5 * age + 5;
+            return 10 * weight + 6.25 * height - 5 * age - 161;
+        };
 
-const loadProfile=async(uid)=>{
-const{data}=await sb.from('profiles').select('*').eq('id',uid).single();
-if(data){setProfile(data);if(data.onboarding_completed){setSc('dash');loadMeals(uid);loadTickets(uid)}else setSc('onboard')}
-else setSc('onboard');
-};
+        const calcTDEE = (bmr, activity) => {
+            const m = { sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725, very_active: 1.9 };
+            return Math.round(bmr * (m[activity] || 1.2));
+        };
 
-const loadMeals=async(uid)=>{
-const today=new Date().toISOString().split('T')[0];
-const{data}=await sb.from('meals').select('*').eq('user_id',uid).gte('created_at',today);
-if(data)setMeals(data);
-};
+        const calcAge = (dob) => {
+            const today = new Date();
+            let age = today.getFullYear() - new Date(dob).getFullYear();
+            const monthDiff = today.getMonth() - new Date(dob).getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < new Date(dob).getDate())) age--;
+            return age;
+        };
 
-const loadTickets=async(uid)=>{
-const{data}=await sb.from('support_tickets').select('*').eq('user_id',uid).order('created_at',{ascending:false});
-if(data)setTickets(data);
-};
+        function App() {
+            const [sc, setSc] = useState('splash'); // splash, welcome, login, signup, onboarding, dashboard
+            const [user, setUser] = useState(null);
+            const [profile, setProfile] = useState(null);
+            const [tab, setTab] = useState('accueil');
+            const [homeView, setHomeView] = useState('main');
 
-const loadChatHistory=async(uid)=>{
-const{data}=await sb.from('chat_messages').select('role,content').eq('user_id',uid).order('created_at',{ascending:true}).limit(50);
-if(data&&data.length>0){setChatHist(data.map(m=>({r:m.role==='user'?'u':'b',t:m.content})))}
-else{setChatHist([{r:'b',t:'Bonjour! Je suis votre Coach IA VitalCore. Comment puis-je vous aider?'}])}
-};
+            // Auth state
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [authErr, setAuthErr] = useState('');
 
-const doLogin=async()=>{
-setErr("");
-const{data,error}=await sb.auth.signInWithPassword({email,password:pwd});
-if(error){setErr(error.message);return}
-setSession(data.session);setUser(data.user);
-loadProfile(data.user.id);loadChatHistory(data.user.id);
-};
+            // Onboarding state
+            const [obStep, setObStep] = useState(0);
+            const [obData, setObData] = useState({
+                gender: '',
+                dob: '',
+                height: '',
+                weight: '',
+                goal: '',
+                targetWeight: '',
+                activity: '',
+                glp1: '',
+                diet: ''
+            });
 
-const doSignup=async()=>{
-setErr("");
-const{data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{full_name:name}}});
-if(error){setErr(error.message);return}
-setSession(data.session);setUser(data.user);setSc('onboard');
-};
+            // Nutrition state
+            const [meals, setMeals] = useState([]);
+            const [foodName, setFoodName] = useState('');
+            const [calories, setCalories] = useState('');
+            const [protein, setProtein] = useState('');
+            const [carbs, setCarbs] = useState('');
+            const [fat, setFat] = useState('');
+            const [scanning, setScanning] = useState(false);
+            const [scanResult, setScanResult] = useState(null);
+            const [scanPreview, setScanPreview] = useState('');
+            const fileInputRef = useRef(null);
 
-const calcTDEE=(g,a,h,w,act)=>{
-let bmr=g==='female'?10*w+6.25*h-5*a-161:10*w+6.25*h-5*a+5;
-const mult={sedentary:1.2,light:1.375,moderate:1.55,active:1.725,very_active:1.9};
-return Math.round(bmr*(mult[act]||1.55));
-};
+            // Coach state
+            const [messages, setMessages] = useState([]);
+            const [chatInput, setChatInput] = useState('');
+            const [typing, setTyping] = useState(false);
 
-const saveOnboard=async()=>{
-const ageN=parseInt(age)||25;
-const hN=parseFloat(height)||170;
-const wN=parseFloat(weight)||70;
-const tdee=calcTDEE(gender,ageN,hN,wN,activity);
-const p={gender,date_of_birth:dob||null,age:ageN,height_cm:hN,weight_kg:wN,target_weight_kg:parseFloat(targW)||wN,goal:goal||'health',activity_level:activity||'moderate',diet,tdee,onboarding_completed:true};
-if(user){await sb.from('profiles').update(p).eq('id',user.id);setProfile({...profile,...p});
-if(med!=='none'){await sb.from('medications').insert({user_id:user.id,medication_name:med,active:true})}
-loadMeals(user.id);loadTickets(user.id)}
-setSc('dash');
-};
+            // Profile/sub-views state
+            const [mood, setMood] = useState('');
+            const [journalNote, setJournalNote] = useState('');
+            const [subView, setSubView] = useState(null);
+            const [showPremiumModal, setShowPremiumModal] = useState(false);
 
-const addMeal=async()=>{
-if(!mealName)return;
-if(!isPremium&&meals.length>=FREE_MEAL_LIMIT){setShowUpgrade(true);return}
-const m={user_id:user.id,food_name:mealName,calories:parseInt(mealCal)||0,protein_g:parseFloat(mealProt)||0,carbs_g:parseFloat(mealCarb)||0,fat_g:parseFloat(mealFat)||0};
-const{data}=await sb.from('meals').insert(m).select();
-if(data)setMeals([...meals,...data]);
-setMealName("");setMealCal("");setMealProt("");setMealCarb("");setMealFat("");setShowMeal(false);
-};
+            // Fasting state
+            const [fastProtocol, setFastProtocol] = useState('16:8');
+            const [fastActive, setFastActive] = useState(null);
+            const [fastTime, setFastTime] = useState({ elapsed: 0, remaining: 0 });
+            const [fastHistory, setFastHistory] = useState([]);
 
-const sendChat=async()=>{
-if(!chatMsg.trim()||typing)return;
-const userMsg=chatMsg;
-setChatMsg("");
-setChatHist(prev=>[...prev,{r:'u',t:userMsg}]);
-setTyping(true);
-try{
-const{data:sess}=await sb.auth.getSession();
-const token=sess&&sess.session?sess.session.access_token:"";
-const res=await fetch(SUPA_URL+'/functions/v1/chat',{
-method:'POST',
-headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':SUPA_KEY},
-body:JSON.stringify({message:userMsg})
-});
-const data=await res.json();
-if(res.status===429){
-setChatHist(prev=>[...prev,{r:'b',t:data.reply||'Limite atteinte. Passez Premium!'}]);
-setShowUpgrade(true);
-}else if(data.reply){
-setChatHist(prev=>[...prev,{r:'b',t:data.reply}]);
-}else{
-setChatHist(prev=>[...prev,{r:'b',t:'Erreur. Reessayez.'}]);
-}
-}catch(e){
-setChatHist(prev=>[...prev,{r:'b',t:'Erreur de connexion.'}]);
-}
-setTyping(false);
-};
+            // Photos state
+            const [photoList, setPhotoList] = useState([]);
+            const [photoWeight, setPhotoWeight] = useState('');
+            const [photoNote, setPhotoNote] = useState('');
+            const photoFileRef = useRef(null);
 
-const addJournal=async()=>{
-if(!user)return;
-const entry={user_id:user.id,entry_date:new Date().toISOString().split('T')[0],mood:journalMood};
-if(isPremium&&journalNote)entry.notes=journalNote;
-await sb.from('journal_entries').insert(entry);
-setJournalNote("");alert('Entree ajoutee!');
-};
+            // Medications/injections state
+            const [activeMed, setActiveMed] = useState(null);
+            const [injLogs, setInjLogs] = useState([]);
+            const [injSite, setInjSite] = useState('');
+            const [injDose, setInjDose] = useState('');
+            const [injNote, setInjNote] = useState('');
 
-const addTicket=async()=>{
-if(!isPremium){setShowUpgrade(true);return}
-if(!ticketSubj||!user)return;
-await sb.from('support_tickets').insert({user_id:user.id,subject:ticketSubj,category:'other',status:'open'});
-setTicketSubj("");loadTickets(user.id);alert('Ticket cree!');
-};
+            // Load user on mount
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    const session = sb.auth.session();
+                    if (session) {
+                        setUser(session.user);
+                        loadProfile(session.user.id);
+                    } else {
+                        setSc('welcome');
+                    }
+                }, 2000);
+                return () => clearTimeout(timer);
+            }, []);
 
-const logout=async()=>{
-await sb.auth.signOut();
-setUser(null);setSession(null);setProfile(null);setChatHist([]);setSc('welcome');
-};
+            // Load profile
+            const loadProfile = async (userId) => {
+                const { data, error } = await sb
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                if (data) {
+                    setProfile(data);
+                    if (data.onboarding_completed) {
+                        setSc('dashboard');
+                        loadDashboardData(userId);
+                    } else {
+                        setSc('onboarding');
+                    }
+                } else {
+                    setSc('onboarding');
+                }
+            };
 
-const totalCal=meals.reduce((s,m)=>s+(m.calories||0),0);
-const totalProt=meals.reduce((s,m)=>s+(m.protein_g||0),0);
-const totalCarb=meals.reduce((s,m)=>s+(m.carbs_g||0),0);
-const totalFat=meals.reduce((s,m)=>s+(m.fat_g||0),0);
+            const loadDashboardData = async (userId) => {
+                const today = new Date().toISOString().split('T')[0];
 
-const UpgradeModal=()=>(
-<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,.5)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:200,padding:20}} onClick={()=>setShowUpgrade(false)}>
-<div style={{maxWidth:380,width:'100%'}} onClick={e=>e.stopPropagation()}>
-<div className="upgrade-card">
-<h3 style={{fontSize:20,marginBottom:8}}>Passez Premium</h3>
-<p style={{opacity:.9,fontSize:14,marginBottom:16}}>Coach IA Claude illimite, analyse photo, medicaments GLP-1, jeune, photos progres!</p>
-<div style={{fontSize:32,fontWeight:800,marginBottom:4}}>9,99 EUR<span style={{fontSize:14,fontWeight:400}}>/mois</span></div>
-<button onClick={()=>{(async()=>{try{const{data:sess}=await sb.auth.getSession();const token=sess&&sess.session?sess.session.access_token:"";const r=await fetch(SUPA_URL+'/functions/v1/create-checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':SUPA_KEY}});const d=await r.json();if(d.url){window.location.href=d.url}else{alert(d.error||'Erreur')}}catch(e){alert('Erreur: '+e.message)}})();setShowUpgrade(false)}} style={{background:'#fff',color:'#3b82f6',border:'none',padding:'14px 32px',borderRadius:14,fontSize:16,fontWeight:700,cursor:'pointer'}}>Passer Premium</button>
-</div>
-<button onClick={()=>setShowUpgrade(false)} style={{width:'100%',padding:14,background:'#fff',border:'none',borderRadius:14,marginTop:12,fontSize:15,cursor:'pointer',color:'#718096'}}>Plus tard</button>
-</div>
-</div>
-);
+                const { data: mealsData } = await sb
+                    .from('meals')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .eq('meal_date', today);
+                setMeals(mealsData || []);
 
-const LockedCard=({icon,title,desc})=>(
-<div className="card" onClick={()=>setShowUpgrade(true)} style={{cursor:'pointer',position:'relative',overflow:'hidden'}}>
-<div style={{opacity:.3,filter:'blur(2px)'}}>
-<div style={{display:'flex',alignItems:'center',gap:10}}>
-<span style={{fontSize:24}}>{icon}</span>
-<div><div style={{fontWeight:600}}>{title}</div><div style={{fontSize:12,color:'#718096'}}>{desc}</div></div>
-</div>
-</div>
-<div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(255,255,255,.7)',borderRadius:16}}>
-<div style={{textAlign:'center',fontWeight:700,color:'#3b82f6'}}>Premium</div>
-</div>
-</div>
-);
+                const { data: msgData } = await sb
+                    .from('chat_messages')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: true });
+                setMessages(msgData || []);
 
-if(sc==='splash')return(
-<div className="c" style={{display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(135deg,#4fd1c5,#3b82f6)',flexDirection:'column',minHeight:'100vh'}}>
-<div style={{fontSize:64,color:'#fff',fontWeight:800}}>V</div>
-<h1 style={{color:'#fff',marginTop:16,fontSize:28}}>VitalCore</h1>
-<p style={{color:'rgba(255,255,255,.8)',marginTop:8}}>Coach Sante IA</p>
-</div>
-);
+                const { data: fastData } = await sb
+                    .from('fasting_sessions')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .eq('status', 'active')
+                    .single();
+                setFastActive(fastData || null);
 
-if(sc==='welcome')return(
-<div className="c" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:32,background:'linear-gradient(180deg,#e6fffa 0%,#fff 100%)',minHeight:'100vh'}}>
-<div style={{fontSize:64,fontWeight:800,color:'#4fd1c5',marginBottom:24}}>VC</div>
-<h1 style={{fontSize:28,marginBottom:8}}>VitalCore v2.0</h1>
-<p style={{color:'#718096',marginBottom:40,textAlign:'center'}}>Coach sante IA - Suivi GLP-1, nutrition et jeune</p>
-<button className="btn" style={{marginBottom:12}} onClick={()=>setSc('login')}>Se connecter</button>
-<button className="btn btn2" onClick={()=>setSc('signup')}>Creer un compte</button>
-</div>
-);
+                const { data: fastHist } = await sb
+                    .from('fasting_sessions')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .eq('status', 'completed')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                setFastHistory(fastHist || []);
 
-if(sc==='login')return(
-<div className="c" style={{padding:32,paddingTop:60}}>
-<button onClick={()=>setSc('welcome')} style={{background:'none',border:'none',fontSize:20,cursor:'pointer'}}>Retour</button>
-<h1 style={{fontSize:24,margin:'24px 0'}}>Connexion</h1>
-{err&&<p style={{color:'#ff6b6b',marginBottom:12}}>{err}</p>}
-<input className="inp" placeholder="Email" type="email" value={email} onChange={e=>setEmail(e.target.value)} style={{marginBottom:12}} autoCapitalize="none" autoCorrect="off"/>
-<input className="inp" type="password" placeholder="Mot de passe" value={pwd} onChange={e=>setPwd(e.target.value)} style={{marginBottom:24}} onKeyDown={e=>{if(e.key==='Enter')doLogin()}}/>
-<button className="btn" onClick={doLogin}>Se connecter</button>
-</div>
-);
+                const { data: photoData } = await sb
+                    .from('progress_photos')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+                setPhotoList(photoData || []);
 
-if(sc==='signup')return(
-<div className="c" style={{padding:32,paddingTop:60}}>
-<button onClick={()=>setSc('welcome')} style={{background:'none',border:'none',fontSize:20,cursor:'pointer'}}>Retour</button>
-<h1 style={{fontSize:24,margin:'24px 0'}}>Creer un compte</h1>
-{err&&<p style={{color:'#ff6b6b',marginBottom:12}}>{err}</p>}
-<input className="inp" placeholder="Nom complet" value={name} onChange={e=>setName(e.target.value)} style={{marginBottom:12}}/>
-<input className="inp" placeholder="Email" type="email" value={email} onChange={e=>setEmail(e.target.value)} style={{marginBottom:12}} autoCapitalize="none"/>
-<input className="inp" type="password" placeholder="Mot de passe (min 6)" value={pwd} onChange={e=>setPwd(e.target.value)} style={{marginBottom:24}} onKeyDown={e=>{if(e.key==='Enter')doSignup()}}/>
-<button className="btn" onClick={doSignup}>Creer mon compte</button>
-</div>
-);
+                const { data: medData } = await sb
+                    .from('medications')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .eq('active', true)
+                    .single();
+                setActiveMed(medData || null);
 
-if(sc==='onboard'){
-const onboardSteps=[
-<div key="0"><h2 style={{marginBottom:16}}>Votre genre</h2>
-{['male','female','other'].map(g=><div key={g} className={'chip'+(gender===g?' a':"")} onClick={()=>setGender(g)} style={{padding:'16px 24px',display:'block',marginBottom:8,textAlign:'center',borderRadius:12,fontSize:16}}>{g==='male'?'Homme':g==='female'?'Femme':'Autre'}</div>)}</div>,
-<div key="1"><h2 style={{marginBottom:16}}>Date de naissance</h2>
-<input className="inp" type="date" value={dob} onChange={e=>{setDob(e.target.value);const b=new Date(e.target.value);const t=new Date();let a=t.getFullYear()-b.getFullYear();const mo=t.getMonth()-b.getMonth();if(mo<0||(mo===0&&t.getDate()<b.getDate()))a--;if(a>0&&a<120)setAge(String(a))}}/>
-{age&&<p style={{marginTop:12,fontSize:18,color:'#4fd1c5'}}>Vous avez {age} ans</p>}</div>,
-<div key="2"><h2 style={{marginBottom:16}}>Mensurations</h2>
-<label style={{fontSize:14,color:'#718096'}}>Taille (cm)</label>
-<input className="inp" type="number" placeholder="170" value={height} onChange={e=>setHeight(e.target.value)} style={{marginBottom:12}}/>
-<label style={{fontSize:14,color:'#718096'}}>Poids (kg)</label>
-<input className="inp" type="number" placeholder="70" value={weight} onChange={e=>setWeight(e.target.value)}/></div>,
-<div key="3"><h2 style={{marginBottom:16}}>Objectif</h2>
-{[['lose','Perdre du poids'],['maintain','Maintenir'],['gain','Prendre du muscle'],['health','Sante generale']].map(([v,l])=><div key={v} className={'chip'+(goal===v?' a':"")} onClick={()=>setGoal(v)} style={{padding:'14px 20px',display:'block',marginBottom:8,borderRadius:12,fontSize:15}}>{l}</div>)}</div>,
-<div key="4"><h2 style={{marginBottom:16}}>Poids cible (kg)</h2>
-<input className="inp" type="number" placeholder="65" value={targW} onChange={e=>setTargW(e.target.value)}/></div>,
-<div key="5"><h2 style={{marginBottom:16}}>Activite</h2>
-{[['sedentary','Sedentaire'],['light','Legerement actif'],['moderate','Modere'],['active','Actif'],['very_active','Tres actif']].map(([v,l])=><div key={v} className={'chip'+(activity===v?' a':"")} onClick={()=>setActivity(v)} style={{padding:'14px 20px',display:'block',marginBottom:8,borderRadius:12,fontSize:15}}>{l}</div>)}</div>,
-<div key="6"><h2 style={{marginBottom:16}}>Medicament GLP-1</h2>
-<p style={{color:'#718096',marginBottom:12,fontSize:13}}>Optionnel</p>
-{['none','Ozempic','Mounjaro','Saxenda','Wegovy'].map(m2=><div key={m2} className={'chip'+(med===m2?' a':"")} onClick={()=>setMed(m2)} style={{padding:'14px 20px',display:'block',marginBottom:8,borderRadius:12,fontSize:15}}>{m2==='none'?'Aucun':m2}</div>)}</div>,
-<div key="7"><h2 style={{marginBottom:16}}>Regime alimentaire</h2>
-{['Standard','Keto','Vegetarien','Vegan','Mediterraneen','Sans gluten'].map(d2=><div key={d2} className={'chip'+(diet===d2?' a':"")} onClick={()=>setDiet(d2)} style={{padding:'14px 20px',display:'block',marginBottom:8,borderRadius:12,fontSize:15}}>{d2}</div>)}</div>
-];
-const progress=((step+1)/8*100);
-return(
-<div className="c">
-<div className="hdr"><span style={{fontSize:14}}>Etape {step+1}/8</span><span>VitalCore</span></div>
-<div style={{height:4,background:'#e2e8f0'}}><div style={{height:4,background:'#4fd1c5',width:progress+'%',transition:'width .3s'}}/></div>
-<div style={{padding:24}}>
-{onboardSteps[step]}
-<div style={{marginTop:24,display:'flex',gap:12}}>
-{step>0&&<button className="btn" style={{background:'#e2e8f0',color:'#2d3561'}} onClick={()=>setStep(step-1)}>Precedent</button>}
-{step<7?<button className="btn" onClick={()=>setStep(step+1)}>Suivant</button>:<button className="btn" onClick={saveOnboard}>Terminer</button>}
-</div>
-</div>
-</div>
-);
-}
+                const { data: injData } = await sb
+                    .from('injection_logs')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                setInjLogs(injData || []);
+            };
 
-if(sc==='dash'){
-const tabs_ui=[{e:'\u{1F3E0}',l:'Accueil'},{e:'\u{1F34E}',l:'Nutrition'},{e:'\u{1F916}',l:'Coach'},{e:'\u{1F464}',l:'Profil'}];
-const pn=profile?profile.full_name||"":"";const firstName=pn.split(' ')[0];
+            // Auth functions
+            const handleLogin = async () => {
+                setAuthErr('');
+                const { error } = await sb.auth.signInWithPassword({ email, password });
+                if (error) {
+                    setAuthErr(error.message);
+                } else {
+                    const session = sb.auth.session();
+                    if (session) {
+                        setUser(session.user);
+                        loadProfile(session.user.id);
+                    }
+                }
+            };
 
-const renderTab=()=>{
-if(tab===0)return(
-<div className="content">
-<h2 style={{marginBottom:16}}>Bonjour {firstName}</h2>
-{!isPremium&&<div onClick={()=>setShowUpgrade(true)} style={{background:'linear-gradient(135deg,#3b82f6,#4fd1c5)',color:'#fff',borderRadius:14,padding:'12px 16px',marginBottom:12,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-<div><div style={{fontSize:13,fontWeight:600}}>Passez Premium</div><div style={{fontSize:11,opacity:.8}}>Coach IA illimite, analyse photo...</div></div>
-<div style={{background:'#fff',color:'#3b82f6',padding:'6px 14px',borderRadius:8,fontWeight:700,fontSize:13}}>9,99 EUR</div>
-</div>}
-<div className="card" style={{background:'linear-gradient(135deg,#4fd1c5,#3b82f6)',color:'#fff'}}>
-<div style={{fontSize:13,opacity:.8}}>TDEE quotidien</div>
-<div style={{fontSize:32,fontWeight:700}}>{profile?profile.tdee:'-'} kcal</div>
-<div style={{fontSize:13,opacity:.8,marginTop:4}}>Objectif: {profile?(profile.goal==='lose'?'Perdre du poids':profile.goal==='gain'?'Muscle':'Maintenir'):'-'}</div>
-</div>
-<div className="card">
-<div style={{display:'flex',justifyContent:'space-between'}}>
-<div><div style={{fontSize:13,color:'#718096'}}>Calories</div><div style={{fontSize:24,fontWeight:700,color:'#4fd1c5'}}>{totalCal}</div></div>
-<div style={{textAlign:'right'}}><div style={{fontSize:13,color:'#718096'}}>Objectif</div><div style={{fontSize:24,fontWeight:700}}>{profile?profile.tdee:2000}</div></div>
-</div>
-<div style={{height:8,background:'#e2e8f0',borderRadius:4,marginTop:12}}>
-<div style={{height:8,background:totalCal>(profile?profile.tdee:2000)?'#ff6b6b':'#4fd1c5',borderRadius:4,width:Math.min(100,totalCal/(profile?profile.tdee:2000)*100)+'%'}}/>
-</div>
-</div>
-<div className="card">
-<div style={{fontSize:13,color:'#718096',marginBottom:8}}>Macros du jour</div>
-<div style={{display:'flex',justifyContent:'space-around',textAlign:'center'}}>
-<div><div style={{fontSize:20,fontWeight:700,color:'#3b82f6'}}>{totalProt.toFixed(0)}g</div><div style={{fontSize:11}}>Prot</div></div>
-<div><div style={{fontSize:20,fontWeight:700,color:'#ffd700'}}>{totalCarb.toFixed(0)}g</div><div style={{fontSize:11}}>Gluc</div></div>
-<div><div style={{fontSize:20,fontWeight:700,color:'#ff6b6b'}}>{totalFat.toFixed(0)}g</div><div style={{fontSize:11}}>Lip</div></div>
-</div>
-</div>
-{!isPremium&&<div>
-<LockedCard icon={"\u{1F489}"} title="Suivi Medicaments GLP-1" desc="Rappels injection, suivi doses"/>
-<LockedCard icon={"\u{1F4F7}"} title="Photos Progres" desc="Comparaison avant/apres"/>
-<LockedCard icon={"\u{23F1}"} title="Jeune Intermittent" desc="16:8, 18:6, 20:4"/>
-</div>}
-</div>
-);
+            const handleSignup = async () => {
+                setAuthErr('');
+                const { error } = await sb.auth.signUp({ email, password });
+                if (error) {
+                    setAuthErr(error.message);
+                } else {
+                    const { data } = await sb.auth.signInWithPassword({ email, password });
+                    if (data.user) {
+                        setUser(data.user);
+                        await sb.from('profiles').insert({
+                            id: data.user.id,
+                            email: data.user.email,
+                            full_name: '',
+                            subscription_plan: 'free'
+                        });
+                        setSc('onboarding');
+                    }
+                }
+            };
 
-if(tab===1)return(
-<div className="content">
-<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
-<h2>Nutrition</h2>
-<button className="btn" style={{width:'auto',padding:'8px 16px',fontSize:14}} onClick={()=>{if(!isPremium&&meals.length>=FREE_MEAL_LIMIT)setShowUpgrade(true);else setShowMeal(true)}}>+ Repas</button>
-</div>
-{!isPremium&&<div style={{background:'#f0f4ff',borderRadius:12,padding:'10px 14px',marginBottom:12,fontSize:13,color:'#3b82f6',display:'flex',justifyContent:'space-between'}}>
-<span>{meals.length}/{FREE_MEAL_LIMIT} repas</span>
-<span onClick={()=>setShowUpgrade(true)} style={{fontWeight:700,cursor:'pointer'}}>Illimite &gt;</span>
-</div>}
-{showMeal&&<div className="card" style={{border:'2px solid #4fd1c5'}}>
-<h3 style={{marginBottom:12,fontSize:16}}>Ajouter un repas</h3>
-<input className="inp" placeholder="Nom du plat" value={mealName} onChange={e=>setMealName(e.target.value)} style={{marginBottom:8}}/>
-<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-<input className="inp" placeholder="Calories" type="number" value={mealCal} onChange={e=>setMealCal(e.target.value)}/>
-<input className="inp" placeholder="Prot (g)" type="number" value={mealProt} onChange={e=>setMealProt(e.target.value)}/>
-<input className="inp" placeholder="Gluc (g)" type="number" value={mealCarb} onChange={e=>setMealCarb(e.target.value)}/>
-<input className="inp" placeholder="Lip (g)" type="number" value={mealFat} onChange={e=>setMealFat(e.target.value)}/>
-</div>
-<div style={{display:'flex',gap:8,marginTop:12}}>
-<button className="btn" onClick={addMeal}>Ajouter</button>
-<button className="btn" style={{background:'#e2e8f0',color:'#2d3561'}} onClick={()=>setShowMeal(false)}>Annuler</button>
-</div>
-</div>}
-<div className="card">
-<div style={{fontSize:13,color:'#718096',marginBottom:8}}>Resume du jour</div>
-<div style={{display:'flex',justifyContent:'space-around',textAlign:'center'}}>
-<div><div style={{fontSize:22,fontWeight:700,color:'#4fd1c5'}}>{totalCal}</div><div style={{fontSize:11}}>kcal</div></div>
-<div><div style={{fontSize:22,fontWeight:700,color:'#3b82f6'}}>{totalProt.toFixed(0)}g</div><div style={{fontSize:11}}>Prot</div></div>
-<div><div style={{fontSize:22,fontWeight:700,color:'#ffd700'}}>{totalCarb.toFixed(0)}g</div><div style={{fontSize:11}}>Gluc</div></div>
-<div><div style={{fontSize:22,fontWeight:700,color:'#ff6b6b'}}>{totalFat.toFixed(0)}g</div><div style={{fontSize:11}}>Lip</div></div>
-</div>
-</div>
-{meals.map((m,i)=><div key={i} className="card" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-<div><div style={{fontWeight:600}}>{m.food_name}</div><div style={{fontSize:12,color:'#718096'}}>{m.protein_g||0}g P | {m.carbs_g||0}g G | {m.fat_g||0}g L</div></div>
-<div style={{fontWeight:700,color:'#4fd1c5'}}>{m.calories||0} kcal</div>
-</div>)}
-{meals.length===0&&<p style={{textAlign:'center',color:'#a0aec0',marginTop:24}}>Aucun repas enregistre</p>}
-</div>
-);
+            const handleLogout = async () => {
+                await sb.auth.signOut();
+                setUser(null);
+                setProfile(null);
+                setSc('welcome');
+                setEmail('');
+                setPassword('');
+            };
 
-if(tab===2)return(
-<div style={{display:'flex',flexDirection:'column',height:'calc(100vh - 120px)'}}>
-<div style={{padding:'0 20px',paddingTop:12}}>
-<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
-<h2>Coach IA</h2>
-<span style={{fontSize:11,color:'#718096',background:'#f0f4ff',padding:'4px 10px',borderRadius:6}}>Claude</span>
-</div>
-</div>
-<div style={{flex:1,overflowY:'auto',padding:'0 20px'}}>
-{chatHist.map((m,i)=><div key={i} className={'msg '+(m.r==='u'?'u':'b')} style={{whiteSpace:'pre-wrap'}}>{m.t}</div>)}
-{typing&&<div className="typing"><span></span><span></span><span></span></div>}
-<div ref={chatEnd}/>
-</div>
-<div style={{padding:'12px 20px',paddingBottom:'calc(70px + env(safe-area-inset-bottom))',background:'#fff'}}>
-<div style={{display:'flex',gap:8}}>
-<input className="inp" placeholder="Posez votre question..." value={chatMsg} onChange={e=>setChatMsg(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')sendChat()}} style={{flex:1}} disabled={typing}/>
-<button className="btn" style={{width:'auto',padding:'12px 20px',opacity:typing?.5:1}} onClick={sendChat} disabled={typing}>Go</button>
-</div>
-<div style={{display:'flex',gap:4,marginTop:8,flexWrap:'wrap'}}>
-{['Mon poids','Que manger?','Mes calories','Injection','Jeune'].map(q=><button key={q} className="chip" style={{fontSize:12,padding:'4px 10px'}} onClick={()=>{if(!typing){setChatMsg(q)}}}>{q}</button>)}
-</div>
-</div>
-</div>
-);
+            // Onboarding
+            const handleObNext = () => {
+                if (obStep < 7) setObStep(obStep + 1);
+            };
 
-if(tab===3){
-if(profView==='journal')return(
-<div className="content">
-<button onClick={()=>setProfView('main')} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',marginBottom:12,color:'#3b82f6'}}>&larr; Journal</button>
-<div className="card">
-<h3 style={{marginBottom:12}}>Nouvelle entree</h3>
-<div style={{marginBottom:12}}>
-<label style={{fontSize:13,color:'#718096'}}>Humeur</label>
-<div style={{display:'flex',gap:8,marginTop:4}}>
-{[1,2,3,4,5].map(i=><span key={i} onClick={()=>setJournalMood(i)} style={{fontSize:28,cursor:'pointer',opacity:journalMood===i?1:.4,background:journalMood===i?'#e6fffa':'transparent',borderRadius:8,padding:4}}>{i}</span>)}
-</div>
-</div>
-{isPremium?<textarea className="inp" rows={3} placeholder="Notes detaillees..." value={journalNote} onChange={e=>setJournalNote(e.target.value)} style={{marginBottom:12,resize:'none'}}/>:
-<div onClick={()=>setShowUpgrade(true)} style={{padding:12,background:'#f0f4ff',borderRadius:10,marginBottom:12,cursor:'pointer',textAlign:'center',fontSize:13,color:'#3b82f6'}}>Notes detaillees = Premium</div>}
-<button className="btn" onClick={addJournal}>Enregistrer</button>
-</div>
-</div>
-);
-if(profView==='support')return(
-<div className="content">
-<button onClick={()=>setProfView('main')} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',marginBottom:12,color:'#3b82f6'}}>&larr; Support</button>
-{isPremium?<div>
-<div className="card">
-<h3 style={{marginBottom:12}}>Nouveau ticket</h3>
-<input className="inp" placeholder="Sujet" value={ticketSubj} onChange={e=>setTicketSubj(e.target.value)} style={{marginBottom:8}}/>
-<button className="btn" onClick={addTicket}>Envoyer</button>
-</div>
-{tickets.map((t,i)=><div key={i} className="card" style={{display:'flex',justifyContent:'space-between'}}><span>{t.subject}</span><span style={{fontSize:12,color:t.status==='open'?'#e53e3e':'#38a169'}}>{t.status}</span></div>)}
-</div>:
-<div className="upgrade-card">
-<h3>Support Premium</h3>
-<p style={{opacity:.9,marginBottom:16}}>Creez des tickets support</p>
-<button onClick={()=>setShowUpgrade(true)} style={{background:'#fff',color:'#3b82f6',border:'none',padding:'12px 24px',borderRadius:12,fontWeight:700,cursor:'pointer'}}>Debloquer</button>
-</div>}
-</div>
-);
-if(profView==='payment')return(
-<div className="content">
-<button onClick={()=>setProfView('main')} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',marginBottom:12,color:'#3b82f6'}}>&larr; Abonnement</button>
-<div className="card" style={{background:isPremium?'linear-gradient(135deg,#4fd1c5,#3b82f6)':'#f7fafc',color:isPremium?'#fff':'#2d3561',textAlign:'center',padding:24}}>
-<h3>{isPremium?'Premium Actif':'Plan Gratuit'}</h3>
-<p style={{fontSize:24,fontWeight:800,marginTop:8}}>{isPremium?'9,99 EUR/mois':'0 EUR'}</p>
-</div>
-{!isPremium&&<div className="upgrade-card">
-<h3>Passez Premium</h3>
-<div style={{textAlign:'left',fontSize:13,marginBottom:16,lineHeight:1.8}}>
-Coach IA Claude illimite<br/>Repas illimites + analyse photo<br/>Suivi medicaments GLP-1<br/>Jeune intermittent<br/>Photos progres<br/>Journal complet<br/>Support ticket
-</div>
-<button onClick={()=>setShowUpgrade(true)} style={{background:'#fff',color:'#3b82f6',border:'none',padding:'14px 32px',borderRadius:14,fontSize:16,fontWeight:700,cursor:'pointer'}}>9,99 EUR/mois</button>
-</div>}
-</div>
-);
-return(
-<div className="content">
-<h2 style={{marginBottom:16}}>Profil</h2>
-<div className="card" style={{textAlign:'center',background:'linear-gradient(135deg,#e6fffa,#ebf8ff)',padding:20}}>
-<div style={{fontSize:18,fontWeight:700}}>{pn||'Utilisateur'}</div>
-<div style={{color:'#718096',fontSize:14}}>{user?user.email:""}</div>
-<span style={{display:'inline-block',marginTop:8,padding:'4px 14px',borderRadius:12,fontSize:12,fontWeight:700,background:isPremium?'linear-gradient(135deg,#4fd1c5,#3b82f6)':'#e2e8f0',color:isPremium?'#fff':'#718096'}}>{isPremium?'Premium':'Free'}</span>
-</div>
-<div className="card">
-<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,textAlign:'center'}}>
-<div><div style={{fontSize:22,fontWeight:700}}>{profile?profile.weight_kg:'-'}</div><div style={{fontSize:12,color:'#718096'}}>Poids (kg)</div></div>
-<div><div style={{fontSize:22,fontWeight:700}}>{profile?profile.height_cm:'-'}</div><div style={{fontSize:12,color:'#718096'}}>Taille (cm)</div></div>
-<div><div style={{fontSize:22,fontWeight:700}}>{profile?profile.tdee:'-'}</div><div style={{fontSize:12,color:'#718096'}}>TDEE</div></div>
-<div><div style={{fontSize:22,fontWeight:700}}>{profile?profile.age:'-'}</div><div style={{fontSize:12,color:'#718096'}}>Age</div></div>
-</div>
-</div>
-{[['Journal','journal'],['Support','support'],['Abonnement','payment']].map(([lb,v])=>
-<button key={v} onClick={()=>setProfView(v)} style={{width:'100%',padding:'14px 16px',background:'#fff',border:'1px solid #e2e8f0',borderRadius:12,marginBottom:8,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer',fontSize:15}}>
-<span>{lb}</span>
-{v==='support'&&!isPremium?<span style={{fontSize:12,color:'#3b82f6'}}>Premium</span>:<span style={{color:'#a0aec0'}}>&rsaquo;</span>}
-</button>
-)}
-<button className="btn btnA" style={{marginTop:16}} onClick={logout}>Deconnexion</button>
-</div>
-);
-}
-};
+            const handleObPrev = () => {
+                if (obStep > 0) setObStep(obStep - 1);
+            };
 
-return(
-<div className="c">
-{showUpgrade&&<UpgradeModal/>}
-<div className="hdr">
-<span style={{fontWeight:700,fontSize:18}}>VitalCore</span>
-<span style={{fontSize:13}}>{tabs_ui[tab].l}</span>
-</div>
-<div style={{paddingTop:0}}>{renderTab()}</div>
-<div className="tabs">
-{tabs_ui.map((t,i)=><button key={i} className={'tab'+(tab===i?' a':"")} onClick={()=>{setTab(i);setProfView('main')}}>
-<span>{t.e}</span>{t.l}
-</button>)}
-</div>
-</div>
-);
-}
-}
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-</script>
+            const handleObFinish = async () => {
+                const dob = obData.dob;
+                const age = calcAge(dob);
+                const height = parseFloat(obData.height);
+                const weight = parseFloat(obData.weight);
+                const bmr = calcBMR(obData.gender, weight, height, age);
+                const tdee = calcTDEE(bmr, obData.activity);
+
+                await sb
+                    .from('profiles')
+                    .update({
+                        gender: obData.gender,
+                        date_of_birth: dob,
+                        age,
+                        height_cm: height,
+                        weight_kg: weight,
+                        target_weight_kg: parseFloat(obData.targetWeight),
+                        goal: obData.goal,
+                        activity_level: obData.activity,
+                        diet: obData.diet,
+                        glp1_medication: obData.glp1,
+                        tdee,
+                        onboarding_completed: true
+                    })
+                    .eq('id', user.id);
+
+                setSc('dashboard');
+                const { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
+                setProfile(data);
+                loadDashboardData(user.id);
+            };
+
+            // Nutrition
+            const handleAddMeal = async () => {
+                if (!foodName || !calories) return;
+                const today = new Date().toISOString().split('T')[0];
+                await sb.from('meals').insert({
+                    user_id: user.id,
+                    meal_date: today,
+                    food_name: foodName,
+                    calories: parseInt(calories),
+                    protein_g: parseFloat(protein) || 0,
+                    carbs_g: parseFloat(carbs) || 0,
+                    fat_g: parseFloat(fat) || 0
+                });
+                setFoodName('');
+                setCalories('');
+                setProtein('');
+                setCarbs('');
+                setFat('');
+                setScanResult(null);
+                setScanPreview('');
+                loadDashboardData(user.id);
+            };
+
+            const handlePhotoScan = () => {
+                if (profile?.subscription_plan === 'free') {
+                    setShowPremiumModal(true);
+                } else {
+                    fileInputRef.current?.click();
+                }
+            };
+
+            const handlePhotoCapture = async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                setScanning(true);
+                const reader = new FileReader();
+                reader.onload = async (evt) => {
+                    const base64 = evt.target?.result?.split(',')[1];
+                    setScanPreview(evt.target?.result || '');
+
+                    try {
+                        const response = await fetch(`${SUPA_URL}/functions/v1/analyze-meal-photo`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${sb.auth.session()?.access_token}`
+                            },
+                            body: JSON.stringify({ image_base64: base64 })
+                        });
+
+                        const result = await response.json();
+                        setScanResult(result);
+                        setFoodName(result.food_name || '');
+                        setCalories(result.calories?.toString() || '');
+                        setProtein(result.protein_g?.toString() || '');
+                        setCarbs(result.carbs_g?.toString() || '');
+                        setFat(result.fat_g?.toString() || '');
+                    } catch (err) {
+                        console.error('Scan error:', err);
+                    }
+                    setScanning(false);
+                };
+                reader.readAsDataURL(file);
+            };
+
+            // Chat
+            const sendMessage = async () => {
+                if (!chatInput.trim()) return;
+
+                const userMsg = { role: 'user', content: chatInput };
+                setMessages([...messages, userMsg]);
+                setChatInput('');
+                setTyping(true);
+
+                try {
+                    const response = await fetch(`${SUPA_URL}/functions/v1/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${sb.auth.session()?.access_token}`
+                        },
+                        body: JSON.stringify({ message: chatInput, user_id: user.id })
+                    });
+
+                    const data = await response.json();
+                    const botMsg = { role: 'assistant', content: data.reply || 'Désolé, une erreur s\'est produite.' };
+                    setMessages((prev) => [...prev, botMsg]);
+                } catch (err) {
+                    console.error('Chat error:', err);
+                }
+                setTyping(false);
+            };
+
+            // Fasting
+            const startFasting = async () => {
+                const targetHours = parseInt(fastProtocol.split(':')[0]);
+                const { data } = await sb.from('fasting_sessions').insert({
+                    user_id: user.id,
+                    protocol: fastProtocol,
+                    start_time: new Date().toISOString(),
+                    target_hours: targetHours,
+                    status: 'active'
+                }).select().single();
+                setFastActive(data);
+            };
+
+            const stopFasting = async () => {
+                if (!fastActive) return;
+                await sb
+                    .from('fasting_sessions')
+                    .update({ end_time: new Date().toISOString(), status: 'completed' })
+                    .eq('id', fastActive.id);
+                setFastActive(null);
+                loadDashboardData(user.id);
+            };
+
+            useEffect(() => {
+                if (!fastActive) return;
+                const timer = setInterval(() => {
+                    const startTime = new Date(fastActive.start_time);
+                    const now = new Date();
+                    const elapsedMs = now - startTime;
+                    const elapsedHours = elapsedMs / (1000 * 60 * 60);
+                    const remaining = Math.max(0, fastActive.target_hours - elapsedHours);
+                    setFastTime({
+                        elapsed: elapsedHours,
+                        remaining
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [fastActive]);
+
+            // Photos
+            const handleUploadPhoto = async (e) => {
+                const file = e.target.files?.[0];
+                if (!file || profile?.subscription_plan === 'free') {
+                    if (profile?.subscription_plan === 'free') setShowPremiumModal(true);
+                    return;
+                }
+
+                const timestamp = Date.now();
+                const path = `${user.id}/progress/${timestamp}.jpg`;
+                await sb.storage.from('photos').upload(path, file);
+
+                const { data } = sb.storage.from('photos').getPublicUrl(path);
+                await sb.from('progress_photos').insert({
+                    user_id: user.id,
+                    photo_url: data.publicUrl,
+                    weight_kg: photoWeight ? parseFloat(photoWeight) : null,
+                    notes: photoNote
+                });
+
+                setPhotoWeight('');
+                setPhotoNote('');
+                loadDashboardData(user.id);
+            };
+
+            // Injections
+            const logInjection = async () => {
+                if (!activeMed || !injSite || !injDose) return;
+                if (profile?.subscription_plan === 'free') {
+                    setShowPremiumModal(true);
+                    return;
+                }
+
+                await sb.from('injection_logs').insert({
+                    user_id: user.id,
+                    medication_id: activeMed.id,
+                    injection_date: new Date().toISOString(),
+                    dose: injDose,
+                    injection_site: injSite,
+                    notes: injNote
+                });
+
+                const nextInj = new Date();
+                nextInj.setDate(nextInj.getDate() + 7);
+                await sb.from('medications').update({ next_injection: nextInj.toISOString() }).eq('id', activeMed.id);
+
+                setInjSite('');
+                setInjDose('');
+                setInjNote('');
+                loadDashboardData(user.id);
+            };
+
+            // Premium checkout
+            const handleUpgrade = async () => {
+                try {
+                    const response = await fetch(`${SUPA_URL}/functions/v1/create-checkout`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${sb.auth.session()?.access_token}`
+                        },
+                        body: JSON.stringify({ user_id: user.id, price_id: 'price_premium' })
+                    });
+                    const data = await response.json();
+                    if (data.url) window.location.href = data.url;
+                } catch (err) {
+                    console.error('Checkout error:', err);
+                }
+            };
+
+            // Render helpers
+            const getTodayCalories = () => meals.reduce((s, m) => s + (m.calories || 0), 0);
+            const getTodayProtein = () => meals.reduce((s, m) => s + (m.protein_g || 0), 0);
+            const getTodayCarbs = () => meals.reduce((s, m) => s + (m.carbs_g || 0), 0);
+            const getTodayFat = () => meals.reduce((s, m) => s + (m.fat_g || 0), 0);
+
+            const formatTime = (hours) => {
+                const h = Math.floor(hours);
+                const m = Math.floor((hours - h) * 60);
+                return `${h}:${m.toString().padStart(2, '0')}`;
+            };
+
+            // Render screens
+            if (sc === 'splash') {
+                return <div className="splash">VitalCore 💚</div>;
+            }
+
+            if (sc === 'welcome') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>VitalCore</h1>
+                            <p>Votre assistant santé et nutrition</p>
+                        </div>
+                        <div className="content" style={{ textAlign: 'center', paddingTop: 60 }}>
+                            <div style={{ fontSize: 48, marginBottom: 32 }}>💚</div>
+                            <h2 style={{ marginBottom: 32 }}>Bienvenue</h2>
+                            <button className="btn btn-block" onClick={() => setSc('login')}>
+                                Se Connecter
+                            </button>
+                            <button className="btn btn-secondary btn-block" onClick={() => setSc('signup')}>
+                                S'inscrire
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (sc === 'login') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Connexion</h1>
+                        </div>
+                        <div className="auth-screen">
+                            {authErr && <div className="error">{authErr}</div>}
+                            <input
+                                type="email"
+                                className="input"
+                                placeholder="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <input
+                                type="password"
+                                className="input"
+                                placeholder="Mot de passe"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <button className="btn btn-block" onClick={handleLogin}>
+                                Se Connecter
+                            </button>
+                            <button className="btn btn-secondary btn-block" onClick={() => setSc('welcome')}>
+                                Retour
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (sc === 'signup') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Inscription</h1>
+                        </div>
+                        <div className="auth-screen">
+                            {authErr && <div className="error">{authErr}</div>}
+                            <input
+                                type="email"
+                                className="input"
+                                placeholder="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <input
+                                type="password"
+                                className="input"
+                                placeholder="Mot de passe"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <button className="btn btn-block" onClick={handleSignup}>
+                                S'inscrire
+                            </button>
+                            <button className="btn btn-secondary btn-block" onClick={() => setSc('welcome')}>
+                                Retour
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (sc === 'onboarding') {
+                const steps = [
+                    {
+                        title: 'Genre',
+                        render: () => (
+                            <div className="form-group">
+                                <label>Sélectionnez votre genre</label>
+                                <select
+                                    className="select"
+                                    value={obData.gender}
+                                    onChange={(e) => setObData({ ...obData, gender: e.target.value })}
+                                >
+                                    <option value="">Choisir</option>
+                                    <option value="male">Homme</option>
+                                    <option value="female">Femme</option>
+                                    <option value="other">Autre</option>
+                                </select>
+                            </div>
+                        )
+                    },
+                    {
+                        title: 'Date de naissance',
+                        render: () => (
+                            <div className="form-group">
+                                <label>Votre date de naissance</label>
+                                <input
+                                    type="date"
+                                    className="input"
+                                    value={obData.dob}
+                                    onChange={(e) => setObData({ ...obData, dob: e.target.value })}
+                                />
+                            </div>
+                        )
+                    },
+                    {
+                        title: 'Mesures',
+                        render: () => (
+                            <div>
+                                <div className="form-group">
+                                    <label>Hauteur (cm)</label>
+                                    <input
+                                        type="number"
+                                        className="input"
+                                        placeholder="170"
+                                        value={obData.height}
+                                        onChange={(e) => setObData({ ...obData, height: e.target.value })}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Poids (kg)</label>
+                                    <input
+                                        type="number"
+                                        className="input"
+                                        placeholder="75"
+                                        value={obData.weight}
+                                        onChange={(e) => setObData({ ...obData, weight: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        )
+                    },
+                    {
+                        title: 'Objectif',
+                        render: () => (
+                            <div className="form-group">
+                                <label>Quel est votre objectif?</label>
+                                <select
+                                    className="select"
+                                    value={obData.goal}
+                                    onChange={(e) => setObData({ ...obData, goal: e.target.value })}
+                                >
+                                    <option value="">Choisir</option>
+                                    <option value="lose_weight">Perdre du poids</option>
+                                    <option value="maintain">Maintenir</option>
+                                    <option value="gain_muscle">Gagner du muscle</option>
+                                    <option value="general_health">Santé générale</option>
+                                </select>
+                            </div>
+                        )
+                    },
+                    {
+                        title: 'Poids cible',
+                        render: () => (
+                            <div className="form-group">
+                                <label>Poids cible (kg)</label>
+                                <input
+                                    type="number"
+                                    className="input"
+                                    placeholder="70"
+                                    value={obData.targetWeight}
+                                    onChange={(e) => setObData({ ...obData, targetWeight: e.target.value })}
+                                />
+                            </div>
+                        )
+                    },
+                    {
+                        title: 'Niveau d\'activité',
+                        render: () => (
+                            <div className="form-group">
+                                <label>Niveau d'activité</label>
+                                <select
+                                    className="select"
+                                    value={obData.activity}
+                                    onChange={(e) => setObData({ ...obData, activity: e.target.value })}
+                                >
+                                    <option value="">Choisir</option>
+                                    <option value="sedentary">Sédentaire</option>
+                                    <option value="light">Léger</option>
+                                    <option value="moderate">Modéré</option>
+                                    <option value="active">Actif</option>
+                                    <option value="very_active">Très actif</option>
+                                </select>
+                            </div>
+                        )
+                    },
+                    {
+                        title: 'Médicament GLP-1',
+                        render: () => (
+                            <div className="form-group">
+                                <label>Atilisez-vous un médicament GLP-1?</label>
+                                <select
+                                    className="select"
+                                    value={obData.glp1}
+                                    onChange={(e) => setObData({ ...obData, glp1: e.target.value })}
+                                >
+                                    <option value="">Non</option>
+                                    <option value="ozempic">Ozempic</option>
+                                    <option value="mounjaro">Mounjaro</option>
+                                    <option value="saxenda">Saxenda</option>
+                                    <option value="wegovy">Wegovy</option>
+                                </select>
+                            </div>
+                        )
+                    },
+                    {
+                        title: 'Régime alimentaire',
+                        render: () => (
+                            <div className="form-group">
+                                <label>Type de régime</label>
+                                <select
+                                    className="select"
+                                    value={obData.diet}
+                                    onChange={(e) => setObData({ ...obData, diet: e.target.value })}
+                                >
+                                    <option value="">Choisir</option>
+                                    <option value="standard">Standard</option>
+                                    <option value="keto">Cétogène</option>
+                                    <option value="vegetarian">Végétarien</option>
+                                    <option value="vegan">Vegan</option>
+                                    <option value="mediterranean">Méditerranéen</option>
+                                    <option value="gluten_free">Sans gluten</option>
+                                </select>
+                            </div>
+                        )
+                    }
+                ];
+
+                const step = steps[obStep];
+
+                return (
+                    <div className="container">
+                        <div className="onboarding">
+                            <div>
+                                <div className="progress-bar">
+                                    <div
+                                        className="progress-fill"
+                                        style={{ width: `${((obStep + 1) / steps.length) * 100}%` }}
+                                    ></div>
+                                </div>
+                                <h2 style={{ marginBottom: 24 }}>{step.title}</h2>
+                                {step.render()}
+                            </div>
+                            <div style={{ display: 'flex', gap: 12 }}>
+                                {obStep > 0 && (
+                                    <button className="btn btn-secondary" style={{ flex: 1 }} onClick={handleObPrev}>
+                                        Précédent
+                                    </button>
+                                )}
+                                {obStep < steps.length - 1 ? (
+                                    <button className="btn" style={{ flex: 1 }} onClick={handleObNext}>
+                                        Suivant
+                                    </button>
+                                ) : (
+                                    <button className="btn" style={{ flex: 1 }} onClick={handleObFinish}>
+                                        Terminer
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (sc === 'dashboard') {
+                return (
+                    <div className="container">
+                        {homeView === 'main' && (
+                            <>
+                                <div className="tabs">
+                                    <div
+                                        className={`tab ${tab === 'accueil' ? 'active' : ''}`}
+                                        onClick={() => setTab('accueil')}
+                                    >
+                                        🏠 Accueil
+                                    </div>
+                                    <div
+                                        className={`tab ${tab === 'nutrition' ? 'active' : ''}`}
+                                        onClick={() => setTab('nutrition')}
+                                    >
+                                        🍎 Nutrition
+                                    </div>
+                                    <div
+                                        className={`tab ${tab === 'coach' ? 'active' : ''}`}
+                                        onClick={() => setTab('coach')}
+                                    >
+                                        🤖 Coach
+                                    </div>
+                                    <div
+                                        className={`tab ${tab === 'profil' ? 'active' : ''}`}
+                                        onClick={() => setTab('profil')}
+                                    >
+                                        👤 Profil
+                                    </div>
+                                </div>
+
+                                <div className="content">
+                                    {tab === 'accueil' && (
+                                        <>
+                                            <div className="greeting">Bonjour {profile?.full_name || 'Ami'}! 👋</div>
+
+                                            {profile?.subscription_plan === 'free' && (
+                                                <div
+                                                    className="premium-banner"
+                                                    onClick={() => setShowPremiumModal(true)}
+                                                >
+                                                    ✨ Upgrade à Premium - 9.99€/mois
+                                                </div>
+                                            )}
+
+                                            <div className="card card-gradient">
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <div>
+                                                        <div style={{ fontSize: 12, opacity: 0.9 }}>
+                                                            TDEE Quotidien
+                                                        </div>
+                                                        <div style={{ fontSize: 28, fontWeight: 'bold' }}>
+                                                            {profile?.tdee || 0}
+                                                        </div>
+                                                        <div style={{ fontSize: 12, opacity: 0.9 }}>
+                                                            kcal
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ textAlign: 'right' }}>
+                                                        <div style={{ fontSize: 12, opacity: 0.9 }}>
+                                                            Objectif
+                                                        </div>
+                                                        <div style={{ fontSize: 16 }}>
+                                                            {profile?.goal === 'lose_weight'
+                                                                ? '↓ Perte'
+                                                                : profile?.goal === 'gain_muscle'
+                                                                  ? '↑ Muscle'
+                                                                  : '➡️ Maintien'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="card">
+                                                <div style={{ marginBottom: 8 }}>Calories Aujourd'hui</div>
+                                                <div
+                                                    style={{
+                                                        fontSize: 24,
+                                                        fontWeight: 'bold',
+                                                        color: '#4fd1c5'
+                                                    }}
+                                                >
+                                                    {getTodayCalories()} / {profile?.tdee || 0} kcal
+                                                </div>
+                                                <div className="progress-bar" style={{ marginTop: 12 }}>
+                                                    <div
+                                                        className="progress-fill"
+                                                        style={{
+                                                            width: `${Math.min(
+                                                                (getTodayCalories() / (profile?.tdee || 1)) * 100,
+                                                                100
+                                                            )}%`
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+
+                                            <div className="card">
+                                                <div style={{ marginBottom: 12 }}>Macronutriments</div>
+                                                <div className="macros-grid">
+                                                    <div className="macro-box">
+                                                        <div className="macro-value">{getTodayProtein().toFixed(0)}</div>
+                                                        <div className="macro-label">Protéine (g)</div>
+                                                    </div>
+                                                    <div className="macro-box">
+                                                        <div className="macro-value">{getTodayCarbs().toFixed(0)}</div>
+                                                        <div className="macro-label">Glucides (g)</div>
+                                                    </div>
+                                                    <div className="macro-box">
+                                                        <div className="macro-value">{getTodayFat().toFixed(0)}</div>
+                                                        <div className="macro-label">Graisses (g)</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {profile?.subscription_plan === 'premium' ? (
+                                                <>
+                                                    <div
+                                                        className="feature-card card"
+                                                        onClick={() => setHomeView('glp1')}
+                                                    >
+                                                        <h3>💉 GLP-1</h3>
+                                                        <p>Suivi des injections</p>
+                                                    </div>
+                                                    <div
+                                                        className="feature-card card"
+                                                        onClick={() => setHomeView('photos')}
+                                                    >
+                                                        <h3>📸 Photos</h3>
+                                                        <p>Suivi de progression</p>
+                                                    </div>
+                                                    <div
+                                                        className="feature-card card"
+                                                        onClick={() => setHomeView('fasting')}
+                                                    >
+                                                        <h3>⏱️ Jeûne</h3>
+                                                        <p>Jeûne intermittent</p>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="card locked-card">
+                                                        <h3>💉 GLP-1</h3>
+                                                        <p>Suivi des injections</p>
+                                                        <div
+                                                            className="locked-overlay"
+                                                            onClick={() => setShowPremiumModal(true)}
+                                                        >
+                                                            Premium
+                                                        </div>
+                                                    </div>
+                                                    <div className="card locked-card">
+                                                        <h3>📸 Photos</h3>
+                                                        <p>Suivi de progression</p>
+                                                        <div
+                                                            className="locked-overlay"
+                                                            onClick={() => setShowPremiumModal(true)}
+                                                        >
+                                                            Premium
+                                                        </div>
+                                                    </div>
+                                                    <div className="card locked-card">
+                                                        <h3>⏱️ Jeûne</h3>
+                                                        <p>Jeùne intermittent</p>
+                                                        <div
+                                                            className="locked-overlay"
+                                                            onClick={() => setShowPremiumModal(true)}
+                                                        >
+                                                            Premium
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </>
+                                    )}
+
+                                    {tab === 'nutrition' && (
+                                        <>
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    marginBottom: 16
+                                                }}
+                                            >
+                                                <h2>Nutrition</h2>
+                                                <div style={{ display: 'flex', gap: 8 }}>
+                                                    <button
+                                                        className="btn btn-small"
+                                                        onClick={() => setShowPremiumModal(false)}
+                                                        style={{ padding: '8px 12px' }}
+                                                    >
+                                                        + Repas
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-small"
+                                                        onClick={handlePhotoScan}
+                                                        style={{ padding: '8px 12px' }}
+                                                    >
+                                                        📷
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                onChange={handlePhotoCapture}
+                                                accept="image/*"
+                                                capture="environment"
+                                                className="hidden-file"
+                                            />
+
+                                            {profile?.subscription_plan === 'free' && (
+                                                <div className="card" style={{ fontSize: 13, color: '#64748b' }}>
+                                                    {meals.length}/3 repas utilisés ·
+                                                    <span
+                                                        style={{ cursor: 'pointer', color: '#4fd1c5', marginLeft: 4 }}
+                                                        onClick={() => setShowPremiumModal(true)}
+                                                    >
+                                                        Illimité &gt;
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {scanPreview && (
+                                                <img src={scanPreview} alt="preview" className="scan-preview" />
+                                            )}
+
+                                            {scanning && (
+                                                <div className="card" style={{ textAlign: 'center' }}>
+                                                    Analyse en cours...
+                                                </div>
+                                            )}
+
+                                            {scanResult && (
+                                                <div className="ai-analysis">
+                                                    <strong>Analyse IA:</strong> Confiance {(
+                                                        (scanResult.confidence || 0.8) * 100
+                                                    ).toFixed(0)}%
+                                                    <br />
+                                                    {scanResult.suggestions}
+                                                </div>
+                                            )}
+
+                                            <div className="card">
+                                                <div className="form-group">
+                                                    <label>Nom du repas</label>
+                                                    <input
+                                                        type="text"
+                                                        className="input"
+                                                        placeholder="Ex: Poulet rôti"
+                                                        value={foodName}
+                                                        onChange={(e) => setFoodName(e.target.value)}
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Calories</label>
+                                                    <input
+                                                        type="number"
+                                                        className="input"
+                                                        placeholder="500"
+                                                        value={calories}
+                                                        onChange={(e) => setCalories(e.target.value)}
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Protéine (g)</label>
+                                                    <input
+                                                        type="number"
+                                                        className="input"
+                                                        placeholder="25"
+                                                        value={protein}
+                                                        onChange={(e) => setProtein(e.target.value)}
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Glucides (g)</label>
+                                                    <input
+                                                        type="number"
+                                                        className="input"
+                                                        placeholder="50"
+                                                        value={carbs}
+                                                        onChange={(e) => setCarbs(e.target.value)}
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Graisses (g)</label>
+                                                    <input
+                                                        type="number"
+                                                        className="input"
+                                                        placeholder="15"
+                                                        value={fat}
+                                                        onChange={(e) => setFat(e.target.value)}
+                                                    />
+                                                </div>
+                                                <button className="btn btn-block" onClick={handleAddMeal}>
+                                                    Ajouter le repas
+                                                </button>
+                                            </div>
+
+                                            <div className="card">
+                                                <h3 style={{ marginBottom: 12 }}>Résumé du jour</h3>
+                                                <div className="macros-grid">
+                                                    <div className="macro-box">
+                                                        <div className="macro-value">{getTodayCalories()}</div>
+                                                        <div className="macro-label">Calories</div>
+                                                    </div>
+                                                    <div className="macro-box">
+                                                        <div className="macro-value">{getTodayProtein().toFixed(0)}</div>
+                                                        <div className="macro-label">Protéine</div>
+                                                    </div>
+                                                    <div className="macro-box">
+                                                        <div className="macro-value">{getTodayCarbs().toFixed(0)}</div>
+                                                        <div className="macro-label">Glucides</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {meals.length > 0 && (
+                                                <div className="card">
+                                                    <h3 style={{ marginBottom: 12 }}>Repas</h3>
+                                                    <div className="meal-list">
+                                                        {meals.map((m) => (
+                                                            <div key={m.id} className="meal-item">
+                                                                <span>{m.food_name}</span>
+                                                                <span style={{ color: '#4fd1c5', fontWeight: 600 }}>
+                                                                    {m.calories} kcal
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+
+                                    {tab === 'coach' && (
+                                        <>
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: 8,
+                                                    marginBottom: 16
+                                                }}
+                                            >
+                                                <h2>Coach IA</h2>
+                                                <span
+                                                    style={{
+                                                        background: '#4fd1c5',
+                                                        color: 'white',
+                                                        padding: '4px 8px',
+                                                        borderRadius: 4,
+                                                        fontSize: 12,
+                                                        fontWeight: 600
+                                                    }}
+                                                >
+                                                    Claude
+                                                </span>
+                                            </div>
+
+                                            <div className="card" style={{ minHeight: 200 }}>
+                                                <div className="chat-messages">
+                                                    {messages.map((msg, idx) => (
+                                                        <div
+                                                            key={idx}
+                                                            className={`message ${msg.role === 'user' ? 'user' : 'bot'}`}
+                                                        >
+                                                            {msg.content}
+                                                        </div>
+                                                    ))}
+                                                    {typing && (
+                                                        <div className="message bot">
+                                                            <div className="typing">
+                                                                <span></span>
+                                                                <span></span>
+                                                                <span></span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div style={{ marginBottom: 16 }}>
+                                                <span className="chip" onClick={() => setChatInput('Mon poids')}>
+                                                    Mon poids
+                                                </span>
+                                                <span className="chip" onClick={() => setChatInput('Que manger?')}>
+                                                    Que manger?
+                                                </span>
+                                                <span className="chip" onClick={() => setChatInput('Mes calories')}>
+                                                    Mes calories
+                                                </span>
+                                                <span className="chip" onClick={() => setChatInput('Injection')}>
+                                                    Injection
+                                                </span>
+                                                <span className="chip" onClick={() => setChatInput('Jeûne')}>
+                                                    Jeûne
+                                                </span>
+                                            </div>
+
+                                            <div className="input-bar">
+                                                <input
+                                                    type="text"
+                                                    className="input"
+                                                    placeholder="Posez une question..."
+                                                    value={chatInput}
+                                                    onChange={(e) => setChatInput(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') sendMessage();
+                                                    }}
+                                                    style={{ marginBottom: 0 }}
+                                                />
+                                                <button className="btn" onClick={sendMessage} style={{ padding: 12 }}>
+                                                    ➤
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {tab === 'profil' && (
+                                        <>
+                                            <div className="card card-gradient">
+                                                <div style={{ marginBottom: 12 }}>
+                                                    <div style={{ fontSize: 18, fontWeight: 'bold' }}>
+                                                        {profile?.full_name || 'Utilisateur'}
+                                                    </div>
+                                                    <div style={{ fontSize: 14, opacity: 0.9 }}>
+                                                        {profile?.email}
+                                                    </div>
+                                                </div>
+                                                <span
+                                                    style={{
+                                                        background: 'rgba(255,255,255,0.3)',
+                                                        padding: '4px 8px',
+                                                        borderRadius: 4,
+                                                        fontSize: 12,
+                                                        fontWeight: 600,
+                                                        display: 'inline-block'
+                                                    }}
+                                                >
+                                                    {profile?.subscription_plan === 'premium'
+                                                        ? '⭐ Premium'
+                                                        : 'Gratuit'}
+                                                </span>
+                                            </div>
+
+                                            <div className="card">
+                                                <h3 style={{ marginBottom: 16 }}>Statistiques</h3>
+                                                <div className="stats-grid">
+                                                    <div className="stat-box">
+                                                        <div className="stat-value">{profile?.weight_kg} kg</div>
+                                                        <div className="stat-label">Poids actuel</div>
+                                                    </div>
+                                                    <div className="stat-box">
+                                                        <div className="stat-value">
+                                                            {profile?.target_weight_kg} kg
+                                                        </div>
+                                                        <div className="stat-label">Poids cible</div>
+                                                    </div>
+                                                    <div className="stat-box">
+                                                        <div className="stat-value">{profile?.height_cm} cm</div>
+                                                        <div className="stat-label">Hauteur</div>
+                                                    </div>
+                                                    <div className="stat-box">
+                                                        <div className="stat-value">{profile?.age}</div>
+                                                        <div className="stat-label">Âge</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="card">
+                                                <div style={{ marginBottom: 12, fontWeight: 600 }}>TDEE</div>
+                                                <div style={{ fontSize: 24, color: '#3b82f6', fontWeight: 'bold' }}>
+                                                    {profile?.tdee} kcal/jour
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                className="btn btn-block"
+                                                onClick={() => setSubView('journal')}
+                                            >
+                                                📔 Journal
+                                            </button>
+                                            <button
+                                                className="btn btn-secondary btn-block"
+                                                onClick={() => setSubView('payment')}
+                                            >
+                                                💳 Abonnement
+                                            </button>
+                                            <button
+                                                className="btn btn-secondary btn-block"
+                                                onClick={handleLogout}
+                                            >
+                                                Déconnexion
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+
+                                {subView === 'journal' && (
+                                    <div className="modal-overlay" onClick={() => setSubView(null)}>
+                                        <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                            <h2>📔 Journal</h2>
+                                            <div className="form-group">
+                                                <label>Humeur (1-5)</label>
+                                                <select
+                                                    className="select"
+                                                    value={mood}
+                                                    onChange={(e) => setMood(e.target.value)}
+                                                >
+                                                    <option value="">Sélectionner</option>
+                                                    <option value="1">😞 Triste</option>
+                                                    <option value="2">😞 Mauvais</option>
+                                                    <option value="3">😐 Normal</option>
+                                                    <option value="4">🙂 Bon</option>
+                                                    <option value="5">😄 Excellent</option>
+                                                </select>
+                                            </div>
+                                            {profile?.subscription_plan === 'premium' && (
+                                                <div className="form-group">
+                                                    <label>Notes</label>
+                                                    <textarea
+                                                        className="input"
+                                                        placeholder="Vos pensées..."
+                                                        value={journalNote}
+                                                        onChange={(e) => setJournalNote(e.target.value)}
+                                                        style={{ minHeight: 80, fontFamily: 'inherit' }}
+                                                    ></textarea>
+                                                </div>
+                                            )}
+                                            <button className="btn btn-block" onClick={() => setSubView(null)}>
+                                                Fermer
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {subView === 'payment' && (
+                                    <div className="modal-overlay" onClick={() => setSubView(null)}>
+                                        <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                            <h2>💳 Abonnement</h2>
+                                            <p>Plan actuel: <strong>{profile?.subscription_plan}</strong></p>
+                                            {profile?.subscription_plan === 'free' && (
+                                                <>
+                                                    <div className="modal-price">9.99€/mois</div>
+                                                    <button
+                                                        className="btn btn-block"
+                                                        onClick={handleUpgrade}
+                                                    >
+                                                        Upgrade à Premium
+                                                    </button>
+                                                </>
+                                            )}
+                                            <button
+                                                className="btn btn-secondary btn-block"
+                                                onClick={() => setSubView(null)}
+                                            >
+                                                Fermer
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                           </>
+                        )}
+
+                        {homeView === 'fasting' && (
+                            <div className="content">
+                                <button className="back-btn" onClick={() => setHomeView('main')}>
+                                    ← Retour
+                                </button>
+
+                                <h2 style={{ marginBottom: 24 }}>Jeûne Intermittent</h2>
+
+                                {!fastActive ? (
+                                    <>
+                                        <div className="card" style={{ marginBottom: 24 }}>
+                                            <div style={{ marginBottom: 12 }}>Sélectionnez un protocole:</div>
+                                            <div className="protocol-selector">
+                                                <button
+                                                    className={`protocol-btn ${fastProtocol === '16:8' ? 'active' : ''}`}
+                                                    onClick={() => setFastProtocol('16:8')}
+                                                >
+                                                    16:8
+                                                </button>
+                                                <button
+                                                    className={`protocol-btn ${fastProtocol === '18:6' ? 'active' : ''}`}
+                                                    onClick={() => setFastProtocol('18:6')}
+                                                >
+                                                    18:6
+                                                </button>
+                                                <button
+                                                    className={`protocol-btn ${fastProtocol === '20:4' ? 'active' : ''}`}
+                                                    onClick={() => setFastProtocol('20:4')}
+                                                >
+                                                    20:4
+                                                </button>
+                                                <button
+                                                    className={`protocol-btn ${fastProtocol === '23:1' ? 'active' : ''}`}
+                                                    onClick={() => setFastProtocol('23:1')}
+                                                >
+                                                    OMAD
+                                                </button>
+                                            </div>
+                                            <button className="btn btn-block" onClick={startFasting}>
+                                                Démarrer le jeûne
+                                            </button>
+                                        </div>
+
+                                        {fastHistory.length > 0 && (
+                                            <div className="card">
+                                                <h3 style={{ marginBottom: 12 }}>Historique</h3>
+                                                {fastHistory.map((f) => {
+                                                    const elapsed = (new Date(f.end_time) - new Date(f.start_time)) / (1000 * 60 * 60);
+                                                    return (
+                                                        <div key={f.id} className="injection-log">
+                                                            <strong>{f.protocol}</strong> • {elapsed.toFixed(1)}h
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="card">
+                                        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                                            <div className="progress-circle">
+                                                <svg viewBox="0 0 120 120">
+                                                    <circle
+                                                        cx="60"
+                                                        cy="60"
+                                                        r="50"
+                                                        fill="none"
+                                                        stroke="#e2e8f0"
+                                                        strokeWidth="8"
+                                                    />
+                                                    <circle
+                                                        cx="60"
+                                                        cy="60"
+                                                        r="50"
+                                                        fill="none"
+                                                        stroke="#4fd1c5"
+                                                        strokeWidth="8"
+                                                        strokeDasharray={`${2 * Math.PI * 50}`}
+                                                        strokeDashoffset={`${
+                                                            2 * Math.PI * 50 * (1 - fastTime.elapsed / fastActive.target_hours)
+                                                        }`}
+                                                        strokeLinecap="round"
+                                                        style={{ transition: 'stroke-dashoffset 1s linear' }}
+                                                    />
+                                                </svg>
+                                                <div className="progress-text">
+                                                    <div className="progress-text-large">
+                                                        {formatTime(fastTime.elapsed)}
+                                                    </div>
+                                                    <div className="progress-text-small">
+                                                        / {formatTime(fastActive.target_hours)}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                gap: 12,
+                                                marginBottom: 12,
+                                                justifyContent: 'center'
+                                            }}
+                                        >
+                                            <div style={{ textAlign: 'center' }}>
+                                                <div style={{ fontSize: 12, color: '#64748b' }}>Écoulé</div>
+                                                <div
+                                                    style={{
+                                                        fontSize: 18,
+                                                        fontWeight: 'bold',
+                                                        color: '#4fd1c5'
+                                                    }}
+                                                >
+                                                    {formatTime(fastTime.elapsed)}
+                                                </div>
+                                            </div>
+                                            <div style={{ textAlign: 'center' }}>
+                                                <div style={{ fontSize: 12, color: '#64748b' }}>Restant</div>
+                                                <div
+                                                    style={{
+                                                        fontSize: 18,
+                                                        fontWeight: 'bold',
+                                                        color: '#3b82f6'
+                                                    }}
+                                                >
+                                                    {formatTime(fastTime.remaining)}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button className="btn btn-block" onClick={stopFasting}>
+                                            Arrêter le jeûne
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {homeView === 'photos' && (
+                            <div className="content">
+                                <button className="back-btn" onClick={() => setHomeView('main')}>
+                                    ← Retour
+                                </button>
+
+                                <h2 style={{ marginBottom: 24 }}>Progression Photos</h2>
+
+                                <div className="card">
+                                    <div className="form-group">
+                                        <label>Poids (kg)</label>
+                                        <input
+                                            type="number"
+                                            className="input"
+                                            placeholder="75"
+                                            value={photoWeight}
+                                            onChange={(e) => setPhotoWeight(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Notes</label>
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="Ex: Après 1 mois"
+                                            value={photoNote}
+                                            onChange={(e) => setPhotoNote(e.target.value)}
+                                        />
+                                    </div>
+                                    <button
+                                        className="btn btn-block"
+                                        onClick={() => photoFileRef.current?.click()}
+                                    >
+                                        📸 Sélectionner une photo
+                                    </button>
+                                    <input
+                                        ref={photoFileRef}
+                                        type="file"
+                                        onChange={handleUploadPhoto}
+                                        accept="image/*"
+                                        className="hidden-file"
+                                    />
+                                </div>
+
+                                {photoList.length >= 2 && (
+                                    <div className="card">
+                                        <h3 style={{ marginBottom: 12 }}>Avant / Après</h3>
+                                        <div className="comparison">
+                                            <div className="comparison-photo">
+                                                <img src={photoList[photoList.length - 1].photo_url} alt="avant" />
+                                                <div style={{ fontSize: 12, color: '#64748b', padding: 8 }}>
+                                                    Avant
+                                                </div>
+                                            </div>
+                                            <div className="comparison-photo">
+                                                <img src={photoList[0].photo_url} alt="après" />
+                                                <div style={{ fontSize: 12, color: '#64748b', padding: 8 }}>
+                                                    Après
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {photoList.length > 0 && (
+                                    <div className="card">
+                                        <h3 style={{ marginBottom: 12 }}>Galerie</h3>
+                                        <div className="photo-grid">
+                                            {photoList.map((p) => (
+                                                <div key={p.id} className="photo-card">
+                                                    <img src={p.photo_url} alt="progress" />
+                                                    <div className="photo-date">
+                                                        {new Date(p.created_at).toLocaleDateString('fr-FR')}
+                                                        {p.weight_kg && ` · ${p.weight_kg}kg`}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {homeView === 'glp1' && (
+                            <div className="content">
+                                <button className="back-btn" onClick={() => setHomeView('main')}>
+                                    ← Retour
+                                </button>
+
+                                <h2 style={{ marginBottom: 24 }}>Suivi GLP-1</h2>
+
+                                {activeMed && (
+                                    <div className="card card-gradient">
+                                        <div style={{ marginBottom: 8 }}>Médicament actif</div>
+                                        <div style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 12 }}>
+                                            {activeMed.medication_name}
+                                        </div>
+                                        <div style={{ fontSize: 14 }}>
+                                            Prochaine injection:{' '}
+                                            {new Date(activeMed.next_injection).toLocaleDateString('fr-FR')}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="card">
+                                    <h3 style={{ marginBottom: 16 }}>Logger une injection</h3>
+                                    <div className="form-group">
+                                        <label>Site d'injection</label>
+                                        <div className="injection-site-grid">
+                                            {['Abdomen', 'Cuisse gauche', 'Cuisse droite', 'Bras gauche', 'Bras droit'].map(
+                                                (site) => (
+                                                    <button
+                                                        key={site}
+                                                        className={`injection-btn ${injSite === site ? 'active' : ''}`}
+                                                        onClick={() => setInjSite(site)}
+                                                    >
+                                                        {site}
+                                                    </button>
+                                                )
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Dose (mg)</label>
+                                        <input
+                                            type="number"
+                                            className="input"
+                                            placeholder="0.5"
+                                            value={injDose}
+                                            onChange={(e) => setInjDose(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Notes</label>
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="Douleur, réactions..."
+                                            value={injNote}
+                                            onChange={(e) => setInjNote(e.target.value)}
+                                        />
+                                    </div>
+                                    <button className="btn btn-block" onClick={logInjection}>
+                                        Logger l'injection
+                                    </button>
+                                </div>
+
+                                {injLogs.length > 0 && (
+                                    <div className="card">
+                                        <h3 style={{ marginBottom: 12 }}>Historique (10 dernières)</h3>
+                                        {injLogs.map((log) => (
+                                            <div key={log.id} className="injection-log">
+                                                <div>
+                                                    <strong>{log.injection_site}</strong> ·{' '}
+                                                    {log.dose}mg
+                                                </div>
+                                                <div style={{ fontSize: 12, color: '#64748b' }}>
+                                                    {new Date(log.injection_date).toLocaleDateString('fr-FR')}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+
+            if (showPremiumModal) {
+                return (
+                    <div className="modal-overlay" onClick={() => setShowPremiumModal(false)}>
+                        <div className="modal" onClick={(e) => e.stopPropagation()}>
+                            <h2>✨ VitalCore Premium</h2>
+                            <p style={{ marginBottom: 16, color: '#64748b' }}>
+                                Déverrouillez toutes les fonctionnalités avancées.
+                            </p>
+                            <div className="modal-price">9.99€/mois</div>
+                            <div style={{ marginBottom: 16, fontSize: 13, color: '#64748b', lineHeight: 1.6 }}>
+                                ✓ Repas illimités<br />
+                                ✓ Scan IA des repas<br />
+                                ✓ Jeûne intermittent<br />
+                                ✓ Photos de progression<br />
+                                ✓ Suivi GLP-1<br />
+                                ✓ Journal premium
+                            </div>
+                            <button className="btn btn-block" onClick={handleUpgrade}>
+                                Upgrade Maintenant
+                            </button>
+                            <button
+                                className="btn btn-secondary btn-block"
+                                onClick={() => setShowPremiumModal(false)}
+                            >
+                                Plus tard
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            return null;
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
 </body>
 </html>
