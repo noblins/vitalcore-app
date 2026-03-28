@@ -41,12 +41,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script>(function(){var _s={};window._fakeStorage={getItem:function(k){return _s[k]!==undefined?_s[k]:null},setItem:function(k,v){_s[k]=String(v)},removeItem:function(k){delete _s[k]},clear:function(){_s={}},get length(){return Object.keys(_s).length},key:function(n){return Object.keys(_s)[n]||null}};var x=new XMLHttpRequest();x.open("GET","https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",false);x.send();if(x.status===200){var c=x.responseText.replace(/sessionStorage/g,"_fakeStorage").replace(/localStorage/g,"_fakeStorage");var s=document.createElement("script");s.textContent=c;document.head.appendChild(s)}})()</script>
+<script></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script type="text/babel">
 const{useState,useEffect,useRef}=React;
 const SUPA_URL='https://mnzvexnaemdetznxeeuo.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uenZleG5hZW1kZXR6bnhlZXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MjQxMTksImV4cCI6MjA5MDIwMDExOX0.3GizLSrEKjqrMeL88V1CNyHw9_L0f13t5SA_jk9REq0';
-const _ms={};const _memStorage={getItem:(k)=>_ms[k]||null,setItem:(k,v)=>{_ms[k]=v},removeItem:(k)=>{delete _ms[k]}};const sb=supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{storage:_memStorage,autoRefreshToken:true,persistSession:true,detectSessionInUrl:true}});
+const _ms={};const _memStorage={getItem:(k)=>_ms[k]||null,setItem:(k,v)=>{_ms[k]=v},removeItem:(k)=>{delete _ms[k]}};const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
 
 function App(){
 const[sc,setSc]=useState('splash');
