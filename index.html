@@ -2254,5 +2254,21 @@
 
         ReactDOM.render(<App />, document.getElementById('root'));
     </script>
+
+<script>
+window.onerror = function(msg, url, line, col, err) {
+  var root = document.getElementById("root");
+  if (root) root.innerHTML = "<pre style=\"color:red;padding:20px;\">JS ERROR: " + msg + "\nLine: " + line + "\nCol: " + col + "\nURL: " + url + "</pre>";
+  return false;
+};
+window.addEventListener("DOMContentLoaded", function() {
+  setTimeout(function() {
+    var root = document.getElementById("root");
+    if (root && !root.innerHTML.trim()) {
+      root.innerHTML = "<pre style=\"color:red;padding:20px;\">React did not render after 5s.\nReact: " + (typeof React) + "\nReactDOM: " + (typeof ReactDOM) + "\nBabel: " + (typeof Babel) + "\nsupabase: " + (typeof supabase) + "\nsupabase.createClient: " + (typeof supabase !== "undefined" ? typeof supabase.createClient : "N/A") + "</pre>";
+    }
+  }, 5000);
+});
+</script>
 </body>
 </html>
