@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>VitalCore - Coach Sante IA</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f7fa;color:#2d3561;min-height:100vh;-webkit-text-size-adjust:100%}
+.c{max-width:430px;margin:0 auto;min-height:100vh;background:#fff;position:relative;overflow-x:hidden}
+.hdr{background:linear-gradient(135deg,#4fd1c5,#3b82f6);color:#fff;padding:18px 20px;display:flex;align-items:center;justify-content:space-between}
+.btn{background:#4fd1c5;color:#fff;border:none;padding:12px 24px;border-radius:12px;font-size:16px;cursor:pointer;width:100%;font-weight:600;-webkit-appearance:none}
+.btn:active{opacity:.8}
+.btn2{background:#3b82f6}
+.btnA{background:#ff6b6b}
+.inp{width:100%;padding:12px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;outline:none;-webkit-appearance:none}
+.inp:focus{border-color:#4fd1c5}
+.card{background:#fff;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;display:flex;background:#fff;border-top:1px solid #e2e8f0;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.tab{flex:1;padding:10px 0 14px;text-align:center;font-size:11px;color:#a0aec0;cursor:pointer;border:none;background:none;-webkit-appearance:none}
+.tab.a{color:#4fd1c5;font-weight:700}
+.tab span{display:block;font-size:20px;margin-bottom:2px}
+.chip{display:inline-block;padding:6px 14px;border-radius:20px;margin:4px;font-size:13px;cursor:pointer;border:2px solid #e2e8f0;background:#fff}
+.chip.a{border-color:#4fd1c5;background:#e6fffa;color:#4fd1c5}
+.msg{padding:10px 14px;border-radius:16px;margin:8px 0;max-width:85%;font-size:14px;line-height:1.5;word-wrap:break-word}
+.msg.u{background:#4fd1c5;color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.msg.b{background:#f1f5f9;margin-right:auto;border-bottom-left-radius:4px}
+.upgrade-card{background:linear-gradient(135deg,#3b82f6,#4fd1c5);color:#fff;border-radius:20px;padding:24px;text-align:center;margin:16px 0}
+.typing{display:inline-block;padding:10px 14px;border-radius:16px;background:#f1f5f9;margin:8px 0;border-bottom-left-radius:4px}
+.typing span{display:inline-block;width:8px;height:8px;background:#a0aec0;border-radius:50%;margin:0 2px;animation:bounce .6s infinite alternate}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{to{transform:translateY(-6px);opacity:.3}}
+.content{padding:20px;padding-bottom:80px;overflow-y:auto}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script>(function(){var _s={};window._fakeStorage={getItem:function(k){return _s[k]!==undefined?_s[k]:null},setItem:function(k,v){_s[k]=String(v)},removeItem:function(k){delete _s[k]},clear:function(){_s={}},get length(){return Object.keys(_s).length},key:function(n){return Object.keys(_s)[n]||null}};var x=new XMLHttpRequest();x.open("GET","https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",false);x.send();if(x.status===200){var c=x.responseText.replace(/sessionStorage/g,"_fakeStorage").replace(/localStorage/g,"_fakeStorage");var s=document.createElement("script");s.textContent=c;document.head.appendChild(s)}})()</script>
+<script type="text/babel">
+const{useState,useEffect,useRef}=React;
+const SUPA_URL='https://mnzvexnaemdetznxeeuo.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uenZleG5hZW1kZXR6bnhlZXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MjQxMTksImV4cCI6MjA5MDIwMDExOX0.3GizLSrEKjqrMeL88V1CNyHw9_L0f13t5SA_jk9REq0';
+const _ms={};const _memStorage={getItem:(k)=>_ms[k]||null,setItem:(k,v)=>{_ms[k]=v},removeItem:(k)=>{delete _ms[k]}};const sb=supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{storage:_memStorage,autoRefreshToken:true,persistSession:true,detectSessionInUrl:true}});
+
+function App(){
+const[sc,setSc]=useState('splash');
+const[user,setUser]=useState(null);
+const[session,setSession]=useState(null);
+const[profile,setProfile]=useState(null);
+const[tab,setTab]=useState(0);
+const[email,setEmail]=useState("");
+const[pwd,setPwd]=useState("");
+const[name,setName]=useState("");
+const[err,setErr]=useState("");
+const[step,setStep]=useState(0);
+const[gender,setGender]=useState("");
+const[dob,setDob]=useState("");
+const[age,setAge]=useState("");
+const[height,setHeight]=useState("");
+const[weight,setWeight]=useState("");
+const[goal,setGoal]=useState("");
+const[targW,setTargW]=useState("");
+const[activity,setActivity]=useState("");
+const[med,setMed]=useState('none');
+const[diet,setDiet]=useState('Standard');
+const[meals,setMeals]=useState([]);
+const[chatHist,setChatHist]=useState([]);
+const[chatMsg,setChatMsg]=useState("");
+const[typing,setTyping]=useState(false);
+const[mealName,setMealName]=useState("");
+const[mealCal,setMealCal]=useState("");
+const[mealProt,setMealProt]=useState("");
+const[mealCarb,setMealCarb]=useState("");
+const[mealFat,setMealFat]=useState("");
+const[showMeal,setShowMeal]=useState(false);
+const[profView,setProfView]=useState('main');
+const[journalMood,setJournalMood]=useState(3);
+const[journalNote,setJournalNote]=useState("");
+const[tickets,setTickets]=useState([]);
+const[ticketSubj,setTicketSubj]=useState("");
+const[showUpgrade,setShowUpgrade]=useState(false);
+const chatEnd=useRef(null);
+const isPremium=profile&&profile.subscription_plan==='premium';
+const FREE_MEAL_LIMIT=3;
+
+useEffect(()=>{
+setTimeout(()=>setSc('welcome'),2000);
+sb.auth.getSession().then(({data})=>{
+if(data.session){setSession(data.session);setUser(data.session.user);loadProfile(data.session.user.id);loadChatHistory(data.session.user.id)}
+});
+},[]);
+
+useEffect(()=>{
+if(chatEnd.current)chatEnd.current.scrollIntoView({behavior:'smooth'});
+},[chatHist,typing]);
+
+const loadProfile=async(uid)=>{
+const{data}=await sb.from('profiles').select('*').eq('id',uid).single();
+if(data){setProfile(data);if(data.onboarding_completed){setSc('dash');loadMeals(uid);loadTickets(uid)}else setSc('onboard')}
+else setSc('onboard');
+};
+
+const loadMeals=async(uid)=>{
+const today=new Date().toISOString().split('T')[0];
+const{data}=await sb.from('meals').select('*').eq('user_id',uid).gte('created_at',today);
+if(data)setMeals(data);
+};
+
+const loadTickets=async(uid)=>{
+const{data}=await sb.from('support_tickets').select('*').eq('user_id',uid).order('created_at',{ascending:false});
+if(data)setTickets(data);
+};
+
+const loadChatHistory=async(uid)=>{
+const{data}=await sb.from('chat_messages').select('role,content').eq('user_id',uid).order('created_at',{ascending:true}).limit(50);
+if(data&&data.length>0){setChatHist(data.map(m=>({r:m.role==='user'?'u':'b',t:m.content})))}
+else{setChatHist([{r:'b',t:'Bonjour! Je suis votre Coach IA VitalCore. Comment puis-je vous aider?'}])}
+};
+
+const doLogin=async()=>{
+setErr("");
+const{data,error}=await sb.auth.signInWithPassword({email,password:pwd});
+if(error){setErr(error.message);return}
+setSession(data.session);setUser(data.user);
+loadProfile(data.user.id);loadChatHistory(data.user.id);
+};
+
+const doSignup=async()=>{
+setErr("");
+const{data,error}=await sb.auth.signUp({email,password:pwd,options:{data:{full_name:name}}});
+if(error){setErr(error.message);return}
+setSession(data.session);setUser(data.user);setSc('onboard');
+};
+
+const calcTDEE=(g,a,h,w,act)=>{
+let bmr=g==='female'?10*w+6.25*h-5*a-161:10*w+6.25*h-5*a+5;
+const mult={sedentary:1.2,light:1.375,moderate:1.55,active:1.725,very_active:1.9};
+return Math.round(bmr*(mult[act]||1.55));
+};
+
+const saveOnboard=async()=>{
+const ageN=parseInt(age)||25;
+const hN=parseFloat(height)||170;
+const wN=parseFloat(weight)||70;
+const tdee=calcTDEE(gender,ageN,hN,wN,activity);
+const p={gender,date_of_birth:dob||null,age:ageN,height_cm:hN,weight_kg:wN,target_weight_kg:parseFloat(targW)||wN,goal:goal||'health',activity_level:activity||'moderate',diet,tdee,onboarding_completed:true};
+if(user){await sb.from('profiles').update(p).eq('id',user.id);setProfile({...profile,...p});
+if(med!=='none'){await sb.from('medications').insert({user_id:user.id,medication_name:med,active:true})}
+loadMeals(user.id);loadTickets(user.id)}
+setSc('dash');
+};
+
+const addMeal=async()=>{
+if(!mealName)return;
+if(!isPremium&&meals.length>=FREE_MEAL_LIMIT){setShowUpgrade(true);return}
+const m={user_id:user.id,food_name:mealName,calories:parseInt(mealCal)||0,protein_g:parseFloat(mealProt)||0,carbs_g:parseFloat(mealCarb)||0,fat_g:parseFloat(mealFat)||0};
+const{data}=await sb.from('meals').insert(m).select();
+if(data)setMeals([...meals,...data]);
+setMealName("");setMealCal("");setMealProt("");setMealCarb("");setMealFat("");setShowMeal(false);
+};
+
+const sendChat=async()=>{
+if(!chatMsg.trim()||typing)return;
+const userMsg=chatMsg;
+setChatMsg("");
+setChatHist(prev=>[...prev,{r:'u',t:userMsg}]);
+setTyping(true);
+try{
+const{data:sess}=await sb.auth.getSession();
+const token=sess&&sess.session?sess.session.access_token:"";
+const res=await fetch(SUPA_URL+'/functions/v1/chat',{
+method:'POST',
+headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':SUPA_KEY},
+body:JSON.stringify({message:userMsg})
+});
+const data=await res.json();
+if(res.status===429){
+setChatHist(prev=>[...prev,{r:'b',t:data.reply||'Limite atteinte. Passez Premium!'}]);
+setShowUpgrade(true);
+}else if(data.reply){
+setChatHist(prev=>[...prev,{r:'b',t:data.reply}]);
+}else{
+setChatHist(prev=>[...prev,{r:'b',t:'Erreur. Reessayez.'}]);
+}
+}catch(e){
+setChatHist(prev=>[...prev,{r:'b',t:'Erreur de connexion.'}]);
+}
+setTyping(false);
+};
+
+const addJournal=async()=>{
+if(!user)return;
+const entry={user_id:user.id,entry_date:new Date().toISOString().split('T')[0],mood:journalMood};
+if(isPremium&&journalNote)entry.notes=journalNote;
+await sb.from('journal_entries').insert(entry);
+setJournalNote("");alert('Entree ajoutee!');
+};
+
+const addTicket=async()=>{
+if(!isPremium){setShowUpgrade(true);return}
+if(!ticketSubj||!user)return;
+await sb.from('support_tickets').insert({user_id:user.id,subject:ticketSubj,category:'other',status:'open'});
+setTicketSubj("");loadTickets(user.id);alert('Ticket cree!');
+};
+
+const logout=async()=>{
+await sb.auth.signOut();
+setUser(null);setSession(null);setProfile(null);setChatHist([]);setSc('welcome');
+};
+
+const totalCal=meals.reduce((s,m)=>s+(m.calories||0),0);
+const totalProt=meals.reduce((s,m)=>s+(m.protein_g||0),0);
+const totalCarb=meals.reduce((s,m)=>s+(m.carbs_g||0),0);
+const totalFat=meals.reduce((s,m)=>s+(m.fat_g||0),0);
+
+const UpgradeModal=()=>(
+<div style={{position:'fixed',inset:0,background:'rgba(0,0,0,.5)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:200,padding:20}} onClick={()=>setShowUpgrade(false)}>
+<div style={{maxWidth:380,width:'100%'}} onClick={e=>e.stopPropagation()}>
+<div className="upgrade-card">
+<h3 style={{fontSize:20,marginBottom:8}}>Passez Premium</h3>
+<p style={{opacity:.9,fontSize:14,marginBottom:16}}>Coach IA Claude illimite, analyse photo, medicaments GLP-1, jeune, photos progres!</p>
+<div style={{fontSize:32,fontWeight:800,marginBottom:4}}>9,99 EUR<span style={{fontSize:14,fontWeight:400}}>/mois</span></div>
+<button onClick={()=>{(async()=>{try{const{data:sess}=await sb.auth.getSession();const token=sess&&sess.session?sess.session.access_token:"";const r=await fetch(SUPA_URL+'/functions/v1/create-checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,'apikey':SUPA_KEY}});const d=await r.json();if(d.url){window.location.href=d.url}else{alert(d.error||'Erreur')}}catch(e){alert('Erreur: '+e.message)}})();setShowUpgrade(false)}} style={{background:'#fff',color:'#3b82f6',border:'none',padding:'14px 32px',borderRadius:14,fontSize:16,fontWeight:700,cursor:'pointer'}}>Passer Premium</button>
+</div>
+<button onClick={()=>setShowUpgrade(false)} style={{width:'100%',padding:14,background:'#fff',border:'none',borderRadius:14,marginTop:12,fontSize:15,cursor:'pointer',color:'#718096'}}>Plus tard</button>
+</div>
+</div>
+);
+
+const LockedCard=({icon,title,desc})=>(
+<div className="card" onClick={()=>setShowUpgrade(true)} style={{cursor:'pointer',position:'relative',overflow:'hidden'}}>
+<div style={{opacity:.3,filter:'blur(2px)'}}>
+<div style={{display:'flex',alignItems:'center',gap:10}}>
+<span style={{fontSize:24}}>{icon}</span>
+<div><div style={{fontWeight:600}}>{title}</div><div style={{fontSize:12,color:'#718096'}}>{desc}</div></div>
+</div>
+</div>
+<div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(255,255,255,.7)',borderRadius:16}}>
+<div style={{textAlign:'center',fontWeight:700,color:'#3b82f6'}}>Premium</div>
+</div>
+</div>
+);
+
+if(sc==='splash')return(
+<div className="c" style={{display:'flex',alignItems:'center',justifyContent:'center',background:'linear-gradient(135deg,#4fd1c5,#3b82f6)',flexDirection:'column',minHeight:'100vh'}}>
+<div style={{fontSize:64,color:'#fff',fontWeight:800}}>V</div>
+<h1 style={{color:'#fff',marginTop:16,fontSize:28}}>VitalCore</h1>
+<p style={{color:'rgba(255,255,255,.8)',marginTop:8}}>Coach Sante IA</p>
+</div>
+);
+
+if(sc==='welcome')return(
+<div className="c" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:32,background:'linear-gradient(180deg,#e6fffa 0%,#fff 100%)',minHeight:'100vh'}}>
+<div style={{fontSize:64,fontWeight:800,color:'#4fd1c5',marginBottom:24}}>VC</div>
+<h1 style={{fontSize:28,marginBottom:8}}>VitalCore v2.0</h1>
+<p style={{color:'#718096',marginBottom:40,textAlign:'center'}}>Coach sante IA - Suivi GLP-1, nutrition et jeune</p>
+<button className="btn" style={{marginBottom:12}} onClick={()=>setSc('login')}>Se connecter</button>
+<button className="btn btn2" onClick={()=>setSc('signup')}>Creer un compte</button>
+</div>
+);
+
+if(sc==='login')return(
+<div className="c" style={{padding:32,paddingTop:60}}>
+<button onClick={()=>setSc('welcome')} style={{background:'none',border:'none',fontSize:20,cursor:'pointer'}}>Retour</button>
+<h1 style={{fontSize:24,margin:'24px 0'}}>Connexion</h1>
+{err&&<p style={{color:'#ff6b6b',marginBottom:12}}>{err}</p>}
+<input className="inp" placeholder="Email" type="email" value={email} onChange={e=>setEmail(e.target.value)} style={{marginBottom:12}} autoCapitalize="none" autoCorrect="off"/>
+<input className="inp" type="password" placeholder="Mot de passe" value={pwd} onChange={e=>setPwd(e.target.value)} style={{marginBottom:24}} onKeyDown={e=>{if(e.key==='Enter')doLogin()}}/>
+<button className="btn" onClick={doLogin}>Se connecter</button>
+</div>
+);
+
+if(sc==='signup')return(
+<div className="c" style={{padding:32,paddingTop:60}}>
+<button onClick={()=>setSc('welcome')} style={{background:'none',border:'none',fontSize:20,cursor:'pointer'}}>Retour</button>
+<h1 style={{fontSize:24,margin:'24px 0'}}>Creer un compte</h1>
+{err&&<p style={{color:'#ff6b6b',marginBottom:12}}>{err}</p>}
+<input className="inp" placeholder="Nom complet" value={name} onChange={e=>setName(e.target.value)} style={{marginBottom:12}}/>
+<input className="inp" placeholder="Email" type="email" value={email} onChange={e=>setEmail(e.target.value)} style={{marginBottom:12}} autoCapitalize="none"/>
+<input className="inp" type="password" placeholder="Mot de passe (min 6)" value={pwd} onChange={e=>setPwd(e.target.value)} style={{marginBottom:24}} onKeyDown={e=>{if(e.key==='Enter')doSignup()}}/>
+<button className="btn" onClick={doSignup}>Creer mon compte</button>
+</div>
+);
+
+if(sc==='onboard'){
+const onboardSteps=[
+<div key="0"><h2 style={{marginBottom:16}}>Votre genre</h2>
+{['male','female','other'].map(g=><div key={g} className={'chip'+(gender===g?' a':"")} onClick={()=>setGender(g)} style={{padding:'16px 24px',display:'block',marginBottom:8,textAlign:'center',borderRadius:12,fontSize:16}}>{g==='male'?'Homme':g==='female'?'Femme':'Autre'}</div>)}</div>,
+<div key="1"><h2 style={{marginBottom:16}}>Date de naissance</h2>
+<input className="inp" type="date" value={dob} onChange={e=>{setDob(e.target.value);const b=new Date(e.target.value);const t=new Date();let a=t.getFullYear()-b.getFullYear();const mo=t.getMonth()-b.getMonth();if(mo<0||(mo===0&&t.getDate()<b.getDate()))a--;if(a>0&&a<120)setAge(String(a))}}/>
+{age&&<p style={{marginTop:12,fontSize:18,color:'#4fd1c5'}}>Vous avez {age} ans</p>}</div>,
+<div key="2"><h2 style={{marginBottom:16}}>Mensurations</h2>
+<label style={{fontSize:14,color:'#718096'}}>Taille (cm)</label>
+<input className="inp" type="number" placeholder="170" value={height} onChange={e=>setHeight(e.target.value)} style={{marginBottom:12}}/>
+<label style={{fontSize:14,color:'#718096'}}>Poids (kg)</label>
+<input className="inp" type="number" placeholder="70" value={weight} onChange={e=>setWeight(e.target.value)}/></div>,
+<div key="3"><h2 style={{marginBottom:16}}>Objectif</h2>
+{[['lose','Perdre du poids'],['maintain','Maintenir'],['gain','Prendre du muscle'],['health','Sante generale']].map(([v,l])=><div key={v} className={'chip'+(goal===v?' a':"")} onClick={()=>setGoal(v)} style={{padding:'14px 20px',display:'block',marginBottom:8,borderRadius:12,fontSize:15}}>{l}</div>)}</div>,
+<div key="4"><h2 style={{marginBottom:16}}>Poids cible (kg)</h2>
+<input className="inp" type="number" placeholder="65" value={targW} onChange={e=>setTargW(e.target.value)}/></div>,
+<div key="5"><h2 style={{marginBottom:16}}>Activite</h2>
+{[['sedentary','Sedentaire'],['light','Legerement actif'],['moderate','Modere'],['active','Actif'],['very_active','Tres actif']].map(([v,l])=><div key={v} className={'chip'+(activity===v?' a':"")} onClick={()=>setActivity(v)} style={{padding:'14px 20px',display:'block',marginBottom:8,borderRadius:12,fontSize:15}}>{l}</div>)}</div>,
+<div key="6"><h2 style={{marginBottom:16}}>Medicament GLP-1</h2>
+<p style={{color:'#718096',marginBottom:12,fontSize:13}}>Optionnel</p>
+{['none','Ozempic','Mounjaro','Saxenda','Wegovy'].map(m2=><div key={m2} className={'chip'+(med===m2?' a':"")} onClick={()=>setMed(m2)} style={{padding:'14px 20px',display:'block',marginBottom:8,borderRadius:12,fontSize:15}}>{m2==='none'?'Aucun':m2}</div>)}</div>,
+<div key="7"><h2 style={{marginBottom:16}}>Regime alimentaire</h2>
+{['Standard','Keto','Vegetarien','Vegan','Mediterraneen','Sans gluten'].map(d2=><div key={d2} className={'chip'+(diet===d2?' a':"")} onClick={()=>setDiet(d2)} style={{padding:'14px 20px',display:'block',marginBottom:8,borderRadius:12,fontSize:15}}>{d2}</div>)}</div>
+];
+const progress=((step+1)/8*100);
+return(
+<div className="c">
+<div className="hdr"><span style={{fontSize:14}}>Etape {step+1}/8</span><span>VitalCore</span></div>
+<div style={{height:4,background:'#e2e8f0'}}><div style={{height:4,background:'#4fd1c5',width:progress+'%',transition:'width .3s'}}/></div>
+<div style={{padding:24}}>
+{onboardSteps[step]}
+<div style={{marginTop:24,display:'flex',gap:12}}>
+{step>0&&<button className="btn" style={{background:'#e2e8f0',color:'#2d3561'}} onClick={()=>setStep(step-1)}>Precedent</button>}
+{step<7?<button className="btn" onClick={()=>setStep(step+1)}>Suivant</button>:<button className="btn" onClick={saveOnboard}>Terminer</button>}
+</div>
+</div>
+</div>
+);
+}
+
+if(sc==='dash'){
+const tabs_ui=[{e:'\u{1F3E0}',l:'Accueil'},{e:'\u{1F34E}',l:'Nutrition'},{e:'\u{1F916}',l:'Coach'},{e:'\u{1F464}',l:'Profil'}];
+const pn=profile?profile.full_name||"":"";const firstName=pn.split(' ')[0];
+
+const renderTab=()=>{
+if(tab===0)return(
+<div className="content">
+<h2 style={{marginBottom:16}}>Bonjour {firstName}</h2>
+{!isPremium&&<div onClick={()=>setShowUpgrade(true)} style={{background:'linear-gradient(135deg,#3b82f6,#4fd1c5)',color:'#fff',borderRadius:14,padding:'12px 16px',marginBottom:12,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+<div><div style={{fontSize:13,fontWeight:600}}>Passez Premium</div><div style={{fontSize:11,opacity:.8}}>Coach IA illimite, analyse photo...</div></div>
+<div style={{background:'#fff',color:'#3b82f6',padding:'6px 14px',borderRadius:8,fontWeight:700,fontSize:13}}>9,99 EUR</div>
+</div>}
+<div className="card" style={{background:'linear-gradient(135deg,#4fd1c5,#3b82f6)',color:'#fff'}}>
+<div style={{fontSize:13,opacity:.8}}>TDEE quotidien</div>
+<div style={{fontSize:32,fontWeight:700}}>{profile?profile.tdee:'-'} kcal</div>
+<div style={{fontSize:13,opacity:.8,marginTop:4}}>Objectif: {profile?(profile.goal==='lose'?'Perdre du poids':profile.goal==='gain'?'Muscle':'Maintenir'):'-'}</div>
+</div>
+<div className="card">
+<div style={{display:'flex',justifyContent:'space-between'}}>
+<div><div style={{fontSize:13,color:'#718096'}}>Calories</div><div style={{fontSize:24,fontWeight:700,color:'#4fd1c5'}}>{totalCal}</div></div>
+<div style={{textAlign:'right'}}><div style={{fontSize:13,color:'#718096'}}>Objectif</div><div style={{fontSize:24,fontWeight:700}}>{profile?profile.tdee:2000}</div></div>
+</div>
+<div style={{height:8,background:'#e2e8f0',borderRadius:4,marginTop:12}}>
+<div style={{height:8,background:totalCal>(profile?profile.tdee:2000)?'#ff6b6b':'#4fd1c5',borderRadius:4,width:Math.min(100,totalCal/(profile?profile.tdee:2000)*100)+'%'}}/>
+</div>
+</div>
+<div className="card">
+<div style={{fontSize:13,color:'#718096',marginBottom:8}}>Macros du jour</div>
+<div style={{display:'flex',justifyContent:'space-around',textAlign:'center'}}>
+<div><div style={{fontSize:20,fontWeight:700,color:'#3b82f6'}}>{totalProt.toFixed(0)}g</div><div style={{fontSize:11}}>Prot</div></div>
+<div><div style={{fontSize:20,fontWeight:700,color:'#ffd700'}}>{totalCarb.toFixed(0)}g</div><div style={{fontSize:11}}>Gluc</div></div>
+<div><div style={{fontSize:20,fontWeight:700,color:'#ff6b6b'}}>{totalFat.toFixed(0)}g</div><div style={{fontSize:11}}>Lip</div></div>
+</div>
+</div>
+{!isPremium&&<div>
+<LockedCard icon={"\u{1F489}"} title="Suivi Medicaments GLP-1" desc="Rappels injection, suivi doses"/>
+<LockedCard icon={"\u{1F4F7}"} title="Photos Progres" desc="Comparaison avant/apres"/>
+<LockedCard icon={"\u{23F1}"} title="Jeune Intermittent" desc="16:8, 18:6, 20:4"/>
+</div>}
+</div>
+);
+
+if(tab===1)return(
+<div className="content">
+<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+<h2>Nutrition</h2>
+<button className="btn" style={{width:'auto',padding:'8px 16px',fontSize:14}} onClick={()=>{if(!isPremium&&meals.length>=FREE_MEAL_LIMIT)setShowUpgrade(true);else setShowMeal(true)}}>+ Repas</button>
+</div>
+{!isPremium&&<div style={{background:'#f0f4ff',borderRadius:12,padding:'10px 14px',marginBottom:12,fontSize:13,color:'#3b82f6',display:'flex',justifyContent:'space-between'}}>
+<span>{meals.length}/{FREE_MEAL_LIMIT} repas</span>
+<span onClick={()=>setShowUpgrade(true)} style={{fontWeight:700,cursor:'pointer'}}>Illimite &gt;</span>
+</div>}
+{showMeal&&<div className="card" style={{border:'2px solid #4fd1c5'}}>
+<h3 style={{marginBottom:12,fontSize:16}}>Ajouter un repas</h3>
+<input className="inp" placeholder="Nom du plat" value={mealName} onChange={e=>setMealName(e.target.value)} style={{marginBottom:8}}/>
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+<input className="inp" placeholder="Calories" type="number" value={mealCal} onChange={e=>setMealCal(e.target.value)}/>
+<input className="inp" placeholder="Prot (g)" type="number" value={mealProt} onChange={e=>setMealProt(e.target.value)}/>
+<input className="inp" placeholder="Gluc (g)" type="number" value={mealCarb} onChange={e=>setMealCarb(e.target.value)}/>
+<input className="inp" placeholder="Lip (g)" type="number" value={mealFat} onChange={e=>setMealFat(e.target.value)}/>
+</div>
+<div style={{display:'flex',gap:8,marginTop:12}}>
+<button className="btn" onClick={addMeal}>Ajouter</button>
+<button className="btn" style={{background:'#e2e8f0',color:'#2d3561'}} onClick={()=>setShowMeal(false)}>Annuler</button>
+</div>
+</div>}
+<div className="card">
+<div style={{fontSize:13,color:'#718096',marginBottom:8}}>Resume du jour</div>
+<div style={{display:'flex',justifyContent:'space-around',textAlign:'center'}}>
+<div><div style={{fontSize:22,fontWeight:700,color:'#4fd1c5'}}>{totalCal}</div><div style={{fontSize:11}}>kcal</div></div>
+<div><div style={{fontSize:22,fontWeight:700,color:'#3b82f6'}}>{totalProt.toFixed(0)}g</div><div style={{fontSize:11}}>Prot</div></div>
+<div><div style={{fontSize:22,fontWeight:700,color:'#ffd700'}}>{totalCarb.toFixed(0)}g</div><div style={{fontSize:11}}>Gluc</div></div>
+<div><div style={{fontSize:22,fontWeight:700,color:'#ff6b6b'}}>{totalFat.toFixed(0)}g</div><div style={{fontSize:11}}>Lip</div></div>
+</div>
+</div>
+{meals.map((m,i)=><div key={i} className="card" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+<div><div style={{fontWeight:600}}>{m.food_name}</div><div style={{fontSize:12,color:'#718096'}}>{m.protein_g||0}g P | {m.carbs_g||0}g G | {m.fat_g||0}g L</div></div>
+<div style={{fontWeight:700,color:'#4fd1c5'}}>{m.calories||0} kcal</div>
+</div>)}
+{meals.length===0&&<p style={{textAlign:'center',color:'#a0aec0',marginTop:24}}>Aucun repas enregistre</p>}
+</div>
+);
+
+if(tab===2)return(
+<div style={{display:'flex',flexDirection:'column',height:'calc(100vh - 120px)'}}>
+<div style={{padding:'0 20px',paddingTop:12}}>
+<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+<h2>Coach IA</h2>
+<span style={{fontSize:11,color:'#718096',background:'#f0f4ff',padding:'4px 10px',borderRadius:6}}>Claude</span>
+</div>
+</div>
+<div style={{flex:1,overflowY:'auto',padding:'0 20px'}}>
+{chatHist.map((m,i)=><div key={i} className={'msg '+(m.r==='u'?'u':'b')} style={{whiteSpace:'pre-wrap'}}>{m.t}</div>)}
+{typing&&<div className="typing"><span></span><span></span><span></span></div>}
+<div ref={chatEnd}/>
+</div>
+<div style={{padding:'12px 20px',paddingBottom:'calc(70px + env(safe-area-inset-bottom))',background:'#fff'}}>
+<div style={{display:'flex',gap:8}}>
+<input className="inp" placeholder="Posez votre question..." value={chatMsg} onChange={e=>setChatMsg(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')sendChat()}} style={{flex:1}} disabled={typing}/>
+<button className="btn" style={{width:'auto',padding:'12px 20px',opacity:typing?.5:1}} onClick={sendChat} disabled={typing}>Go</button>
+</div>
+<div style={{display:'flex',gap:4,marginTop:8,flexWrap:'wrap'}}>
+{['Mon poids','Que manger?','Mes calories','Injection','Jeune'].map(q=><button key={q} className="chip" style={{fontSize:12,padding:'4px 10px'}} onClick={()=>{if(!typing){setChatMsg(q)}}}>{q}</button>)}
+</div>
+</div>
+</div>
+);
+
+if(tab===3){
+if(profView==='journal')return(
+<div className="content">
+<button onClick={()=>setProfView('main')} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',marginBottom:12,color:'#3b82f6'}}>&larr; Journal</button>
+<div className="card">
+<h3 style={{marginBottom:12}}>Nouvelle entree</h3>
+<div style={{marginBottom:12}}>
+<label style={{fontSize:13,color:'#718096'}}>Humeur</label>
+<div style={{display:'flex',gap:8,marginTop:4}}>
+{[1,2,3,4,5].map(i=><span key={i} onClick={()=>setJournalMood(i)} style={{fontSize:28,cursor:'pointer',opacity:journalMood===i?1:.4,background:journalMood===i?'#e6fffa':'transparent',borderRadius:8,padding:4}}>{i}</span>)}
+</div>
+</div>
+{isPremium?<textarea className="inp" rows={3} placeholder="Notes detaillees..." value={journalNote} onChange={e=>setJournalNote(e.target.value)} style={{marginBottom:12,resize:'none'}}/>:
+<div onClick={()=>setShowUpgrade(true)} style={{padding:12,background:'#f0f4ff',borderRadius:10,marginBottom:12,cursor:'pointer',textAlign:'center',fontSize:13,color:'#3b82f6'}}>Notes detaillees = Premium</div>}
+<button className="btn" onClick={addJournal}>Enregistrer</button>
+</div>
+</div>
+);
+if(profView==='support')return(
+<div className="content">
+<button onClick={()=>setProfView('main')} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',marginBottom:12,color:'#3b82f6'}}>&larr; Support</button>
+{isPremium?<div>
+<div className="card">
+<h3 style={{marginBottom:12}}>Nouveau ticket</h3>
+<input className="inp" placeholder="Sujet" value={ticketSubj} onChange={e=>setTicketSubj(e.target.value)} style={{marginBottom:8}}/>
+<button className="btn" onClick={addTicket}>Envoyer</button>
+</div>
+{tickets.map((t,i)=><div key={i} className="card" style={{display:'flex',justifyContent:'space-between'}}><span>{t.subject}</span><span style={{fontSize:12,color:t.status==='open'?'#e53e3e':'#38a169'}}>{t.status}</span></div>)}
+</div>:
+<div className="upgrade-card">
+<h3>Support Premium</h3>
+<p style={{opacity:.9,marginBottom:16}}>Creez des tickets support</p>
+<button onClick={()=>setShowUpgrade(true)} style={{background:'#fff',color:'#3b82f6',border:'none',padding:'12px 24px',borderRadius:12,fontWeight:700,cursor:'pointer'}}>Debloquer</button>
+</div>}
+</div>
+);
+if(profView==='payment')return(
+<div className="content">
+<button onClick={()=>setProfView('main')} style={{background:'none',border:'none',fontSize:16,cursor:'pointer',marginBottom:12,color:'#3b82f6'}}>&larr; Abonnement</button>
+<div className="card" style={{background:isPremium?'linear-gradient(135deg,#4fd1c5,#3b82f6)':'#f7fafc',color:isPremium?'#fff':'#2d3561',textAlign:'center',padding:24}}>
+<h3>{isPremium?'Premium Actif':'Plan Gratuit'}</h3>
+<p style={{fontSize:24,fontWeight:800,marginTop:8}}>{isPremium?'9,99 EUR/mois':'0 EUR'}</p>
+</div>
+{!isPremium&&<div className="upgrade-card">
+<h3>Passez Premium</h3>
+<div style={{textAlign:'left',fontSize:13,marginBottom:16,lineHeight:1.8}}>
+Coach IA Claude illimite<br/>Repas illimites + analyse photo<br/>Suivi medicaments GLP-1<br/>Jeune intermittent<br/>Photos progres<br/>Journal complet<br/>Support ticket
+</div>
+<button onClick={()=>setShowUpgrade(true)} style={{background:'#fff',color:'#3b82f6',border:'none',padding:'14px 32px',borderRadius:14,fontSize:16,fontWeight:700,cursor:'pointer'}}>9,99 EUR/mois</button>
+</div>}
+</div>
+);
+return(
+<div className="content">
+<h2 style={{marginBottom:16}}>Profil</h2>
+<div className="card" style={{textAlign:'center',background:'linear-gradient(135deg,#e6fffa,#ebf8ff)',padding:20}}>
+<div style={{fontSize:18,fontWeight:700}}>{pn||'Utilisateur'}</div>
+<div style={{color:'#718096',fontSize:14}}>{user?user.email:""}</div>
+<span style={{display:'inline-block',marginTop:8,padding:'4px 14px',borderRadius:12,fontSize:12,fontWeight:700,background:isPremium?'linear-gradient(135deg,#4fd1c5,#3b82f6)':'#e2e8f0',color:isPremium?'#fff':'#718096'}}>{isPremium?'Premium':'Free'}</span>
+</div>
+<div className="card">
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,textAlign:'center'}}>
+<div><div style={{fontSize:22,fontWeight:700}}>{profile?profile.weight_kg:'-'}</div><div style={{fontSize:12,color:'#718096'}}>Poids (kg)</div></div>
+<div><div style={{fontSize:22,fontWeight:700}}>{profile?profile.height_cm:'-'}</div><div style={{fontSize:12,color:'#718096'}}>Taille (cm)</div></div>
+<div><div style={{fontSize:22,fontWeight:700}}>{profile?profile.tdee:'-'}</div><div style={{fontSize:12,color:'#718096'}}>TDEE</div></div>
+<div><div style={{fontSize:22,fontWeight:700}}>{profile?profile.age:'-'}</div><div style={{fontSize:12,color:'#718096'}}>Age</div></div>
+</div>
+</div>
+{[['Journal','journal'],['Support','support'],['Abonnement','payment']].map(([lb,v])=>
+<button key={v} onClick={()=>setProfView(v)} style={{width:'100%',padding:'14px 16px',background:'#fff',border:'1px solid #e2e8f0',borderRadius:12,marginBottom:8,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer',fontSize:15}}>
+<span>{lb}</span>
+{v==='support'&&!isPremium?<span style={{fontSize:12,color:'#3b82f6'}}>Premium</span>:<span style={{color:'#a0aec0'}}>&rsaquo;</span>}
+</button>
+)}
+<button className="btn btnA" style={{marginTop:16}} onClick={logout}>Deconnexion</button>
+</div>
+);
+}
+};
+
+return(
+<div className="c">
+{showUpgrade&&<UpgradeModal/>}
+<div className="hdr">
+<span style={{fontWeight:700,fontSize:18}}>VitalCore</span>
+<span style={{fontSize:13}}>{tabs_ui[tab].l}</span>
+</div>
+<div style={{paddingTop:0}}>{renderTab()}</div>
+<div className="tabs">
+{tabs_ui.map((t,i)=><button key={i} className={'tab'+(tab===i?' a':"")} onClick={()=>{setTab(i);setProfView('main')}}>
+<span>{t.e}</span>{t.l}
+</button>)}
+</div>
+</div>
+);
+}
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
