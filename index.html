@@ -6,565 +6,105 @@
     <title>VitalCore v2.0</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js" onerror="document.body.innerHTML='<h1 style=color:red>FAILED TO LOAD REACT</h1>'"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" onerror="document.body.innerHTML='<h1 style=color:red>FAILED TO LOAD REACT-DOM</h1>'"></script>
-    <!-- Babel standalone removed - pre-compiled -->
     <script crossorigin src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror="document.body.innerHTML='<h1 style=color:red>FAILED TO LOAD SUPABASE</h1>'"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: #f8fafc;
-            color: #1e293b;
-        }
-        .container {
-            max-width: 430px;
-            margin: 0 auto;
-            background: white;
-            min-height: 100vh;
-            position: relative;
-        }
-        .header {
-            background: linear-gradient(135deg, #4fd1c5 0%, #3b82f6 100%);
-            color: white;
-            padding: 16px;
-            text-align: center;
-        }
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        .content {
-            padding: 16px;
-            padding-bottom: 80px;
-        }
-        .card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .card-gradient {
-            background: linear-gradient(135deg, #4fd1c5 0%, #3b82f6 100%);
-            color: white;
-            border: none;
-        }
-        .tabs {
-            display: flex;
-            gap: 0;
-            margin-bottom: 16px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        .tab.active {
-            border-bottom-color: #4fd1c5;
-            color: #4fd1c5;
-            font-weight: 600;
-        }
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-around;
-            max-width: 430px;
-            margin: 0 auto;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        .nav-item {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 12px;
-            color: #64748b;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-        .nav-item.active {
-            color: #4fd1c5;
-            font-weight: 600;
-        }
-        .splash {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #4fd1c5 0%, #3b82f6 100%);
-            color: white;
-            font-size: 32px;
-            font-weight: bold;
-        }
-        .auth-screen {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            padding: 32px 16px;
-        }
-        .input {
-            border: 1px solid #e2e8f0;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        .input:focus {
-            outline: none;
-            border-color: #4fd1c5;
-        }
-        .btn {
-            background: #4fd1c5;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .btn:hover {
-            background: #2eb3a0;
-            transform: translateY(-2px);
-        }
-        .btn-secondary {
-            background: #3b82f6;
-        }
-        .btn-secondary:hover {
-            background: #2563eb;
-        }
-        .btn-small {
-            padding: 8px 12px;
-            font-size: 12px;
-        }
-        .btn-block {
-            width: 100%;
-            margin: 8px 0;
-        }
-        .greeting {
-            font-size: 20px;
-            margin-bottom: 16px;
-            font-weight: 600;
-        }
-        .premium-banner {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: white;
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            cursor: pointer;
-            text-align: center;
-            font-weight: 600;
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .modal {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 360px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        .modal h2 {
-            margin-bottom: 16px;
-            font-size: 20px;
-        }
-        .modal-price {
-            font-size: 32px;
-            font-weight: bold;
-            color: #4fd1c5;
-            margin: 16px 0;
-        }
-        .onboarding {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            padding: 24px 16px;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4fd1c5 0%, #3b82f6 100%);
-            transition: width 0.3s;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .form-group label {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .select {
-            border: 1px solid #e2e8f0;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            background: white;
-        }
-        .select:focus {
-            outline: none;
-            border-color: #4fd1c5;
-        }
-        .meal-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .meal-item {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
-        .chat-messages {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            height: 400px;
-            overflow-y: auto;
-            margin-bottom: 16px;
-        }
-        .message {
-            display: flex;
-            gap: 8px;
-            font-size: 14px;
-            padding: 8px 12px;
-            border-radius: 8px;
-        }
-        .message.user {
-            align-self: flex-end;
-            background: #4fd1c5;
-            color: white;
-            max-width: 80%;
-        }
-        .message.bot {
-            align-self: flex-start;
-            background: #e2e8f0;
-            color: #1e293b;
-            max-width: 80%;
-        }
-        .typing {
-            display: inline-flex;
-            gap: 4px;
-        }
-        .typing span {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #64748b;
-            animation: bounce 1.4s infinite;
-        }
-        .typing span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        .typing span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-        @keyframes bounce {
-            0%, 60%, 100% { opacity: 0.3; }
-            30% { opacity: 1; }
-        }
-        .chip {
-            display: inline-block;
-            background: #e2e8f0;
-            color: #1e293b;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            margin: 4px;
-            border: 1px solid transparent;
-            transition: all 0.3s;
-        }
-        .chip:hover {
-            background: #4fd1c5;
-            color: white;
-        }
-        .input-bar {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .input-bar input {
-            flex: 1;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin: 16px 0;
-        }
-        .stat-box {
-            background: #f8fafc;
-            padding: 16px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 20px;
-            font-weight: bold;
-            color: #4fd1c5;
-        }
-        .stat-label {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 4px;
-        }
-        .locked-card {
-            position: relative;
-            opacity: 0.6;
-            filter: blur(4px);
-            pointer-events: none;
-        }
-        .locked-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.8);
-            border-radius: 12px;
-            font-weight: 600;
-            color: #f59e0b;
-            pointer-events: auto;
-            cursor: pointer;
-        }
-        .macros-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-            margin-top: 12px;
-        }
-        .macro-box {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .macro-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: #3b82f6;
-        }
-        .macro-label {
-            font-size: 12px;
-            color: #64748b;
-        }
-        .progress-circle {
-            width: 120px;
-            height: 120px;
-            position: relative;
-            margin: 0 auto 16px;
-        }
-        .progress-circle svg {
-            width: 100%;
-            height: 100%;
-            transform: rotate(-90deg);
-        }
-        .progress-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            font-weight: bold;
-        }
-        .progress-text-large {
-            font-size: 24px;
-            color: #4fd1c5;
-        }
-        .progress-text-small {
-            font-size: 12px;
-            color: #64748b;
-        }
-        .back-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            margin-bottom: 16px;
-            color: #4fd1c5;
-        }
-        .protocol-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .protocol-btn {
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .protocol-btn.active {
-            background: #4fd1c5;
-            color: white;
-            border-color: #4fd1c5;
-        }
-        .photo-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 16px;
-        }
-        .photo-card {
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            aspect-ratio: 1;
-        }
-        .photo-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .photo-date {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            padding: 8px;
-            font-size: 12px;
-        }
-        .comparison {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-        }
-        .comparison-photo {
-            flex: 1;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .comparison-photo img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .injection-site-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .injection-btn {
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .injection-btn.active {
-            background: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-        }
-        .injection-log {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-        .hidden-file {
-            display: none;
-        }
-        .ai-analysis {
-            background: #e0f2fe;
-            border-left: 4px solid #3b82f6;
-            padding: 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            margin-bottom: 12px;
-        }
-        .scan-preview {
-            width: 100%;
-            max-height: 200px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            object-fit: cover;
-        }
-        .feature-card {
-            background: linear-gradient(135deg, #dbeafe 0%, #dbeafe 100%);
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-        .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .feature-card h3 {
-            color: #1e40af;
-            margin-bottom: 8px;
-        }
-        .feature-card p {
-            font-size: 13px;
-            color: #0c4a6e;
-        }
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border-left: 4px solid #dc2626;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif; background:#f8fafc; color:#1e293b; }
+        .container { max-width:430px; margin:0 auto; background:white; min-height:100vh; position:relative; }
+        .header { background:linear-gradient(135deg,#4fd1c5 0%,#3b82f6 100%); color:white; padding:16px; text-align:center; }
+        .header h1 { font-size:24px; margin-bottom:4px; }
+        .header p { font-size:14px; opacity:0.9; }
+        .content { padding:16px; padding-bottom:80px; }
+        .card { background:white; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+        .card-gradient { background:linear-gradient(135deg,#4fd1c5 0%,#3b82f6 100%); color:white; border:none; }
+        .tabs { display:flex; gap:0; margin-bottom:16px; border-bottom:1px solid #e2e8f0; }
+        .tab { flex:1; padding:12px; text-align:center; cursor:pointer; border-bottom:3px solid transparent; font-size:14px; transition:all 0.3s; }
+        .tab.active { border-bottom-color:#4fd1c5; color:#4fd1c5; font-weight:600; }
+        .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:white; border-top:1px solid #e2e8f0; display:flex; justify-content:space-around; max-width:430px; margin:0 auto; padding-bottom:env(safe-area-inset-bottom); }
+        .nav-item { flex:1; padding:12px; text-align:center; cursor:pointer; font-size:12px; color:#64748b; text-decoration:none; transition:all 0.3s; }
+        .nav-item.active { color:#4fd1c5; font-weight:600; }
+        .splash { display:flex; align-items:center; justify-content:center; min-height:100vh; background:linear-gradient(135deg,#4fd1c5 0%,#3b82f6 100%); color:white; font-size:32px; font-weight:bold; }
+        .auth-screen { display:flex; flex-direction:column; gap:16px; padding:32px 16px; }
+        .input { border:1px solid #e2e8f0; padding:12px; border-radius:8px; font-size:14px; transition:border-color 0.3s; width:100%; }
+        .input:focus { outline:none; border-color:#4fd1c5; }
+        .btn { background:#4fd1c5; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; transition:all 0.3s; }
+        .btn:hover { background:#2eb3a0; }
+        .btn-secondary { background:#3b82f6; }
+        .btn-secondary:hover { background:#2563eb; }
+        .btn-danger { background:#ef4444; }
+        .btn-danger:hover { background:#dc2626; }
+        .btn-small { padding:8px 12px; font-size:12px; }
+        .btn-block { width:100%; margin:8px 0; }
+        .greeting { font-size:20px; margin-bottom:16px; font-weight:600; }
+        .premium-banner { background:linear-gradient(135deg,#fbbf24 0%,#f59e0b 100%); color:white; padding:16px; border-radius:12px; margin-bottom:16px; cursor:pointer; text-align:center; font-weight:600; }
+        .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000; }
+        .modal { background:white; border-radius:16px; padding:24px; max-width:380px; width:90%; box-shadow:0 10px 40px rgba(0,0,0,0.2); max-height:85vh; overflow-y:auto; }
+        .modal h2 { margin-bottom:16px; font-size:20px; }
+        .modal-price { font-size:32px; font-weight:bold; color:#4fd1c5; margin:16px 0; }
+        .onboarding { display:flex; flex-direction:column; gap:16px; padding:24px 16px; }
+        .progress-bar { width:100%; height:8px; background:#e2e8f0; border-radius:4px; margin-bottom:24px; overflow:hidden; }
+        .progress-fill { height:100%; background:linear-gradient(90deg,#4fd1c5 0%,#3b82f6 100%); transition:width 0.3s; }
+        .form-group { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+        .form-group label { font-weight:600; font-size:14px; }
+        .select { border:1px solid #e2e8f0; padding:12px; border-radius:8px; font-size:14px; background:white; width:100%; }
+        .select:focus { outline:none; border-color:#4fd1c5; }
+        .meal-list { display:flex; flex-direction:column; gap:8px; }
+        .meal-item { background:#f8fafc; padding:12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-size:14px; }
+        .chat-messages { display:flex; flex-direction:column; gap:12px; height:400px; overflow-y:auto; margin-bottom:16px; padding:8px 0; }
+        .message { display:flex; gap:8px; font-size:14px; padding:8px 12px; border-radius:8px; line-height:1.5; }
+        .message.user { align-self:flex-end; background:#4fd1c5; color:white; max-width:80%; }
+        .message.bot { align-self:flex-start; background:#e2e8f0; color:#1e293b; max-width:80%; }
+        .typing { display:inline-flex; gap:4px; }
+        .typing span { width:8px; height:8px; border-radius:50%; background:#64748b; animation:bounce 1.4s infinite; }
+        .typing span:nth-child(2) { animation-delay:0.2s; }
+        .typing span:nth-child(3) { animation-delay:0.4s; }
+        @keyframes bounce { 0%,60%,100%{opacity:0.3;} 30%{opacity:1;} }
+        .chip { display:inline-block; background:#e2e8f0; color:#1e293b; padding:8px 12px; border-radius:20px; font-size:12px; cursor:pointer; margin:4px; border:1px solid transparent; transition:all 0.3s; }
+        .chip:hover { background:#4fd1c5; color:white; }
+        .input-bar { display:flex; gap:8px; align-items:center; }
+        .input-bar input { flex:1; }
+        .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0; }
+        .stat-box { background:#f8fafc; padding:16px; border-radius:8px; text-align:center; }
+        .stat-value { font-size:20px; font-weight:bold; color:#4fd1c5; }
+        .stat-label { font-size:12px; color:#64748b; margin-top:4px; }
+        .macros-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:12px; }
+        .macro-box { background:#f8fafc; padding:12px; border-radius:8px; text-align:center; }
+        .macro-value { font-size:18px; font-weight:bold; color:#3b82f6; }
+        .macro-label { font-size:12px; color:#64748b; }
+        .progress-circle { width:120px; height:120px; position:relative; margin:0 auto 16px; }
+        .progress-circle svg { width:100%; height:100%; transform:rotate(-90deg); }
+        .progress-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; font-weight:bold; }
+        .progress-text-large { font-size:24px; color:#4fd1c5; }
+        .progress-text-small { font-size:12px; color:#64748b; }
+        .back-btn { background:none; border:none; font-size:20px; cursor:pointer; margin-bottom:16px; color:#4fd1c5; }
+        .protocol-selector { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+        .protocol-btn { padding:12px; border:2px solid #e2e8f0; border-radius:8px; background:white; cursor:pointer; font-size:14px; font-weight:600; transition:all 0.3s; }
+        .protocol-btn.active { background:#4fd1c5; color:white; border-color:#4fd1c5; }
+        .photo-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+        .photo-card { position:relative; border-radius:8px; overflow:hidden; aspect-ratio:1; }
+        .photo-card img { width:100%; height:100%; object-fit:cover; }
+        .photo-date { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; padding:8px; font-size:12px; }
+        .comparison { display:flex; gap:12px; margin-top:16px; }
+        .comparison-photo { flex:1; border-radius:8px; overflow:hidden; }
+        .comparison-photo img { width:100%; height:200px; object-fit:cover; }
+        .injection-site-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+        .injection-btn { padding:12px; border:2px solid #e2e8f0; border-radius:8px; background:white; cursor:pointer; font-size:14px; font-weight:600; transition:all 0.3s; }
+        .injection-btn.active { background:#3b82f6; color:white; border-color:#3b82f6; }
+        .injection-log { background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:8px; font-size:14px; }
+        .hidden-file { display:none; }
+        .ai-analysis { background:#e0f2fe; border-left:4px solid #3b82f6; padding:12px; border-radius:4px; font-size:13px; margin-bottom:12px; }
+        .scan-preview { width:100%; max-height:200px; border-radius:8px; margin-bottom:12px; object-fit:cover; }
+        .feature-card { background:linear-gradient(135deg,#dbeafe 0%,#dbeafe 100%); border:none; cursor:pointer; transition:all 0.3s; position:relative; }
+        .feature-card:hover { transform:translateY(-4px); box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+        .feature-card h3 { color:#1e40af; margin-bottom:8px; }
+        .feature-card p { font-size:13px; color:#0c4a6e; }
+        .error { background:#fee2e2; color:#991b1b; padding:12px; border-radius:8px; margin-bottom:12px; border-left:4px solid #dc2626; }
+        .success { background:#dcfce7; color:#166534; padding:12px; border-radius:8px; margin-bottom:12px; border-left:4px solid #22c55e; font-size:14px; }
+        .mood-bar-container { display:flex; align-items:flex-end; gap:4px; height:80px; margin-top:12px; }
+        .mood-bar { flex:1; border-radius:4px 4px 0 0; transition:height 0.3s; min-width:20px; position:relative; }
+        .mood-bar-label { font-size:10px; color:#64748b; text-align:center; margin-top:4px; }
+        .journal-entry { background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:8px; font-size:14px; border-left:3px solid #4fd1c5; }
+        textarea.input { min-height:80px; font-family:inherit; resize:vertical; }
     </style>
 </head>
 <body>
@@ -580,117 +120,99 @@
     </script>
 
     <script>try {
-const {
-  useState,
-  useEffect,
-  useRef,
-  useCallback
-} = React;
+const { useState, useEffect, useRef, useCallback } = React;
 
-// Supabase setup
 const SUPA_URL = 'https://mnzvexnaemdetznxeeuo.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uenZleG5hZW1kZXR6bnhlZXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MjQxMTksImV4cCI6MjA5MDIwMDExOX0.3GizLSrEKjqrMeL88V1CNyHw9_L0f13t5SA_jk9REq0';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
-// TDEE calculation
 const calcBMR = (gender, weight, height, age) => {
   if (gender === 'male') return 10 * weight + 6.25 * height - 5 * age + 5;
   return 10 * weight + 6.25 * height - 5 * age - 161;
 };
 const calcTDEE = (bmr, activity) => {
-  const m = {
-    sedentary: 1.2,
-    light: 1.375,
-    moderate: 1.55,
-    active: 1.725,
-    very_active: 1.9
-  };
+  const m = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, very_active:1.9 };
   return Math.round(bmr * (m[activity] || 1.2));
 };
 const calcAge = dob => {
   const today = new Date();
   let age = today.getFullYear() - new Date(dob).getFullYear();
-  const monthDiff = today.getMonth() - new Date(dob).getMonth();
-  if (monthDiff < 0 || monthDiff === 0 && today.getDate() < new Date(dob).getDate()) age--;
+  const md = today.getMonth() - new Date(dob).getMonth();
+  if (md < 0 || (md === 0 && today.getDate() < new Date(dob).getDate())) age--;
   return age;
 };
+
 function App() {
-  const [sc, setSc] = useState('splash'); // splash, welcome, login, signup, onboarding, dashboard
+  const [sc, setSc] = useState('splash');
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [tab, setTab] = useState('accueil');
   const [homeView, setHomeView] = useState('main');
 
-  // Auth state
+  // Auth
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authErr, setAuthErr] = useState('');
 
-  // Onboarding state
+  // Onboarding
   const [obStep, setObStep] = useState(0);
-  const [obData, setObData] = useState({
-    gender: '',
-    dob: '',
-    height: '',
-    weight: '',
-    goal: '',
-    targetWeight: '',
-    activity: '',
-    glp1: '',
-    diet: ''
-  });
+  const [obData, setObData] = useState({ gender:'', dob:'', height:'', weight:'', goal:'', targetWeight:'', activity:'', glp1:'', diet:'' });
 
-  // Nutrition state
+  // Nutrition
   const [meals, setMeals] = useState([]);
   const [foodName, setFoodName] = useState('');
   const [calories, setCalories] = useState('');
   const [protein, setProtein] = useState('');
   const [carbs, setCarbs] = useState('');
   const [fat, setFat] = useState('');
+  const [showMealForm, setShowMealForm] = useState(false);
+  const [mealMsg, setMealMsg] = useState('');
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
   const [scanPreview, setScanPreview] = useState('');
   const fileInputRef = useRef(null);
 
-  // Coach state
+  // Coach
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [typing, setTyping] = useState(false);
 
-  // Profile/sub-views state
+  // Profile/sub-views
   const [mood, setMood] = useState('');
   const [journalNote, setJournalNote] = useState('');
   const [subView, setSubView] = useState(null);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [journalEntries, setJournalEntries] = useState([]);
+  const [journalMsg, setJournalMsg] = useState('');
 
-  // Fasting state
+  // Fasting
   const [fastProtocol, setFastProtocol] = useState('16:8');
   const [fastActive, setFastActive] = useState(null);
-  const [fastTime, setFastTime] = useState({
-    elapsed: 0,
-    remaining: 0
-  });
+  const [fastTime, setFastTime] = useState({ elapsed:0, remaining:0 });
   const [fastHistory, setFastHistory] = useState([]);
 
-  // Photos state
+  // Photos
   const [photoList, setPhotoList] = useState([]);
   const [photoWeight, setPhotoWeight] = useState('');
   const [photoNote, setPhotoNote] = useState('');
   const photoFileRef = useRef(null);
 
-  // Medications/injections state
+  // Medications/injections
   const [activeMed, setActiveMed] = useState(null);
   const [injLogs, setInjLogs] = useState([]);
   const [injSite, setInjSite] = useState('');
   const [injDose, setInjDose] = useState('');
   const [injNote, setInjNote] = useState('');
+  const [injMsg, setInjMsg] = useState('');
+  const [medName, setMedName] = useState('');
+  const [medDose, setMedDose] = useState('');
 
   // Load user on mount
   useEffect(() => {
     const timer = setTimeout(async () => {
       try {
         const { data } = await sb.auth.getSession();
-        if (data?.session) {
+        if (data && data.session) {
           setUser(data.session.user);
           loadProfile(data.session.user.id);
         } else {
@@ -704,12 +226,8 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Load profile
-  const loadProfile = async userId => {
-    const {
-      data,
-      error
-    } = await sb.from('profiles').select('*').eq('id', userId).single();
+  const loadProfile = async (userId) => {
+    const { data, error } = await sb.from('profiles').select('*').eq('id', userId).single();
     if (data) {
       setProfile(data);
       if (data.onboarding_completed) {
@@ -722,110 +240,61 @@ function App() {
       setSc('onboarding');
     }
   };
-  const loadDashboardData = async userId => {
+
+  const loadDashboardData = async (userId) => {
     const today = new Date().toISOString().split('T')[0];
-    const {
-      data: mealsData
-    } = await sb.from('meals').select('*').eq('user_id', userId).eq('meal_date', today);
+    const { data: mealsData } = await sb.from('meals').select('*').eq('user_id', userId).eq('meal_date', today).order('created_at', { ascending: true });
     setMeals(mealsData || []);
-    const {
-      data: msgData
-    } = await sb.from('chat_messages').select('*').eq('user_id', userId).order('created_at', {
-      ascending: true
-    });
-    setMessages(msgData || []);
-    const {
-      data: fastData
-    } = await sb.from('fasting_sessions').select('*').eq('user_id', userId).eq('status', 'active').single();
+    const { data: msgData } = await sb.from('chat_messages').select('*').eq('user_id', userId).order('created_at', { ascending: true }).limit(50);
+    setMessages((msgData || []).map(m => ({ role: m.role, content: m.content })));
+    const { data: fastData } = await sb.from('fasting_sessions').select('*').eq('user_id', userId).eq('status', 'active').single();
     setFastActive(fastData || null);
-    const {
-      data: fastHist
-    } = await sb.from('fasting_sessions').select('*').eq('user_id', userId).eq('status', 'completed').order('created_at', {
-      ascending: false
-    }).limit(10);
+    const { data: fastHist } = await sb.from('fasting_sessions').select('*').eq('user_id', userId).eq('status', 'completed').order('created_at', { ascending: false }).limit(10);
     setFastHistory(fastHist || []);
-    const {
-      data: photoData
-    } = await sb.from('progress_photos').select('*').eq('user_id', userId).order('created_at', {
-      ascending: false
-    });
+    const { data: photoData } = await sb.from('progress_photos').select('*').eq('user_id', userId).order('created_at', { ascending: false });
     setPhotoList(photoData || []);
-    const {
-      data: medData
-    } = await sb.from('medications').select('*').eq('user_id', userId).eq('active', true).single();
+    const { data: medData } = await sb.from('medications').select('*').eq('user_id', userId).eq('active', true).single();
     setActiveMed(medData || null);
-    const {
-      data: injData
-    } = await sb.from('injection_logs').select('*').eq('user_id', userId).order('created_at', {
-      ascending: false
-    }).limit(10);
+    const { data: injData } = await sb.from('injection_logs').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(10);
     setInjLogs(injData || []);
   };
 
-  // Auth functions
+  // Auth
   const handleLogin = async () => {
     setAuthErr('');
-    const {
-      error
-    } = await sb.auth.signInWithPassword({
-      email,
-      password
-    });
+    const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
       setAuthErr(error.message);
     } else {
       const { data: sd } = await sb.auth.getSession();
-      if (sd?.session) {
+      if (sd && sd.session) {
         setUser(sd.session.user);
         loadProfile(sd.session.user.id);
       }
     }
   };
+
   const handleSignup = async () => {
     setAuthErr('');
-    const {
-      error
-    } = await sb.auth.signUp({
-      email,
-      password
-    });
+    const { error } = await sb.auth.signUp({ email, password });
     if (error) {
       setAuthErr(error.message);
     } else {
-      const {
-        data
-      } = await sb.auth.signInWithPassword({
-        email,
-        password
-      });
-      if (data.user) {
+      const { data } = await sb.auth.signInWithPassword({ email, password });
+      if (data && data.user) {
         setUser(data.user);
-        await sb.from('profiles').insert({
-          id: data.user.id,
-          email: data.user.email,
-          full_name: '',
-          subscription_plan: 'free'
-        });
+        await sb.from('profiles').insert({ id: data.user.id, email: data.user.email, full_name: '', subscription_plan: 'free' });
         setSc('onboarding');
       }
     }
   };
+
   const handleLogout = async () => {
     await sb.auth.signOut();
-    setUser(null);
-    setProfile(null);
-    setSc('welcome');
-    setEmail('');
-    setPassword('');
+    setUser(null); setProfile(null); setSc('welcome'); setEmail(''); setPassword('');
   };
 
   // Onboarding
-  const handleObNext = () => {
-    if (obStep < 7) setObStep(obStep + 1);
-  };
-  const handleObPrev = () => {
-    if (obStep > 0) setObStep(obStep - 1);
-  };
   const handleObFinish = async () => {
     const dob = obData.dob;
     const age = calcAge(dob);
@@ -834,23 +303,22 @@ function App() {
     const bmr = calcBMR(obData.gender, weight, height, age);
     const tdee = calcTDEE(bmr, obData.activity);
     await sb.from('profiles').update({
-      gender: obData.gender,
-      date_of_birth: dob,
-      age,
-      height_cm: height,
-      weight_kg: weight,
-      target_weight_kg: parseFloat(obData.targetWeight),
-      goal: obData.goal,
-      activity_level: obData.activity,
-      diet: obData.diet,
-      glp1_medication: obData.glp1,
-      tdee,
-      onboarding_completed: true
+      gender: obData.gender, date_of_birth: dob, age, height_cm: height, weight_kg: weight,
+      target_weight_kg: parseFloat(obData.targetWeight), goal: obData.goal, activity_level: obData.activity,
+      diet: obData.diet, tdee, onboarding_completed: true
     }).eq('id', user.id);
+    // Auto-create medication if GLP-1 selected
+    if (obData.glp1 && obData.glp1 !== '') {
+      const nextInj = new Date(); nextInj.setDate(nextInj.getDate() + 7);
+      await sb.from('medications').insert({
+        user_id: user.id, medication_name: obData.glp1.charAt(0).toUpperCase() + obData.glp1.slice(1),
+        dose_current: '0.25', dose_unit: 'mg', injection_day: 'Lundi',
+        start_date: new Date().toISOString().split('T')[0], next_injection: nextInj.toISOString().split('T')[0],
+        active: true
+      });
+    }
     setSc('dashboard');
-    const {
-      data
-    } = await sb.from('profiles').select('*').eq('id', user.id).single();
+    const { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
     setProfile(data);
     loadDashboardData(user.id);
   };
@@ -859,60 +327,47 @@ function App() {
   const handleAddMeal = async () => {
     if (!foodName || !calories) return;
     const today = new Date().toISOString().split('T')[0];
-    await sb.from('meals').insert({
-      user_id: user.id,
-      meal_date: today,
-      food_name: foodName,
-      calories: parseInt(calories),
-      protein_g: parseFloat(protein) || 0,
-      carbs_g: parseFloat(carbs) || 0,
-      fat_g: parseFloat(fat) || 0
+    const { error } = await sb.from('meals').insert({
+      user_id: user.id, meal_date: today, food_name: foodName,
+      calories: parseInt(calories), protein_g: parseFloat(protein) || 0,
+      carbs_g: parseFloat(carbs) || 0, fat_g: parseFloat(fat) || 0
     });
-    setFoodName('');
-    setCalories('');
-    setProtein('');
-    setCarbs('');
-    setFat('');
-    setScanResult(null);
-    setScanPreview('');
-    loadDashboardData(user.id);
-  };
-  const handlePhotoScan = () => {
-    if (profile?.subscription_plan === 'free') {
-      setShowPremiumModal(true);
-    } else {
-      fileInputRef.current?.click();
+    if (!error) {
+      setFoodName(''); setCalories(''); setProtein(''); setCarbs(''); setFat('');
+      setScanResult(null); setScanPreview(''); setShowMealForm(false);
+      setMealMsg('Repas ajout\u00e9 \u2713');
+      setTimeout(() => setMealMsg(''), 3000);
+      loadDashboardData(user.id);
     }
   };
-  const handlePhotoCapture = async e => {
-    const file = e.target.files?.[0];
+
+  const handleDeleteMeal = async (mealId) => {
+    await sb.from('meals').delete().eq('id', mealId);
+    loadDashboardData(user.id);
+  };
+
+  const handlePhotoScan = () => { fileInputRef.current && fileInputRef.current.click(); };
+
+  const handlePhotoCapture = async (e) => {
+    const file = e.target.files && e.target.files[0];
     if (!file) return;
-    setScanning(true);
+    setScanning(true); setShowMealForm(true);
     const reader = new FileReader();
-    reader.onload = async evt => {
-      const base64 = evt.target?.result?.split(',')[1];
-      setScanPreview(evt.target?.result || '');
+    reader.onload = async (evt) => {
+      const base64 = evt.target && evt.target.result ? evt.target.result.split(',')[1] : '';
+      setScanPreview(evt.target && evt.target.result ? evt.target.result : '');
       try {
-        const response = await fetch(`${SUPA_URL}/functions/v1/analyze-meal-photo`, {
+        const response = await fetch(SUPA_URL + '/functions/v1/analyze-meal-photo', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${(await sb.auth.getSession()).data?.session?.access_token}`
-          },
-          body: JSON.stringify({
-            image_base64: base64
-          })
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ((await sb.auth.getSession()).data.session.access_token) },
+          body: JSON.stringify({ image_base64: base64 })
         });
         const result = await response.json();
         setScanResult(result);
-        setFoodName(result.food_name || '');
-        setCalories(result.calories?.toString() || '');
-        setProtein(result.protein_g?.toString() || '');
-        setCarbs(result.carbs_g?.toString() || '');
-        setFat(result.fat_g?.toString() || '');
-      } catch (err) {
-        console.error('Scan error:', err);
-      }
+        setFoodName(result.food_name || ''); setCalories((result.calories || '').toString());
+        setProtein((result.protein_g || '').toString()); setCarbs((result.carbs_g || '').toString());
+        setFat((result.fat_g || '').toString());
+      } catch (err) { console.error('Scan error:', err); }
       setScanning(false);
     };
     reader.readAsDataURL(file);
@@ -921,1244 +376,519 @@ function App() {
   // Chat
   const sendMessage = async () => {
     if (!chatInput.trim()) return;
-    const userMsg = {
-      role: 'user',
-      content: chatInput
-    };
-    setMessages([...messages, userMsg]);
+    const userMsg = { role: 'user', content: chatInput };
+    setMessages(prev => [...prev, userMsg]);
+    const msgText = chatInput;
     setChatInput('');
     setTyping(true);
     try {
-      const response = await fetch(`${SUPA_URL}/functions/v1/chat`, {
+      const session = await sb.auth.getSession();
+      const token = session.data && session.data.session ? session.data.session.access_token : '';
+      const response = await fetch(SUPA_URL + '/functions/v1/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(await sb.auth.getSession()).data?.session?.access_token}`
-        },
-        body: JSON.stringify({
-          message: chatInput,
-          user_id: user.id
-        })
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ message: msgText, user_id: user.id })
       });
       const data = await response.json();
-      const botMsg = {
-        role: 'assistant',
-        content: data.reply || 'Désolé, une erreur s\'est produite.'
-      };
-      setMessages(prev => [...prev, botMsg]);
+      if (data.reply) {
+        setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      } else if (data.error) {
+        setMessages(prev => [...prev, { role: 'assistant', content: data.error === 'limit_reached' ? data.reply : 'Erreur: ' + (data.details || data.error) }]);
+      }
     } catch (err) {
       console.error('Chat error:', err);
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Erreur de connexion au serveur. R\u00e9essayez.' }]);
     }
     setTyping(false);
+  };
+
+  // Journal
+  const loadJournal = async () => {
+    const { data } = await sb.from('journal_entries').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10);
+    setJournalEntries(data || []);
+  };
+
+  const saveJournal = async () => {
+    if (!mood) return;
+    const today = new Date().toISOString().split('T')[0];
+    const { error } = await sb.from('journal_entries').insert({
+      user_id: user.id, entry_date: today, mood: parseInt(mood), notes: journalNote, energy: 3
+    });
+    if (!error) {
+      setJournalMsg('Entr\u00e9e enregistr\u00e9e \u2713');
+      setMood(''); setJournalNote('');
+      loadJournal();
+      setTimeout(() => setJournalMsg(''), 3000);
+    }
   };
 
   // Fasting
   const startFasting = async () => {
     const targetHours = parseInt(fastProtocol.split(':')[0]);
-    const {
-      data
-    } = await sb.from('fasting_sessions').insert({
-      user_id: user.id,
-      protocol: fastProtocol,
-      start_time: new Date().toISOString(),
-      target_hours: targetHours,
-      status: 'active'
+    const { data } = await sb.from('fasting_sessions').insert({
+      user_id: user.id, protocol: fastProtocol, start_time: new Date().toISOString(),
+      target_hours: targetHours, status: 'active'
     }).select().single();
     setFastActive(data);
   };
+
   const stopFasting = async () => {
     if (!fastActive) return;
-    await sb.from('fasting_sessions').update({
-      end_time: new Date().toISOString(),
-      status: 'completed'
-    }).eq('id', fastActive.id);
+    await sb.from('fasting_sessions').update({ end_time: new Date().toISOString(), status: 'completed' }).eq('id', fastActive.id);
     setFastActive(null);
     loadDashboardData(user.id);
   };
+
   useEffect(() => {
     if (!fastActive) return;
     const timer = setInterval(() => {
-      const startTime = new Date(fastActive.start_time);
-      const now = new Date();
-      const elapsedMs = now - startTime;
-      const elapsedHours = elapsedMs / (1000 * 60 * 60);
-      const remaining = Math.max(0, fastActive.target_hours - elapsedHours);
-      setFastTime({
-        elapsed: elapsedHours,
-        remaining
-      });
+      const elapsed = (new Date() - new Date(fastActive.start_time)) / (1000 * 60 * 60);
+      setFastTime({ elapsed, remaining: Math.max(0, fastActive.target_hours - elapsed) });
     }, 1000);
     return () => clearInterval(timer);
   }, [fastActive]);
 
   // Photos
-  const handleUploadPhoto = async e => {
-    const file = e.target.files?.[0];
-    if (!file || profile?.subscription_plan === 'free') {
-      if (profile?.subscription_plan === 'free') setShowPremiumModal(true);
-      return;
-    }
-    const timestamp = Date.now();
-    const path = `${user.id}/progress/${timestamp}.jpg`;
+  const handleUploadPhoto = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const ts = Date.now();
+    const path = user.id + '/progress/' + ts + '.jpg';
     await sb.storage.from('photos').upload(path, file);
-    const {
-      data
-    } = sb.storage.from('photos').getPublicUrl(path);
+    const { data } = sb.storage.from('photos').getPublicUrl(path);
     await sb.from('progress_photos').insert({
-      user_id: user.id,
-      photo_url: data.publicUrl,
-      weight_kg: photoWeight ? parseFloat(photoWeight) : null,
-      notes: photoNote
+      user_id: user.id, photo_url: data.publicUrl,
+      weight_kg: photoWeight ? parseFloat(photoWeight) : null, notes: photoNote
     });
-    setPhotoWeight('');
-    setPhotoNote('');
+    setPhotoWeight(''); setPhotoNote('');
     loadDashboardData(user.id);
   };
 
   // Injections
+  const setupMedication = async () => {
+    if (!medName) return;
+    const nextInj = new Date(); nextInj.setDate(nextInj.getDate() + 7);
+    const { data } = await sb.from('medications').insert({
+      user_id: user.id, medication_name: medName, dose_current: medDose || '0.25',
+      dose_unit: 'mg', injection_day: 'Lundi',
+      start_date: new Date().toISOString().split('T')[0], next_injection: nextInj.toISOString().split('T')[0],
+      active: true
+    }).select().single();
+    setActiveMed(data);
+    setMedName(''); setMedDose('');
+  };
+
   const logInjection = async () => {
     if (!activeMed || !injSite || !injDose) return;
-    if (profile?.subscription_plan === 'free') {
-      setShowPremiumModal(true);
-      return;
-    }
-    await sb.from('injection_logs').insert({
-      user_id: user.id,
-      medication_id: activeMed.id,
-      injection_date: new Date().toISOString(),
-      dose: injDose,
-      injection_site: injSite,
-      notes: injNote
+    const { error } = await sb.from('injection_logs').insert({
+      user_id: user.id, medication_id: activeMed.id,
+      injection_date: new Date().toISOString(), dose: injDose,
+      injection_site: injSite, notes: injNote
     });
-    const nextInj = new Date();
-    nextInj.setDate(nextInj.getDate() + 7);
-    await sb.from('medications').update({
-      next_injection: nextInj.toISOString()
-    }).eq('id', activeMed.id);
-    setInjSite('');
-    setInjDose('');
-    setInjNote('');
-    loadDashboardData(user.id);
+    if (!error) {
+      const nextInj = new Date(); nextInj.setDate(nextInj.getDate() + 7);
+      await sb.from('medications').update({ next_injection: nextInj.toISOString().split('T')[0] }).eq('id', activeMed.id);
+      setInjSite(''); setInjDose(''); setInjNote('');
+      setInjMsg('Injection enregistr\u00e9e \u2713');
+      setTimeout(() => setInjMsg(''), 3000);
+      loadDashboardData(user.id);
+    }
   };
 
   // Premium checkout
   const handleUpgrade = async () => {
     try {
-      const response = await fetch(`${SUPA_URL}/functions/v1/create-checkout`, {
+      const response = await fetch(SUPA_URL + '/functions/v1/create-checkout', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(await sb.auth.getSession()).data?.session?.access_token}`
-        },
-        body: JSON.stringify({
-          user_id: user.id,
-          price_id: 'price_premium'
-        })
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ((await sb.auth.getSession()).data.session.access_token) },
+        body: JSON.stringify({ user_id: user.id, price_id: 'price_premium' })
       });
       const data = await response.json();
       if (data.url) window.location.href = data.url;
-    } catch (err) {
-      console.error('Checkout error:', err);
-    }
+    } catch (err) { console.error('Checkout error:', err); }
   };
 
-  // Render helpers
+  // Helpers
   const getTodayCalories = () => meals.reduce((s, m) => s + (m.calories || 0), 0);
   const getTodayProtein = () => meals.reduce((s, m) => s + (m.protein_g || 0), 0);
   const getTodayCarbs = () => meals.reduce((s, m) => s + (m.carbs_g || 0), 0);
   const getTodayFat = () => meals.reduce((s, m) => s + (m.fat_g || 0), 0);
-  const formatTime = hours => {
-    const h = Math.floor(hours);
-    const m = Math.floor((hours - h) * 60);
-    return `${h}:${m.toString().padStart(2, '0')}`;
+  const formatTime = (hours) => {
+    const h = Math.floor(hours); const m = Math.floor((hours - h) * 60);
+    return h + ':' + m.toString().padStart(2, '0');
   };
+  const moodEmoji = (v) => ['', '\uD83D\uDE1E', '\uD83D\uDE14', '\uD83D\uDE10', '\uD83D\uDE42', '\uD83D\uDE04'][v] || '';
+  const moodColor = (v) => ['', '#ef4444', '#f97316', '#eab308', '#22c55e', '#10b981'][v] || '#e2e8f0';
+  const isPremium = profile && profile.subscription_plan === 'premium';
+  const e = React.createElement;
 
-  // Render screens
-  if (sc === 'splash') {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "splash"
-    }, "VitalCore \uD83D\uDC9A");
-  }
-  if (sc === 'welcome') {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "container"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "header"
-    }, /*#__PURE__*/React.createElement("h1", null, "VitalCore"), /*#__PURE__*/React.createElement("p", null, "Votre assistant sant\xE9 et nutrition")), /*#__PURE__*/React.createElement("div", {
-      className: "content",
-      style: {
-        textAlign: 'center',
-        paddingTop: 60
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 48,
-        marginBottom: 32
-      }
-    }, "\uD83D\uDC9A"), /*#__PURE__*/React.createElement("h2", {
-      style: {
-        marginBottom: 32
-      }
-    }, "Bienvenue"), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: () => setSc('login')
-    }, "Se Connecter"), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-secondary btn-block",
-      onClick: () => setSc('signup')
-    }, "S'inscrire")));
-  }
-  if (sc === 'login') {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "container"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "header"
-    }, /*#__PURE__*/React.createElement("h1", null, "Connexion")), /*#__PURE__*/React.createElement("div", {
-      className: "auth-screen"
-    }, authErr && /*#__PURE__*/React.createElement("div", {
-      className: "error"
-    }, authErr), /*#__PURE__*/React.createElement("input", {
-      type: "email",
-      className: "input",
-      placeholder: "Email",
-      value: email,
-      onChange: e => setEmail(e.target.value)
-    }), /*#__PURE__*/React.createElement("input", {
-      type: "password",
-      className: "input",
-      placeholder: "Mot de passe",
-      value: password,
-      onChange: e => setPassword(e.target.value)
-    }), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: handleLogin
-    }, "Se Connecter"), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-secondary btn-block",
-      onClick: () => setSc('welcome')
-    }, "Retour")));
-  }
-  if (sc === 'signup') {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "container"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "header"
-    }, /*#__PURE__*/React.createElement("h1", null, "Inscription")), /*#__PURE__*/React.createElement("div", {
-      className: "auth-screen"
-    }, authErr && /*#__PURE__*/React.createElement("div", {
-      className: "error"
-    }, authErr), /*#__PURE__*/React.createElement("input", {
-      type: "email",
-      className: "input",
-      placeholder: "Email",
-      value: email,
-      onChange: e => setEmail(e.target.value)
-    }), /*#__PURE__*/React.createElement("input", {
-      type: "password",
-      className: "input",
-      placeholder: "Mot de passe",
-      value: password,
-      onChange: e => setPassword(e.target.value)
-    }), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: handleSignup
-    }, "S'inscrire"), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-secondary btn-block",
-      onClick: () => setSc('welcome')
-    }, "Retour")));
-  }
+  // === SCREENS ===
+  if (sc === 'splash') return e('div', { className: 'splash' }, 'VitalCore \uD83D\uDC9A');
+
+  if (sc === 'welcome') return e('div', { className: 'container' },
+    e('div', { className: 'header' }, e('h1', null, 'VitalCore'), e('p', null, 'Votre assistant sant\u00e9 et nutrition')),
+    e('div', { className: 'content', style: { textAlign: 'center', paddingTop: 60 } },
+      e('div', { style: { fontSize: 48, marginBottom: 32 } }, '\uD83D\uDC9A'),
+      e('h2', { style: { marginBottom: 32 } }, 'Bienvenue'),
+      e('button', { className: 'btn btn-block', onClick: () => setSc('login') }, 'Se Connecter'),
+      e('button', { className: 'btn btn-secondary btn-block', onClick: () => setSc('signup') }, "S'inscrire")
+    )
+  );
+
+  if (sc === 'login') return e('div', { className: 'container' },
+    e('div', { className: 'header' }, e('h1', null, 'Connexion')),
+    e('div', { className: 'auth-screen' },
+      authErr && e('div', { className: 'error' }, authErr),
+      e('input', { type: 'email', className: 'input', placeholder: 'Email', value: email, onChange: ev => setEmail(ev.target.value) }),
+      e('input', { type: 'password', className: 'input', placeholder: 'Mot de passe', value: password, onChange: ev => setPassword(ev.target.value), onKeyDown: ev => { if (ev.key === 'Enter') handleLogin(); } }),
+      e('button', { className: 'btn btn-block', onClick: handleLogin }, 'Se Connecter'),
+      e('button', { className: 'btn btn-secondary btn-block', onClick: () => setSc('welcome') }, 'Retour')
+    )
+  );
+
+  if (sc === 'signup') return e('div', { className: 'container' },
+    e('div', { className: 'header' }, e('h1', null, 'Inscription')),
+    e('div', { className: 'auth-screen' },
+      authErr && e('div', { className: 'error' }, authErr),
+      e('input', { type: 'email', className: 'input', placeholder: 'Email', value: email, onChange: ev => setEmail(ev.target.value) }),
+      e('input', { type: 'password', className: 'input', placeholder: 'Mot de passe', value: password, onChange: ev => setPassword(ev.target.value) }),
+      e('button', { className: 'btn btn-block', onClick: handleSignup }, "S'inscrire"),
+      e('button', { className: 'btn btn-secondary btn-block', onClick: () => setSc('welcome') }, 'Retour')
+    )
+  );
+
   if (sc === 'onboarding') {
-    const steps = [{
-      title: 'Genre',
-      render: () => /*#__PURE__*/React.createElement("div", {
-        className: "form-group"
-      }, /*#__PURE__*/React.createElement("label", null, "S\xE9lectionnez votre genre"), /*#__PURE__*/React.createElement("select", {
-        className: "select",
-        value: obData.gender,
-        onChange: e => setObData({
-          ...obData,
-          gender: e.target.value
-        })
-      }, /*#__PURE__*/React.createElement("option", {
-        value: ""
-      }, "Choisir"), /*#__PURE__*/React.createElement("option", {
-        value: "male"
-      }, "Homme"), /*#__PURE__*/React.createElement("option", {
-        value: "female"
-      }, "Femme"), /*#__PURE__*/React.createElement("option", {
-        value: "other"
-      }, "Autre")))
-    }, {
-      title: 'Date de naissance',
-      render: () => /*#__PURE__*/React.createElement("div", {
-        className: "form-group"
-      }, /*#__PURE__*/React.createElement("label", null, "Votre date de naissance"), /*#__PURE__*/React.createElement("input", {
-        type: "date",
-        className: "input",
-        value: obData.dob,
-        onChange: e => setObData({
-          ...obData,
-          dob: e.target.value
-        })
-      }))
-    }, {
-      title: 'Mesures',
-      render: () => /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-        className: "form-group"
-      }, /*#__PURE__*/React.createElement("label", null, "Hauteur (cm)"), /*#__PURE__*/React.createElement("input", {
-        type: "number",
-        className: "input",
-        placeholder: "170",
-        value: obData.height,
-        onChange: e => setObData({
-          ...obData,
-          height: e.target.value
-        })
-      })), /*#__PURE__*/React.createElement("div", {
-        className: "form-group"
-      }, /*#__PURE__*/React.createElement("label", null, "Poids (kg)"), /*#__PURE__*/React.createElement("input", {
-        type: "number",
-        className: "input",
-        placeholder: "75",
-        value: obData.weight,
-        onChange: e => setObData({
-          ...obData,
-          weight: e.target.value
-        })
-      })))
-    }, {
-      title: 'Objectif',
-      render: () => /*#__PURE__*/React.createElement("div", {
-        className: "form-group"
-      }, /*#__PURE__*/React.createElement("label", null, "Quel est votre objectif?"), /*#__PURE__*/React.createElement("select", {
-        className: "select",
-        value: obData.goal,
-        onChange: e => setObData({
-          ...obData,
-          goal: e.target.value
-        })
-      }, /*#__PURE__*/React.createElement("option", {
-        value: ""
-      }, "Choisir"), /*#__PURE__*/React.createElement("option", {
-        value: "lose_weight"
-      }, "Perdre du poids"), /*#__PURE__*/React.createElement("option", {
-        value: "maintain"
-      }, "Maintenir"), /*#__PURE__*/React.createElement("option", {
-        value: "gain_muscle"
-      }, "Gagner du muscle"), /*#__PURE__*/React.createElement("option", {
-        value: "general_health"
-      }, "Sant\xE9 g\xE9n\xE9rale")))
-    }, {
-      title: 'Poids cible',
-      render: () => /*#__PURE__*/React.createElement("div", {
-        className: "form-group"
-      }, /*#__PURE__*/React.createElement("label", null, "Poids cible (kg)"), /*#__PURE__*/React.createElement("input", {
-        type: "number",
-        className: "input",
-        placeholder: "70",
-        value: obData.targetWeight,
-        onChange: e => setObData({
-          ...obData,
-          targetWeight: e.target.value
-        })
-      }))
-    }, {
-      title: 'Niveau d\'activité',
-      render: () => /*#__PURE__*/React.createElement("div", {
-        className: "form-group"
-      }, /*#__PURE__*/React.createElement("label", null, "Niveau d'activit\xE9"), /*#__PURE__*/React.createElement("select", {
-        className: "select",
-        value: obData.activity,
-        onChange: e => setObData({
-          ...obData,
-          activity: e.target.value
-        })
-      }, /*#__PURE__*/React.createElement("option", {
-        value: ""
-      }, "Choisir"), /*#__PURE__*/React.createElement("option", {
-        value: "sedentary"
-      }, "S\xE9dentaire"), /*#__PURE__*/React.createElement("option", {
-        value: "light"
-      }, "L\xE9ger"), /*#__PURE__*/React.createElement("option", {
-        value: "moderate"
-      }, "Mod\xE9r\xE9"), /*#__PURE__*/React.createElement("option", {
-        value: "active"
-      }, "Actif"), /*#__PURE__*/React.createElement("option", {
-        value: "very_active"
-      }, "Tr\xE8s actif")))
-    }, {
-      title: 'Médicament GLP-1',
-      render: () => /*#__PURE__*/React.createElement("div", {
-        className: "form-group"
-      }, /*#__PURE__*/React.createElement("label", null, "Utilisez-vous un m\xE9dicament GLP-1?"), /*#__PURE__*/React.createElement("select", {
-        className: "select",
-        value: obData.glp1,
-        onChange: e => setObData({
-          ...obData,
-          glp1: e.target.value
-        })
-      }, /*#__PURE__*/React.createElement("option", {
-        value: ""
-      }, "Non"), /*#__PURE__*/React.createElement("option", {
-        value: "ozempic"
-      }, "Ozempic"), /*#__PURE__*/React.createElement("option", {
-        value: "mounjaro"
-      }, "Mounjaro"), /*#__PURE__*/React.createElement("option", {
-        value: "saxenda"
-      }, "Saxenda"), /*#__PURE__*/React.createElement("option", {
-        value: "wegovy"
-      }, "Wegovy")))
-    }, {
-      title: 'Régime alimentaire',
-      render: () => /*#__PURE__*/React.createElement("div", {
-        className: "form-group"
-      }, /*#__PURE__*/React.createElement("label", null, "Type de r\xE9gime"), /*#__PURE__*/React.createElement("select", {
-        className: "select",
-        value: obData.diet,
-        onChange: e => setObData({
-          ...obData,
-          diet: e.target.value
-        })
-      }, /*#__PURE__*/React.createElement("option", {
-        value: ""
-      }, "Choisir"), /*#__PURE__*/React.createElement("option", {
-        value: "standard"
-      }, "Standard"), /*#__PURE__*/React.createElement("option", {
-        value: "keto"
-      }, "C\xE9tog\xE8ne"), /*#__PURE__*/React.createElement("option", {
-        value: "vegetarian"
-      }, "V\xE9g\xE9tarien"), /*#__PURE__*/React.createElement("option", {
-        value: "vegan"
-      }, "Vegan"), /*#__PURE__*/React.createElement("option", {
-        value: "mediterranean"
-      }, "M\xE9diterran\xE9en"), /*#__PURE__*/React.createElement("option", {
-        value: "gluten_free"
-      }, "Sans gluten")))
-    }];
+    const steps = [
+      { title: 'Genre', render: () => e('div', { className: 'form-group' },
+          e('label', null, 'S\u00e9lectionnez votre genre'),
+          e('select', { className: 'select', value: obData.gender, onChange: ev => setObData({...obData, gender: ev.target.value}) },
+            e('option', { value: '' }, 'Choisir'), e('option', { value: 'male' }, 'Homme'), e('option', { value: 'female' }, 'Femme'), e('option', { value: 'other' }, 'Autre'))) },
+      { title: 'Date de naissance', render: () => e('div', { className: 'form-group' },
+          e('label', null, 'Votre date de naissance'),
+          e('input', { type: 'date', className: 'input', value: obData.dob, onChange: ev => setObData({...obData, dob: ev.target.value}) })) },
+      { title: 'Mesures', render: () => e('div', null,
+          e('div', { className: 'form-group' }, e('label', null, 'Taille (cm)'), e('input', { type: 'number', className: 'input', placeholder: '170', value: obData.height, onChange: ev => setObData({...obData, height: ev.target.value}) })),
+          e('div', { className: 'form-group' }, e('label', null, 'Poids (kg)'), e('input', { type: 'number', className: 'input', placeholder: '75', value: obData.weight, onChange: ev => setObData({...obData, weight: ev.target.value}) }))) },
+      { title: 'Objectif', render: () => e('div', { className: 'form-group' },
+          e('label', null, 'Quel est votre objectif?'),
+          e('select', { className: 'select', value: obData.goal, onChange: ev => setObData({...obData, goal: ev.target.value}) },
+            e('option', { value: '' }, 'Choisir'), e('option', { value: 'lose_weight' }, 'Perdre du poids'), e('option', { value: 'maintain' }, 'Maintenir'), e('option', { value: 'gain_muscle' }, 'Gagner du muscle'), e('option', { value: 'general_health' }, 'Sant\u00e9 g\u00e9n\u00e9rale'))) },
+      { title: 'Poids cible', render: () => e('div', { className: 'form-group' },
+          e('label', null, 'Poids cible (kg)'),
+          e('input', { type: 'number', className: 'input', placeholder: '70', value: obData.targetWeight, onChange: ev => setObData({...obData, targetWeight: ev.target.value}) })) },
+      { title: "Niveau d'activit\u00e9", render: () => e('div', { className: 'form-group' },
+          e('label', null, "Niveau d'activit\u00e9"),
+          e('select', { className: 'select', value: obData.activity, onChange: ev => setObData({...obData, activity: ev.target.value}) },
+            e('option', { value: '' }, 'Choisir'), e('option', { value: 'sedentary' }, 'S\u00e9dentaire'), e('option', { value: 'light' }, 'L\u00e9ger'), e('option', { value: 'moderate' }, 'Mod\u00e9r\u00e9'), e('option', { value: 'active' }, 'Actif'), e('option', { value: 'very_active' }, 'Tr\u00e8s actif'))) },
+      { title: 'M\u00e9dicament GLP-1', render: () => e('div', { className: 'form-group' },
+          e('label', null, 'Utilisez-vous un m\u00e9dicament GLP-1?'),
+          e('select', { className: 'select', value: obData.glp1, onChange: ev => setObData({...obData, glp1: ev.target.value}) },
+            e('option', { value: '' }, 'Non'), e('option', { value: 'ozempic' }, 'Ozempic'), e('option', { value: 'mounjaro' }, 'Mounjaro'), e('option', { value: 'saxenda' }, 'Saxenda'), e('option', { value: 'wegovy' }, 'Wegovy'))) },
+      { title: 'R\u00e9gime alimentaire', render: () => e('div', { className: 'form-group' },
+          e('label', null, 'Type de r\u00e9gime'),
+          e('select', { className: 'select', value: obData.diet, onChange: ev => setObData({...obData, diet: ev.target.value}) },
+            e('option', { value: '' }, 'Choisir'), e('option', { value: 'standard' }, 'Standard'), e('option', { value: 'keto' }, 'C\u00e9tog\u00e8ne'), e('option', { value: 'vegetarian' }, 'V\u00e9g\u00e9tarien'), e('option', { value: 'vegan' }, 'Vegan'), e('option', { value: 'mediterranean' }, 'M\u00e9diterran\u00e9en'), e('option', { value: 'gluten_free' }, 'Sans gluten'))) }
+    ];
     const step = steps[obStep];
-    return /*#__PURE__*/React.createElement("div", {
-      className: "container"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "onboarding"
-    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-      className: "progress-bar"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "progress-fill",
-      style: {
-        width: `${(obStep + 1) / steps.length * 100}%`
-      }
-    })), /*#__PURE__*/React.createElement("h2", {
-      style: {
-        marginBottom: 24
-      }
-    }, step.title), step.render()), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: 'flex',
-        gap: 12
-      }
-    }, obStep > 0 && /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-secondary",
-      style: {
-        flex: 1
-      },
-      onClick: handleObPrev
-    }, "Pr\xE9c\xE9dent"), obStep < steps.length - 1 ? /*#__PURE__*/React.createElement("button", {
-      className: "btn",
-      style: {
-        flex: 1
-      },
-      onClick: handleObNext
-    }, "Suivant") : /*#__PURE__*/React.createElement("button", {
-      className: "btn",
-      style: {
-        flex: 1
-      },
-      onClick: handleObFinish
-    }, "Terminer"))));
+    return e('div', { className: 'container' },
+      e('div', { className: 'onboarding' },
+        e('div', null,
+          e('div', { className: 'progress-bar' }, e('div', { className: 'progress-fill', style: { width: ((obStep + 1) / steps.length * 100) + '%' } })),
+          e('h2', { style: { marginBottom: 24 } }, step.title),
+          step.render()
+        ),
+        e('div', { style: { display: 'flex', gap: 12 } },
+          obStep > 0 && e('button', { className: 'btn btn-secondary', style: { flex: 1 }, onClick: () => setObStep(obStep - 1) }, 'Pr\u00e9c\u00e9dent'),
+          obStep < steps.length - 1
+            ? e('button', { className: 'btn', style: { flex: 1 }, onClick: () => setObStep(obStep + 1) }, 'Suivant')
+            : e('button', { className: 'btn', style: { flex: 1 }, onClick: handleObFinish }, 'Terminer')
+        )
+      )
+    );
   }
+
+  // === DASHBOARD ===
   if (sc === 'dashboard') {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "container"
-    }, homeView === 'main' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "tabs"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: `tab ${tab === 'accueil' ? 'active' : ''}`,
-      onClick: () => setTab('accueil')
-    }, "\uD83C\uDFE0 Accueil"), /*#__PURE__*/React.createElement("div", {
-      className: `tab ${tab === 'nutrition' ? 'active' : ''}`,
-      onClick: () => setTab('nutrition')
-    }, "\uD83C\uDF4E Nutrition"), /*#__PURE__*/React.createElement("div", {
-      className: `tab ${tab === 'coach' ? 'active' : ''}`,
-      onClick: () => setTab('coach')
-    }, "\uD83E\uDD16 Coach"), /*#__PURE__*/React.createElement("div", {
-      className: `tab ${tab === 'profil' ? 'active' : ''}`,
-      onClick: () => setTab('profil')
-    }, "\uD83D\uDC64 Profil")), /*#__PURE__*/React.createElement("div", {
-      className: "content"
-    }, tab === 'accueil' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "greeting"
-    }, "Bonjour ", profile?.full_name || 'Ami', "! \uD83D\uDC4B"), profile?.subscription_plan === 'free' && /*#__PURE__*/React.createElement("div", {
-      className: "premium-banner",
-      onClick: () => setShowPremiumModal(true)
-    }, "\u2728 Upgrade \xE0 Premium - 9.99\u20AC/mois"), /*#__PURE__*/React.createElement("div", {
-      className: "card card-gradient"
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: 'flex',
-        justifyContent: 'space-between'
-      }
-    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        opacity: 0.9
-      }
-    }, "TDEE Quotidien"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 28,
-        fontWeight: 'bold'
-      }
-    }, profile?.tdee || 0), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        opacity: 0.9
-      }
-    }, "kcal")), /*#__PURE__*/React.createElement("div", {
-      style: {
-        textAlign: 'right'
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        opacity: 0.9
-      }
-    }, "Objectif"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 16
-      }
-    }, profile?.goal === 'lose_weight' ? '↓ Perte' : profile?.goal === 'gain_muscle' ? '↑ Muscle' : '➡️ Maintien')))), /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 8
-      }
-    }, "Calories Aujourd'hui"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#4fd1c5'
-      }
-    }, getTodayCalories(), " / ", profile?.tdee || 0, " kcal"), /*#__PURE__*/React.createElement("div", {
-      className: "progress-bar",
-      style: {
-        marginTop: 12
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "progress-fill",
-      style: {
-        width: `${Math.min(getTodayCalories() / (profile?.tdee || 1) * 100, 100)}%`
-      }
-    }))), /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 12
-      }
-    }, "Macronutriments"), /*#__PURE__*/React.createElement("div", {
-      className: "macros-grid"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "macro-box"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "macro-value"
-    }, getTodayProtein().toFixed(0)), /*#__PURE__*/React.createElement("div", {
-      className: "macro-label"
-    }, "Prot\xE9ine (g)")), /*#__PURE__*/React.createElement("div", {
-      className: "macro-box"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "macro-value"
-    }, getTodayCarbs().toFixed(0)), /*#__PURE__*/React.createElement("div", {
-      className: "macro-label"
-    }, "Glucides (g)")), /*#__PURE__*/React.createElement("div", {
-      className: "macro-box"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "macro-value"
-    }, getTodayFat().toFixed(0)), /*#__PURE__*/React.createElement("div", {
-      className: "macro-label"
-    }, "Graisses (g)")))), profile?.subscription_plan === 'premium' ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "feature-card card",
-      onClick: () => setHomeView('glp1')
-    }, /*#__PURE__*/React.createElement("h3", null, "\uD83D\uDC89 GLP-1"), /*#__PURE__*/React.createElement("p", null, "Suivi des injections")), /*#__PURE__*/React.createElement("div", {
-      className: "feature-card card",
-      onClick: () => setHomeView('photos')
-    }, /*#__PURE__*/React.createElement("h3", null, "\uD83D\uDCF8 Photos"), /*#__PURE__*/React.createElement("p", null, "Suivi de progression")), /*#__PURE__*/React.createElement("div", {
-      className: "feature-card card",
-      onClick: () => setHomeView('fasting')
-    }, /*#__PURE__*/React.createElement("h3", null, "\u23F1\uFE0F Je\xFBne"), /*#__PURE__*/React.createElement("p", null, "Je\xFBne intermittent"))) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "card locked-card"
-    }, /*#__PURE__*/React.createElement("h3", null, "\uD83D\uDC89 GLP-1"), /*#__PURE__*/React.createElement("p", null, "Suivi des injections"), /*#__PURE__*/React.createElement("div", {
-      className: "locked-overlay",
-      onClick: () => setShowPremiumModal(true)
-    }, "Premium")), /*#__PURE__*/React.createElement("div", {
-      className: "card locked-card"
-    }, /*#__PURE__*/React.createElement("h3", null, "\uD83D\uDCF8 Photos"), /*#__PURE__*/React.createElement("p", null, "Suivi de progression"), /*#__PURE__*/React.createElement("div", {
-      className: "locked-overlay",
-      onClick: () => setShowPremiumModal(true)
-    }, "Premium")), /*#__PURE__*/React.createElement("div", {
-      className: "card locked-card"
-    }, /*#__PURE__*/React.createElement("h3", null, "\u23F1\uFE0F Je\xFBne"), /*#__PURE__*/React.createElement("p", null, "Je\xFBne intermittent"), /*#__PURE__*/React.createElement("div", {
-      className: "locked-overlay",
-      onClick: () => setShowPremiumModal(true)
-    }, "Premium")))), tab === 'nutrition' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 16
-      }
-    }, /*#__PURE__*/React.createElement("h2", null, "Nutrition"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: 'flex',
-        gap: 8
-      }
-    }, /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-small",
-      onClick: () => setShowPremiumModal(false),
-      style: {
-        padding: '8px 12px'
-      }
-    }, "+ Repas"), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-small",
-      onClick: handlePhotoScan,
-      style: {
-        padding: '8px 12px'
-      }
-    }, "\uD83D\uDCF7"))), /*#__PURE__*/React.createElement("input", {
-      type: "file",
-      ref: fileInputRef,
-      onChange: handlePhotoCapture,
-      accept: "image/*",
-      capture: "environment",
-      className: "hidden-file"
-    }), profile?.subscription_plan === 'free' && /*#__PURE__*/React.createElement("div", {
-      className: "card",
-      style: {
-        fontSize: 13,
-        color: '#64748b'
-      }
-    }, meals.length, "/3 repas utilis\xE9s \xB7", /*#__PURE__*/React.createElement("span", {
-      style: {
-        cursor: 'pointer',
-        color: '#4fd1c5',
-        marginLeft: 4
-      },
-      onClick: () => setShowPremiumModal(true)
-    }, "Illimit\xE9 >")), scanPreview && /*#__PURE__*/React.createElement("img", {
-      src: scanPreview,
-      alt: "preview",
-      className: "scan-preview"
-    }), scanning && /*#__PURE__*/React.createElement("div", {
-      className: "card",
-      style: {
-        textAlign: 'center'
-      }
-    }, "Analyse en cours..."), scanResult && /*#__PURE__*/React.createElement("div", {
-      className: "ai-analysis"
-    }, /*#__PURE__*/React.createElement("strong", null, "Analyse IA:"), " Confiance ", ((scanResult.confidence || 0.8) * 100).toFixed(0), "%", /*#__PURE__*/React.createElement("br", null), scanResult.suggestions), /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Nom du repas"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      className: "input",
-      placeholder: "Ex: Poulet r\xF4ti",
-      value: foodName,
-      onChange: e => setFoodName(e.target.value)
-    })), /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Calories"), /*#__PURE__*/React.createElement("input", {
-      type: "number",
-      className: "input",
-      placeholder: "500",
-      value: calories,
-      onChange: e => setCalories(e.target.value)
-    })), /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Prot\xE9ine (g)"), /*#__PURE__*/React.createElement("input", {
-      type: "number",
-      className: "input",
-      placeholder: "25",
-      value: protein,
-      onChange: e => setProtein(e.target.value)
-    })), /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Glucides (g)"), /*#__PURE__*/React.createElement("input", {
-      type: "number",
-      className: "input",
-      placeholder: "50",
-      value: carbs,
-      onChange: e => setCarbs(e.target.value)
-    })), /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Graisses (g)"), /*#__PURE__*/React.createElement("input", {
-      type: "number",
-      className: "input",
-      placeholder: "15",
-      value: fat,
-      onChange: e => setFat(e.target.value)
-    })), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: handleAddMeal
-    }, "Ajouter le repas")), /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("h3", {
-      style: {
-        marginBottom: 12
-      }
-    }, "R\xE9sum\xE9 du jour"), /*#__PURE__*/React.createElement("div", {
-      className: "macros-grid"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "macro-box"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "macro-value"
-    }, getTodayCalories()), /*#__PURE__*/React.createElement("div", {
-      className: "macro-label"
-    }, "Calories")), /*#__PURE__*/React.createElement("div", {
-      className: "macro-box"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "macro-value"
-    }, getTodayProtein().toFixed(0)), /*#__PURE__*/React.createElement("div", {
-      className: "macro-label"
-    }, "Prot\xE9ine")), /*#__PURE__*/React.createElement("div", {
-      className: "macro-box"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "macro-value"
-    }, getTodayCarbs().toFixed(0)), /*#__PURE__*/React.createElement("div", {
-      className: "macro-label"
-    }, "Glucides")))), meals.length > 0 && /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("h3", {
-      style: {
-        marginBottom: 12
-      }
-    }, "Repas"), /*#__PURE__*/React.createElement("div", {
-      className: "meal-list"
-    }, meals.map(m => /*#__PURE__*/React.createElement("div", {
-      key: m.id,
-      className: "meal-item"
-    }, /*#__PURE__*/React.createElement("span", null, m.food_name), /*#__PURE__*/React.createElement("span", {
-      style: {
-        color: '#4fd1c5',
-        fontWeight: 600
-      }
-    }, m.calories, " kcal")))))), tab === 'coach' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        marginBottom: 16
-      }
-    }, /*#__PURE__*/React.createElement("h2", null, "Coach IA"), /*#__PURE__*/React.createElement("span", {
-      style: {
-        background: '#4fd1c5',
-        color: 'white',
-        padding: '4px 8px',
-        borderRadius: 4,
-        fontSize: 12,
-        fontWeight: 600
-      }
-    }, "Claude")), /*#__PURE__*/React.createElement("div", {
-      className: "card",
-      style: {
-        minHeight: 200
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "chat-messages"
-    }, messages.map((msg, idx) => /*#__PURE__*/React.createElement("div", {
-      key: idx,
-      className: `message ${msg.role === 'user' ? 'user' : 'bot'}`
-    }, msg.content)), typing && /*#__PURE__*/React.createElement("div", {
-      className: "message bot"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "typing"
-    }, /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement("span", null))))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 16
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      className: "chip",
-      onClick: () => setChatInput('Mon poids')
-    }, "Mon poids"), /*#__PURE__*/React.createElement("span", {
-      className: "chip",
-      onClick: () => setChatInput('Que manger?')
-    }, "Que manger?"), /*#__PURE__*/React.createElement("span", {
-      className: "chip",
-      onClick: () => setChatInput('Mes calories')
-    }, "Mes calories"), /*#__PURE__*/React.createElement("span", {
-      className: "chip",
-      onClick: () => setChatInput('Injection')
-    }, "Injection"), /*#__PURE__*/React.createElement("span", {
-      className: "chip",
-      onClick: () => setChatInput('Jeûne')
-    }, "Je\xFBne")), /*#__PURE__*/React.createElement("div", {
-      className: "input-bar"
-    }, /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      className: "input",
-      placeholder: "Posez une question...",
-      value: chatInput,
-      onChange: e => setChatInput(e.target.value),
-      onKeyDown: e => {
-        if (e.key === 'Enter') sendMessage();
-      },
-      style: {
-        marginBottom: 0
-      }
-    }), /*#__PURE__*/React.createElement("button", {
-      className: "btn",
-      onClick: sendMessage,
-      style: {
-        padding: 12
-      }
-    }, "\u27A4"))), tab === 'profil' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "card card-gradient"
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 12
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 18,
-        fontWeight: 'bold'
-      }
-    }, profile?.full_name || 'Utilisateur'), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 14,
-        opacity: 0.9
-      }
-    }, profile?.email)), /*#__PURE__*/React.createElement("span", {
-      style: {
-        background: 'rgba(255,255,255,0.3)',
-        padding: '4px 8px',
-        borderRadius: 4,
-        fontSize: 12,
-        fontWeight: 600,
-        display: 'inline-block'
-      }
-    }, profile?.subscription_plan === 'premium' ? '⭐ Premium' : 'Gratuit')), /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("h3", {
-      style: {
-        marginBottom: 16
-      }
-    }, "Statistiques"), /*#__PURE__*/React.createElement("div", {
-      className: "stats-grid"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "stat-box"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "stat-value"
-    }, profile?.weight_kg, " kg"), /*#__PURE__*/React.createElement("div", {
-      className: "stat-label"
-    }, "Poids actuel")), /*#__PURE__*/React.createElement("div", {
-      className: "stat-box"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "stat-value"
-    }, profile?.target_weight_kg, " kg"), /*#__PURE__*/React.createElement("div", {
-      className: "stat-label"
-    }, "Poids cible")), /*#__PURE__*/React.createElement("div", {
-      className: "stat-box"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "stat-value"
-    }, profile?.height_cm, " cm"), /*#__PURE__*/React.createElement("div", {
-      className: "stat-label"
-    }, "Hauteur")), /*#__PURE__*/React.createElement("div", {
-      className: "stat-box"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "stat-value"
-    }, profile?.age), /*#__PURE__*/React.createElement("div", {
-      className: "stat-label"
-    }, "\xC2ge")))), /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 12,
-        fontWeight: 600
-      }
-    }, "TDEE"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 24,
-        color: '#3b82f6',
-        fontWeight: 'bold'
-      }
-    }, profile?.tdee, " kcal/jour")), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: () => setSubView('journal')
-    }, "\uD83D\uDCD4 Journal"), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-secondary btn-block",
-      onClick: () => setSubView('payment')
-    }, "\uD83D\uDCB3 Abonnement"), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-secondary btn-block",
-      onClick: handleLogout
-    }, "D\xE9connexion"))), subView === 'journal' && /*#__PURE__*/React.createElement("div", {
-      className: "modal-overlay",
-      onClick: () => setSubView(null)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "modal",
-      onClick: e => e.stopPropagation()
-    }, /*#__PURE__*/React.createElement("h2", null, "\uD83D\uDCD4 Journal"), /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Humeur (1-5)"), /*#__PURE__*/React.createElement("select", {
-      className: "select",
-      value: mood,
-      onChange: e => setMood(e.target.value)
-    }, /*#__PURE__*/React.createElement("option", {
-      value: ""
-    }, "S\xE9lectionner"), /*#__PURE__*/React.createElement("option", {
-      value: "1"
-    }, "\uD83D\uDE1E Triste"), /*#__PURE__*/React.createElement("option", {
-      value: "2"
-    }, "\uD83D\uDE1E Mauvais"), /*#__PURE__*/React.createElement("option", {
-      value: "3"
-    }, "\uD83D\uDE10 Normal"), /*#__PURE__*/React.createElement("option", {
-      value: "4"
-    }, "\uD83D\uDE42 Bon"), /*#__PURE__*/React.createElement("option", {
-      value: "5"
-    }, "\uD83D\uDE04 Excellent"))), profile?.subscription_plan === 'premium' && /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Notes"), /*#__PURE__*/React.createElement("textarea", {
-      className: "input",
-      placeholder: "Vos pens\xE9es...",
-      value: journalNote,
-      onChange: e => setJournalNote(e.target.value),
-      style: {
-        minHeight: 80,
-        fontFamily: 'inherit'
-      }
-    })), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: () => setSubView(null)
-    }, "Fermer"))), subView === 'payment' && /*#__PURE__*/React.createElement("div", {
-      className: "modal-overlay",
-      onClick: () => setSubView(null)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "modal",
-      onClick: e => e.stopPropagation()
-    }, /*#__PURE__*/React.createElement("h2", null, "\uD83D\uDCB3 Abonnement"), /*#__PURE__*/React.createElement("p", null, "Plan actuel: ", /*#__PURE__*/React.createElement("strong", null, profile?.subscription_plan)), profile?.subscription_plan === 'free' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "modal-price"
-    }, "9.99\u20AC/mois"), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: handleUpgrade
-    }, "Upgrade \xE0 Premium")), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-secondary btn-block",
-      onClick: () => setSubView(null)
-    }, "Fermer")))), homeView === 'fasting' && /*#__PURE__*/React.createElement("div", {
-      className: "content"
-    }, /*#__PURE__*/React.createElement("button", {
-      className: "back-btn",
-      onClick: () => setHomeView('main')
-    }, "\u2190 Retour"), /*#__PURE__*/React.createElement("h2", {
-      style: {
-        marginBottom: 24
-      }
-    }, "Je\xFBne Intermittent"), !fastActive ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "card",
-      style: {
-        marginBottom: 24
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 12
-      }
-    }, "S\xE9lectionnez un protocole:"), /*#__PURE__*/React.createElement("div", {
-      className: "protocol-selector"
-    }, /*#__PURE__*/React.createElement("button", {
-      className: `protocol-btn ${fastProtocol === '16:8' ? 'active' : ''}`,
-      onClick: () => setFastProtocol('16:8')
-    }, "16:8"), /*#__PURE__*/React.createElement("button", {
-      className: `protocol-btn ${fastProtocol === '18:6' ? 'active' : ''}`,
-      onClick: () => setFastProtocol('18:6')
-    }, "18:6"), /*#__PURE__*/React.createElement("button", {
-      className: `protocol-btn ${fastProtocol === '20:4' ? 'active' : ''}`,
-      onClick: () => setFastProtocol('20:4')
-    }, "20:4"), /*#__PURE__*/React.createElement("button", {
-      className: `protocol-btn ${fastProtocol === '23:1' ? 'active' : ''}`,
-      onClick: () => setFastProtocol('23:1')
-    }, "OMAD")), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: startFasting
-    }, "D\xE9marrer le je\xFBne")), fastHistory.length > 0 && /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("h3", {
-      style: {
-        marginBottom: 12
-      }
-    }, "Historique"), fastHistory.map(f => {
-      const elapsed = (new Date(f.end_time) - new Date(f.start_time)) / (1000 * 60 * 60);
-      return /*#__PURE__*/React.createElement("div", {
-        key: f.id,
-        className: "injection-log"
-      }, /*#__PURE__*/React.createElement("strong", null, f.protocol), " \u2022 ", elapsed.toFixed(1), "h");
-    }))) : /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        textAlign: 'center',
-        marginBottom: 24
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "progress-circle"
-    }, /*#__PURE__*/React.createElement("svg", {
-      viewBox: "0 0 120 120"
-    }, /*#__PURE__*/React.createElement("circle", {
-      cx: "60",
-      cy: "60",
-      r: "50",
-      fill: "none",
-      stroke: "#e2e8f0",
-      strokeWidth: "8"
-    }), /*#__PURE__*/React.createElement("circle", {
-      cx: "60",
-      cy: "60",
-      r: "50",
-      fill: "none",
-      stroke: "#4fd1c5",
-      strokeWidth: "8",
-      strokeDasharray: `${2 * Math.PI * 50}`,
-      strokeDashoffset: `${2 * Math.PI * 50 * (1 - fastTime.elapsed / fastActive.target_hours)}`,
-      strokeLinecap: "round",
-      style: {
-        transition: 'stroke-dashoffset 1s linear'
-      }
-    })), /*#__PURE__*/React.createElement("div", {
-      className: "progress-text"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "progress-text-large"
-    }, formatTime(fastTime.elapsed)), /*#__PURE__*/React.createElement("div", {
-      className: "progress-text-small"
-    }, "/ ", formatTime(fastActive.target_hours))))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: 'flex',
-        gap: 12,
-        marginBottom: 12,
-        justifyContent: 'center'
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        textAlign: 'center'
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: '#64748b'
-      }
-    }, "\xC9coul\xE9"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#4fd1c5'
-      }
-    }, formatTime(fastTime.elapsed))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        textAlign: 'center'
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: '#64748b'
-      }
-    }, "Restant"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#3b82f6'
-      }
-    }, formatTime(fastTime.remaining)))), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: stopFasting
-    }, "Arr\xEAter le je\xFBne"))), homeView === 'photos' && /*#__PURE__*/React.createElement("div", {
-      className: "content"
-    }, /*#__PURE__*/React.createElement("button", {
-      className: "back-btn",
-      onClick: () => setHomeView('main')
-    }, "\u2190 Retour"), /*#__PURE__*/React.createElement("h2", {
-      style: {
-        marginBottom: 24
-      }
-    }, "Progression Photos"), /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Poids (kg)"), /*#__PURE__*/React.createElement("input", {
-      type: "number",
-      className: "input",
-      placeholder: "75",
-      value: photoWeight,
-      onChange: e => setPhotoWeight(e.target.value)
-    })), /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Notes"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      className: "input",
-      placeholder: "Ex: Apr\xE8s 1 mois",
-      value: photoNote,
-      onChange: e => setPhotoNote(e.target.value)
-    })), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: () => photoFileRef.current?.click()
-    }, "\uD83D\uDCF8 S\xE9lectionner une photo"), /*#__PURE__*/React.createElement("input", {
-      ref: photoFileRef,
-      type: "file",
-      onChange: handleUploadPhoto,
-      accept: "image/*",
-      className: "hidden-file"
-    })), photoList.length >= 2 && /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("h3", {
-      style: {
-        marginBottom: 12
-      }
-    }, "Avant / Apr\xE8s"), /*#__PURE__*/React.createElement("div", {
-      className: "comparison"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "comparison-photo"
-    }, /*#__PURE__*/React.createElement("img", {
-      src: photoList[photoList.length - 1].photo_url,
-      alt: "avant"
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: '#64748b',
-        padding: 8
-      }
-    }, "Avant")), /*#__PURE__*/React.createElement("div", {
-      className: "comparison-photo"
-    }, /*#__PURE__*/React.createElement("img", {
-      src: photoList[0].photo_url,
-      alt: "apr\xE8s"
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: '#64748b',
-        padding: 8
-      }
-    }, "Apr\xE8s")))), photoList.length > 0 && /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("h3", {
-      style: {
-        marginBottom: 12
-      }
-    }, "Galerie"), /*#__PURE__*/React.createElement("div", {
-      className: "photo-grid"
-    }, photoList.map(p => /*#__PURE__*/React.createElement("div", {
-      key: p.id,
-      className: "photo-card"
-    }, /*#__PURE__*/React.createElement("img", {
-      src: p.photo_url,
-      alt: "progress"
-    }), /*#__PURE__*/React.createElement("div", {
-      className: "photo-date"
-    }, new Date(p.created_at).toLocaleDateString('fr-FR'), p.weight_kg && ` · ${p.weight_kg}kg`)))))), homeView === 'glp1' && /*#__PURE__*/React.createElement("div", {
-      className: "content"
-    }, /*#__PURE__*/React.createElement("button", {
-      className: "back-btn",
-      onClick: () => setHomeView('main')
-    }, "\u2190 Retour"), /*#__PURE__*/React.createElement("h2", {
-      style: {
-        marginBottom: 24
-      }
-    }, "Suivi GLP-1"), activeMed && /*#__PURE__*/React.createElement("div", {
-      className: "card card-gradient"
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 8
-      }
-    }, "M\xE9dicament actif"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 12
-      }
-    }, activeMed.medication_name), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 14
-      }
-    }, "Prochaine injection:", ' ', new Date(activeMed.next_injection).toLocaleDateString('fr-FR'))), /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("h3", {
-      style: {
-        marginBottom: 16
-      }
-    }, "Logger une injection"), /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Site d'injection"), /*#__PURE__*/React.createElement("div", {
-      className: "injection-site-grid"
-    }, ['Abdomen', 'Cuisse gauche', 'Cuisse droite', 'Bras gauche', 'Bras droit'].map(site => /*#__PURE__*/React.createElement("button", {
-      key: site,
-      className: `injection-btn ${injSite === site ? 'active' : ''}`,
-      onClick: () => setInjSite(site)
-    }, site)))), /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Dose (mg)"), /*#__PURE__*/React.createElement("input", {
-      type: "number",
-      className: "input",
-      placeholder: "0.5",
-      value: injDose,
-      onChange: e => setInjDose(e.target.value)
-    })), /*#__PURE__*/React.createElement("div", {
-      className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Notes"), /*#__PURE__*/React.createElement("input", {
-      type: "text",
-      className: "input",
-      placeholder: "Douleur, r\xE9actions...",
-      value: injNote,
-      onChange: e => setInjNote(e.target.value)
-    })), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: logInjection
-    }, "Logger l'injection")), injLogs.length > 0 && /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, /*#__PURE__*/React.createElement("h3", {
-      style: {
-        marginBottom: 12
-      }
-    }, "Historique (10 derni\xE8res)"), injLogs.map(log => /*#__PURE__*/React.createElement("div", {
-      key: log.id,
-      className: "injection-log"
-    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("strong", null, log.injection_site), " \xB7", ' ', log.dose, "mg"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: '#64748b'
-      }
-    }, new Date(log.injection_date).toLocaleDateString('fr-FR')))))));
+    // --- TAB: ACCUEIL ---
+    const renderAccueil = () => e(React.Fragment, null,
+      e('div', { className: 'greeting' }, 'Bonjour ', profile && profile.full_name ? profile.full_name : 'Ami', '! \uD83D\uDC4B'),
+      !isPremium && e('div', { className: 'premium-banner', onClick: () => setShowPremiumModal(true) }, '\u2728 Upgrade \u00e0 Premium - 9.99\u20AC/mois'),
+      e('div', { className: 'card card-gradient' },
+        e('div', { style: { display: 'flex', justifyContent: 'space-between' } },
+          e('div', null,
+            e('div', { style: { fontSize: 12, opacity: 0.9 } }, 'TDEE Quotidien'),
+            e('div', { style: { fontSize: 28, fontWeight: 'bold' } }, profile && profile.tdee ? profile.tdee : 0),
+            e('div', { style: { fontSize: 12, opacity: 0.9 } }, 'kcal')),
+          e('div', { style: { textAlign: 'right' } },
+            e('div', { style: { fontSize: 12, opacity: 0.9 } }, 'Objectif'),
+            e('div', { style: { fontSize: 16 } }, profile && profile.goal === 'lose_weight' ? '\u2193 Perte' : profile && profile.goal === 'gain_muscle' ? '\u2191 Muscle' : '\u27A1\uFE0F Maintien')))),
+      e('div', { className: 'card' },
+        e('div', { style: { marginBottom: 8 } }, "Calories Aujourd'hui"),
+        e('div', { style: { fontSize: 24, fontWeight: 'bold', color: '#4fd1c5' } }, getTodayCalories(), ' / ', profile && profile.tdee ? profile.tdee : 0, ' kcal'),
+        e('div', { className: 'progress-bar', style: { marginTop: 12 } },
+          e('div', { className: 'progress-fill', style: { width: Math.min(getTodayCalories() / ((profile && profile.tdee) || 1) * 100, 100) + '%' } }))),
+      e('div', { className: 'card' },
+        e('div', { style: { marginBottom: 12 } }, 'Macronutriments'),
+        e('div', { className: 'macros-grid' },
+          e('div', { className: 'macro-box' }, e('div', { className: 'macro-value' }, getTodayProtein().toFixed(0)), e('div', { className: 'macro-label' }, 'Prot\u00e9ine (g)')),
+          e('div', { className: 'macro-box' }, e('div', { className: 'macro-value' }, getTodayCarbs().toFixed(0)), e('div', { className: 'macro-label' }, 'Glucides (g)')),
+          e('div', { className: 'macro-box' }, e('div', { className: 'macro-value' }, getTodayFat().toFixed(0)), e('div', { className: 'macro-label' }, 'Graisses (g)')))),
+      // Feature cards
+      e('div', { className: 'feature-card card', onClick: () => setHomeView('glp1') }, e('h3', null, '\uD83D\uDC89 GLP-1'), e('p', null, 'Suivi des injections')),
+      e('div', { className: 'feature-card card', onClick: () => setHomeView('photos') }, e('h3', null, '\uD83D\uDCF8 Photos'), e('p', null, 'Suivi de progression')),
+      e('div', { className: 'feature-card card', onClick: () => setHomeView('fasting') }, e('h3', null, '\u23F1\uFE0F Je\u00fbne'), e('p', null, 'Je\u00fbne intermittent'))
+    );
+
+    // --- TAB: NUTRITION ---
+    const renderNutrition = () => e(React.Fragment, null,
+      e('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 } },
+        e('h2', null, 'Nutrition'),
+        e('div', { style: { display: 'flex', gap: 8 } },
+          e('button', { className: 'btn btn-small', onClick: () => setShowMealForm(!showMealForm) }, showMealForm ? '\u2715 Fermer' : '+ Repas'),
+          e('button', { className: 'btn btn-small', onClick: handlePhotoScan }, '\uD83D\uDCF7'))),
+      e('input', { type: 'file', ref: fileInputRef, onChange: handlePhotoCapture, accept: 'image/*', capture: 'environment', className: 'hidden-file' }),
+      mealMsg && e('div', { className: 'success' }, mealMsg),
+      scanPreview && e('img', { src: scanPreview, alt: 'preview', className: 'scan-preview' }),
+      scanning && e('div', { className: 'card', style: { textAlign: 'center' } }, 'Analyse en cours...'),
+      scanResult && e('div', { className: 'ai-analysis' }, e('strong', null, 'Analyse IA:'), ' Confiance ', ((scanResult.confidence || 0.8) * 100).toFixed(0), '%'),
+      showMealForm && e('div', { className: 'card' },
+        e('div', { className: 'form-group' }, e('label', null, 'Nom du repas'), e('input', { type: 'text', className: 'input', placeholder: 'Ex: Poulet r\u00f4ti', value: foodName, onChange: ev => setFoodName(ev.target.value) })),
+        e('div', { className: 'form-group' }, e('label', null, 'Calories'), e('input', { type: 'number', className: 'input', placeholder: '500', value: calories, onChange: ev => setCalories(ev.target.value) })),
+        e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 } },
+          e('div', { className: 'form-group' }, e('label', null, 'Prot (g)'), e('input', { type: 'number', className: 'input', placeholder: '25', value: protein, onChange: ev => setProtein(ev.target.value) })),
+          e('div', { className: 'form-group' }, e('label', null, 'Gluc (g)'), e('input', { type: 'number', className: 'input', placeholder: '50', value: carbs, onChange: ev => setCarbs(ev.target.value) })),
+          e('div', { className: 'form-group' }, e('label', null, 'Gras (g)'), e('input', { type: 'number', className: 'input', placeholder: '15', value: fat, onChange: ev => setFat(ev.target.value) }))),
+        e('button', { className: 'btn btn-block', onClick: handleAddMeal }, 'Ajouter le repas')),
+      e('div', { className: 'card' },
+        e('h3', { style: { marginBottom: 12 } }, 'R\u00e9sum\u00e9 du jour'),
+        e('div', { className: 'macros-grid' },
+          e('div', { className: 'macro-box' }, e('div', { className: 'macro-value' }, getTodayCalories()), e('div', { className: 'macro-label' }, 'Calories')),
+          e('div', { className: 'macro-box' }, e('div', { className: 'macro-value' }, getTodayProtein().toFixed(0)), e('div', { className: 'macro-label' }, 'Prot\u00e9ine')),
+          e('div', { className: 'macro-box' }, e('div', { className: 'macro-value' }, getTodayCarbs().toFixed(0)), e('div', { className: 'macro-label' }, 'Glucides')))),
+      meals.length > 0 && e('div', { className: 'card' },
+        e('h3', { style: { marginBottom: 12 } }, 'Repas du jour'),
+        e('div', { className: 'meal-list' },
+          meals.map(m => e('div', { key: m.id, className: 'meal-item' },
+            e('div', null, e('span', { style: { fontWeight: 600 } }, m.food_name), e('span', { style: { color: '#64748b', fontSize: 12, marginLeft: 8 } }, m.protein_g ? m.protein_g + 'g prot' : '')),
+            e('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
+              e('span', { style: { color: '#4fd1c5', fontWeight: 600 } }, m.calories, ' kcal'),
+              e('button', { className: 'btn btn-danger btn-small', style: { padding: '4px 8px', fontSize: 11 }, onClick: () => handleDeleteMeal(m.id) }, '\u2715'))))))
+    );
+
+    // --- TAB: COACH ---
+    const chatEndRef = useRef(null);
+    useEffect(() => { if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: 'smooth' }); }, [messages, typing]);
+
+    const renderCoach = () => e(React.Fragment, null,
+      e('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 } },
+        e('h2', null, 'Coach IA'),
+        e('span', { style: { background: '#4fd1c5', color: 'white', padding: '4px 8px', borderRadius: 4, fontSize: 12, fontWeight: 600 } }, 'Claude')),
+      e('div', { className: 'card', style: { minHeight: 200 } },
+        e('div', { className: 'chat-messages' },
+          messages.length === 0 && e('div', { style: { textAlign: 'center', color: '#94a3b8', padding: 40 } }, 'Posez une question \u00e0 votre coach IA \uD83D\uDCAC'),
+          messages.map((msg, idx) => e('div', { key: idx, className: 'message ' + (msg.role === 'user' ? 'user' : 'bot') }, msg.content)),
+          typing && e('div', { className: 'message bot' }, e('div', { className: 'typing' }, e('span'), e('span'), e('span'))),
+          e('div', { ref: chatEndRef }))),
+      e('div', { style: { marginBottom: 16 } },
+        e('span', { className: 'chip', onClick: () => { setChatInput('Mon poids'); } }, 'Mon poids'),
+        e('span', { className: 'chip', onClick: () => { setChatInput('Que manger?'); } }, 'Que manger?'),
+        e('span', { className: 'chip', onClick: () => { setChatInput('Mes calories'); } }, 'Mes calories'),
+        e('span', { className: 'chip', onClick: () => { setChatInput('Conseils injection'); } }, 'Injection'),
+        e('span', { className: 'chip', onClick: () => { setChatInput('Conseils je\u00fbne'); } }, 'Je\u00fbne')),
+      e('div', { className: 'input-bar' },
+        e('input', { type: 'text', className: 'input', placeholder: 'Posez une question...', value: chatInput, onChange: ev => setChatInput(ev.target.value), onKeyDown: ev => { if (ev.key === 'Enter') sendMessage(); }, style: { marginBottom: 0 } }),
+        e('button', { className: 'btn', onClick: sendMessage, style: { padding: 12 } }, '\u27A4'))
+    );
+
+    // --- TAB: PROFIL ---
+    const renderProfil = () => e(React.Fragment, null,
+      e('div', { className: 'card card-gradient' },
+        e('div', { style: { marginBottom: 12 } },
+          e('div', { style: { fontSize: 18, fontWeight: 'bold' } }, profile && profile.full_name ? profile.full_name : 'Utilisateur'),
+          e('div', { style: { fontSize: 14, opacity: 0.9 } }, profile && profile.email)),
+        e('span', { style: { background: 'rgba(255,255,255,0.3)', padding: '4px 8px', borderRadius: 4, fontSize: 12, fontWeight: 600, display: 'inline-block' } }, isPremium ? '\u2B50 Premium' : 'Gratuit')),
+      e('div', { className: 'card' },
+        e('h3', { style: { marginBottom: 16 } }, 'Statistiques'),
+        e('div', { className: 'stats-grid' },
+          e('div', { className: 'stat-box' }, e('div', { className: 'stat-value' }, profile && profile.weight_kg, ' kg'), e('div', { className: 'stat-label' }, 'Poids actuel')),
+          e('div', { className: 'stat-box' }, e('div', { className: 'stat-value' }, profile && profile.target_weight_kg, ' kg'), e('div', { className: 'stat-label' }, 'Poids cible')),
+          e('div', { className: 'stat-box' }, e('div', { className: 'stat-value' }, profile && profile.height_cm, ' cm'), e('div', { className: 'stat-label' }, 'Taille')),
+          e('div', { className: 'stat-box' }, e('div', { className: 'stat-value' }, profile && profile.age), e('div', { className: 'stat-label' }, '\u00C2ge')))),
+      e('div', { className: 'card' },
+        e('div', { style: { marginBottom: 12, fontWeight: 600 } }, 'TDEE'),
+        e('div', { style: { fontSize: 24, color: '#3b82f6', fontWeight: 'bold' } }, profile && profile.tdee, ' kcal/jour')),
+      e('button', { className: 'btn btn-block', onClick: () => { setSubView('journal'); loadJournal(); } }, '\uD83D\uDCD4 Journal'),
+      e('button', { className: 'btn btn-secondary btn-block', onClick: () => setSubView('payment') }, '\uD83D\uDCB3 Abonnement'),
+      e('button', { className: 'btn btn-secondary btn-block', onClick: handleLogout }, 'D\u00e9connexion')
+    );
+
+    // --- SUBVIEW: FASTING ---
+    const renderFasting = () => e('div', { className: 'content' },
+      e('button', { className: 'back-btn', onClick: () => setHomeView('main') }, '\u2190 Retour'),
+      e('h2', { style: { marginBottom: 24 } }, 'Je\u00fbne Intermittent'),
+      !fastActive ? e(React.Fragment, null,
+        e('div', { className: 'card', style: { marginBottom: 24 } },
+          e('div', { style: { marginBottom: 12 } }, 'S\u00e9lectionnez un protocole:'),
+          e('div', { className: 'protocol-selector' },
+            ['16:8','18:6','20:4','23:1'].map(p => e('button', { key: p, className: 'protocol-btn ' + (fastProtocol === p ? 'active' : ''), onClick: () => setFastProtocol(p) }, p === '23:1' ? 'OMAD' : p))),
+          e('button', { className: 'btn btn-block', onClick: startFasting }, 'D\u00e9marrer le je\u00fbne')),
+        fastHistory.length > 0 && e('div', { className: 'card' },
+          e('h3', { style: { marginBottom: 12 } }, 'Historique'),
+          fastHistory.map(f => {
+            const el = (new Date(f.end_time) - new Date(f.start_time)) / (1000 * 60 * 60);
+            return e('div', { key: f.id, className: 'injection-log' }, e('strong', null, f.protocol), ' \u2022 ', el.toFixed(1), 'h \u2022 ', new Date(f.start_time).toLocaleDateString('fr-FR'));
+          }))
+      ) : e('div', { className: 'card' },
+        e('div', { style: { textAlign: 'center', marginBottom: 24 } },
+          e('div', { className: 'progress-circle' },
+            e('svg', { viewBox: '0 0 120 120' },
+              e('circle', { cx: 60, cy: 60, r: 50, fill: 'none', stroke: '#e2e8f0', strokeWidth: 8 }),
+              e('circle', { cx: 60, cy: 60, r: 50, fill: 'none', stroke: '#4fd1c5', strokeWidth: 8, strokeDasharray: 2 * Math.PI * 50, strokeDashoffset: 2 * Math.PI * 50 * (1 - Math.min(fastTime.elapsed / fastActive.target_hours, 1)), strokeLinecap: 'round', style: { transition: 'stroke-dashoffset 1s linear' } })),
+            e('div', { className: 'progress-text' },
+              e('div', { className: 'progress-text-large' }, formatTime(fastTime.elapsed)),
+              e('div', { className: 'progress-text-small' }, '/ ', formatTime(fastActive.target_hours))))),
+        e('div', { style: { display: 'flex', gap: 12, marginBottom: 12, justifyContent: 'center' } },
+          e('div', { style: { textAlign: 'center' } }, e('div', { style: { fontSize: 12, color: '#64748b' } }, '\u00C9coul\u00e9'), e('div', { style: { fontSize: 18, fontWeight: 'bold', color: '#4fd1c5' } }, formatTime(fastTime.elapsed))),
+          e('div', { style: { textAlign: 'center' } }, e('div', { style: { fontSize: 12, color: '#64748b' } }, 'Restant'), e('div', { style: { fontSize: 18, fontWeight: 'bold', color: '#3b82f6' } }, formatTime(fastTime.remaining)))),
+        e('button', { className: 'btn btn-block', onClick: stopFasting }, 'Arr\u00eater le je\u00fbne'))
+    );
+
+    // --- SUBVIEW: PHOTOS ---
+    const renderPhotos = () => e('div', { className: 'content' },
+      e('button', { className: 'back-btn', onClick: () => setHomeView('main') }, '\u2190 Retour'),
+      e('h2', { style: { marginBottom: 24 } }, 'Progression Photos'),
+      e('div', { className: 'card' },
+        e('div', { className: 'form-group' }, e('label', null, 'Poids (kg)'), e('input', { type: 'number', className: 'input', placeholder: '75', value: photoWeight, onChange: ev => setPhotoWeight(ev.target.value) })),
+        e('div', { className: 'form-group' }, e('label', null, 'Notes'), e('input', { type: 'text', className: 'input', placeholder: 'Ex: Apr\u00e8s 1 mois', value: photoNote, onChange: ev => setPhotoNote(ev.target.value) })),
+        e('button', { className: 'btn btn-block', onClick: () => photoFileRef.current && photoFileRef.current.click() }, '\uD83D\uDCF8 S\u00e9lectionner une photo'),
+        e('input', { ref: photoFileRef, type: 'file', onChange: handleUploadPhoto, accept: 'image/*', className: 'hidden-file' })),
+      photoList.length >= 2 && e('div', { className: 'card' },
+        e('h3', { style: { marginBottom: 12 } }, 'Avant / Apr\u00e8s'),
+        e('div', { className: 'comparison' },
+          e('div', { className: 'comparison-photo' }, e('img', { src: photoList[photoList.length - 1].photo_url, alt: 'avant' }), e('div', { style: { fontSize: 12, color: '#64748b', padding: 8 } }, 'Avant')),
+          e('div', { className: 'comparison-photo' }, e('img', { src: photoList[0].photo_url, alt: 'apr\u00e8s' }), e('div', { style: { fontSize: 12, color: '#64748b', padding: 8 } }, 'Apr\u00e8s')))),
+      photoList.length > 0 && e('div', { className: 'card' },
+        e('h3', { style: { marginBottom: 12 } }, 'Galerie'),
+        e('div', { className: 'photo-grid' },
+          photoList.map(p => e('div', { key: p.id, className: 'photo-card' },
+            e('img', { src: p.photo_url, alt: 'progress' }),
+            e('div', { className: 'photo-date' }, new Date(p.created_at).toLocaleDateString('fr-FR'), p.weight_kg ? ' \u00B7 ' + p.weight_kg + 'kg' : '')))))
+    );
+
+    // --- SUBVIEW: GLP-1 ---
+    const renderGLP1 = () => e('div', { className: 'content' },
+      e('button', { className: 'back-btn', onClick: () => setHomeView('main') }, '\u2190 Retour'),
+      e('h2', { style: { marginBottom: 24 } }, 'Suivi GLP-1'),
+      injMsg && e('div', { className: 'success' }, injMsg),
+      !activeMed ? e('div', { className: 'card' },
+        e('h3', { style: { marginBottom: 16 } }, 'Configurer votre m\u00e9dicament'),
+        e('div', { className: 'form-group' },
+          e('label', null, 'M\u00e9dicament'),
+          e('select', { className: 'select', value: medName, onChange: ev => setMedName(ev.target.value) },
+            e('option', { value: '' }, 'S\u00e9lectionner'), e('option', { value: 'Ozempic' }, 'Ozempic'), e('option', { value: 'Mounjaro' }, 'Mounjaro'), e('option', { value: 'Saxenda' }, 'Saxenda'), e('option', { value: 'Wegovy' }, 'Wegovy'))),
+        e('div', { className: 'form-group' }, e('label', null, 'Dose actuelle (mg)'), e('input', { type: 'text', className: 'input', placeholder: '0.25', value: medDose, onChange: ev => setMedDose(ev.target.value) })),
+        e('button', { className: 'btn btn-block', onClick: setupMedication }, 'Configurer')
+      ) : e(React.Fragment, null,
+        e('div', { className: 'card card-gradient' },
+          e('div', { style: { marginBottom: 8 } }, 'M\u00e9dicament actif'),
+          e('div', { style: { fontSize: 20, fontWeight: 'bold', marginBottom: 8 } }, activeMed.medication_name),
+          e('div', { style: { fontSize: 14 } }, 'Dose: ', activeMed.dose_current, ' ', activeMed.dose_unit),
+          activeMed.next_injection && e('div', { style: { fontSize: 14, marginTop: 4 } }, 'Prochaine injection: ', new Date(activeMed.next_injection).toLocaleDateString('fr-FR'))),
+        e('div', { className: 'card' },
+          e('h3', { style: { marginBottom: 16 } }, 'Logger une injection'),
+          e('div', { className: 'form-group' },
+            e('label', null, "Site d'injection"),
+            e('div', { className: 'injection-site-grid' },
+              ['Abdomen', 'Cuisse gauche', 'Cuisse droite', 'Bras gauche', 'Bras droit'].map(site =>
+                e('button', { key: site, className: 'injection-btn ' + (injSite === site ? 'active' : ''), onClick: () => setInjSite(site) }, site)))),
+          e('div', { className: 'form-group' }, e('label', null, 'Dose (mg)'), e('input', { type: 'number', className: 'input', placeholder: '0.5', value: injDose, onChange: ev => setInjDose(ev.target.value) })),
+          e('div', { className: 'form-group' }, e('label', null, 'Notes'), e('input', { type: 'text', className: 'input', placeholder: 'Douleur, r\u00e9actions...', value: injNote, onChange: ev => setInjNote(ev.target.value) })),
+          e('button', { className: 'btn btn-block', onClick: logInjection }, "Logger l'injection")),
+        injLogs.length > 0 && e('div', { className: 'card' },
+          e('h3', { style: { marginBottom: 12 } }, 'Historique (10 derni\u00e8res)'),
+          injLogs.map(log => e('div', { key: log.id, className: 'injection-log' },
+            e('div', null, e('strong', null, log.injection_site), ' \u00B7 ', log.dose, 'mg'),
+            e('div', { style: { fontSize: 12, color: '#64748b' } }, new Date(log.injection_date).toLocaleDateString('fr-FR'), log.notes ? ' \u2022 ' + log.notes : '')))))
+    );
+
+    // --- MODAL: JOURNAL ---
+    const renderJournalModal = () => e('div', { className: 'modal-overlay', onClick: () => setSubView(null) },
+      e('div', { className: 'modal', onClick: ev => ev.stopPropagation() },
+        e('h2', null, '\uD83D\uDCD4 Journal'),
+        journalMsg && e('div', { className: 'success' }, journalMsg),
+        e('div', { className: 'form-group' },
+          e('label', null, 'Comment vous sentez-vous?'),
+          e('div', { style: { display: 'flex', gap: 8, justifyContent: 'center', margin: '8px 0' } },
+            [1,2,3,4,5].map(v => e('button', { key: v, onClick: () => setMood(v.toString()),
+              style: { fontSize: 28, background: mood === v.toString() ? '#e0f2fe' : 'transparent', border: mood === v.toString() ? '2px solid #4fd1c5' : '2px solid transparent', borderRadius: 8, padding: 8, cursor: 'pointer' } }, moodEmoji(v))))),
+        e('div', { className: 'form-group' },
+          e('label', null, 'Notes du jour'),
+          e('textarea', { className: 'input', placeholder: 'Comment s\'est pass\u00e9e votre journ\u00e9e?', value: journalNote, onChange: ev => setJournalNote(ev.target.value) })),
+        e('button', { className: 'btn btn-block', onClick: saveJournal }, 'Enregistrer'),
+        e('button', { className: 'btn btn-secondary btn-block', onClick: () => setSubView(null) }, 'Fermer'),
+        // Mood chart
+        journalEntries.length > 0 && e('div', { style: { marginTop: 24 } },
+          e('h3', { style: { marginBottom: 8, fontSize: 16 } }, '\u00C9volution de l\'humeur'),
+          e('div', { className: 'mood-bar-container' },
+            journalEntries.slice(0, 7).reverse().map((je, i) => e('div', { key: i, style: { flex: 1, textAlign: 'center' } },
+              e('div', { className: 'mood-bar', style: { height: (je.mood / 5 * 100) + '%', background: moodColor(je.mood) } }),
+              e('div', { className: 'mood-bar-label' }, new Date(je.entry_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }))))),
+          e('div', { style: { marginTop: 16 } },
+            e('h3', { style: { marginBottom: 8, fontSize: 16 } }, 'Derni\u00e8res entr\u00e9es'),
+            journalEntries.slice(0, 5).map(je => e('div', { key: je.id, className: 'journal-entry' },
+              e('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 4 } },
+                e('span', null, moodEmoji(je.mood), ' Humeur: ', je.mood, '/5'),
+                e('span', { style: { fontSize: 12, color: '#64748b' } }, new Date(je.entry_date).toLocaleDateString('fr-FR'))),
+              je.notes && e('div', { style: { fontSize: 13, color: '#475569' } }, je.notes))))))
+    );
+
+    // --- MODAL: PAYMENT ---
+    const renderPaymentModal = () => e('div', { className: 'modal-overlay', onClick: () => setSubView(null) },
+      e('div', { className: 'modal', onClick: ev => ev.stopPropagation() },
+        e('h2', null, '\uD83D\uDCB3 Abonnement'),
+        e('p', null, 'Plan actuel: ', e('strong', null, profile && profile.subscription_plan)),
+        !isPremium && e(React.Fragment, null,
+          e('div', { className: 'modal-price' }, '9.99\u20AC/mois'),
+          e('button', { className: 'btn btn-block', onClick: handleUpgrade }, 'Upgrade \u00e0 Premium')),
+        e('button', { className: 'btn btn-secondary btn-block', onClick: () => setSubView(null) }, 'Fermer')));
+
+    // --- MODAL: PREMIUM ---
+    const renderPremiumModal = () => e('div', { className: 'modal-overlay', onClick: () => setShowPremiumModal(false) },
+      e('div', { className: 'modal', onClick: ev => ev.stopPropagation() },
+        e('h2', null, '\u2728 VitalCore Premium'),
+        e('p', { style: { marginBottom: 16, color: '#64748b' } }, 'D\u00e9verrouillez toutes les fonctionnalit\u00e9s avanc\u00e9es.'),
+        e('div', { className: 'modal-price' }, '9.99\u20AC/mois'),
+        e('div', { style: { marginBottom: 16, fontSize: 13, color: '#64748b', lineHeight: 1.6 } },
+          '\u2713 Repas illimit\u00e9s', e('br'), '\u2713 Scan IA des repas', e('br'), '\u2713 Je\u00fbne intermittent', e('br'), '\u2713 Photos de progression', e('br'), '\u2713 Suivi GLP-1', e('br'), '\u2713 Journal premium'),
+        e('button', { className: 'btn btn-block', onClick: handleUpgrade }, 'Upgrade Maintenant'),
+        e('button', { className: 'btn btn-secondary btn-block', onClick: () => setShowPremiumModal(false) }, 'Plus tard')));
+
+    // === MAIN RENDER ===
+    return e('div', { className: 'container' },
+      homeView === 'main' && e(React.Fragment, null,
+        e('div', { className: 'tabs' },
+          e('div', { className: 'tab ' + (tab === 'accueil' ? 'active' : ''), onClick: () => setTab('accueil') }, '\uD83C\uDFE0 Accueil'),
+          e('div', { className: 'tab ' + (tab === 'nutrition' ? 'active' : ''), onClick: () => setTab('nutrition') }, '\uD83C\uDF4E Nutrition'),
+          e('div', { className: 'tab ' + (tab === 'coach' ? 'active' : ''), onClick: () => setTab('coach') }, '\uD83E\uDD16 Coach'),
+          e('div', { className: 'tab ' + (tab === 'profil' ? 'active' : ''), onClick: () => setTab('profil') }, '\uD83D\uDC64 Profil')),
+        e('div', { className: 'content' },
+          tab === 'accueil' && renderAccueil(),
+          tab === 'nutrition' && renderNutrition(),
+          tab === 'coach' && renderCoach(),
+          tab === 'profil' && renderProfil()),
+        subView === 'journal' && renderJournalModal(),
+        subView === 'payment' && renderPaymentModal()),
+      homeView === 'fasting' && renderFasting(),
+      homeView === 'photos' && renderPhotos(),
+      homeView === 'glp1' && renderGLP1(),
+      showPremiumModal && renderPremiumModal()
+    );
   }
-  if (showPremiumModal) {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "modal-overlay",
-      onClick: () => setShowPremiumModal(false)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "modal",
-      onClick: e => e.stopPropagation()
-    }, /*#__PURE__*/React.createElement("h2", null, "\u2728 VitalCore Premium"), /*#__PURE__*/React.createElement("p", {
-      style: {
-        marginBottom: 16,
-        color: '#64748b'
-      }
-    }, "D\xE9verrouillez toutes les fonctionnalit\xE9s avanc\xE9es."), /*#__PURE__*/React.createElement("div", {
-      className: "modal-price"
-    }, "9.99\u20AC/mois"), /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginBottom: 16,
-        fontSize: 13,
-        color: '#64748b',
-        lineHeight: 1.6
-      }
-    }, "\u2713 Repas illimit\xE9s", /*#__PURE__*/React.createElement("br", null), "\u2713 Scan IA des repas", /*#__PURE__*/React.createElement("br", null), "\u2713 Je\xFBne intermittent", /*#__PURE__*/React.createElement("br", null), "\u2713 Photos de progression", /*#__PURE__*/React.createElement("br", null), "\u2713 Suivi GLP-1", /*#__PURE__*/React.createElement("br", null), "\u2713 Journal premium"), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-block",
-      onClick: handleUpgrade
-    }, "Upgrade Maintenant"), /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-secondary btn-block",
-      onClick: () => setShowPremiumModal(false)
-    }, "Plus tard")));
-  }
+
   return null;
 }
-ReactDOM.render(/*#__PURE__*/React.createElement(App, null), document.getElementById('root'));
+
+ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
 } catch(e) {
   var d = document.getElementById('error-display');
   if (d) { d.style.display = 'block'; d.textContent = 'CATCH Error: ' + e.message + '\n\nStack: ' + e.stack; }
