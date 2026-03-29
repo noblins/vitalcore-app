@@ -207,6 +207,10 @@ function App() {
   const [medName, setMedName] = useState('');
   const [medDose, setMedDose] = useState('');
 
+  // Chat scroll ref (must be at top level - React hooks rules)
+  const chatEndRef = useRef(null);
+  useEffect(() => { if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: 'smooth' }); }, [messages, typing]);
+
   // Load user on mount
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -676,9 +680,6 @@ function App() {
     );
 
     // --- TAB: COACH ---
-    const chatEndRef = useRef(null);
-    useEffect(() => { if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: 'smooth' }); }, [messages, typing]);
-
     const renderCoach = () => e(React.Fragment, null,
       e('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 } },
         e('h2', null, 'Coach IA'),
