@@ -246,21 +246,23 @@ function App() {
   };
 
   const loadDashboardData = async (userId) => {
-    const today = new Date().toISOString().split('T')[0];
-    const { data: mealsData } = await sb.from('meals').select('*').eq('user_id', userId).eq('meal_date', today).order('created_at', { ascending: true });
-    setMeals(mealsData || []);
-    const { data: msgData } = await sb.from('chat_messages').select('*').eq('user_id', userId).order('created_at', { ascending: true }).limit(50);
-    setMessages((msgData || []).map(m => ({ role: m.role, content: m.content })));
-    const { data: fastData } = await sb.from('fasting_sessions').select('*').eq('user_id', userId).eq('status', 'active').single();
-    setFastActive(fastData || null);
-    const { data: fastHist } = await sb.from('fasting_sessions').select('*').eq('user_id', userId).eq('status', 'completed').order('created_at', { ascending: false }).limit(10);
-    setFastHistory(fastHist || []);
-    const { data: photoData } = await sb.from('progress_photos').select('*').eq('user_id', userId).order('created_at', { ascending: false });
-    setPhotoList(photoData || []);
-    const { data: medData } = await sb.from('medications').select('*').eq('user_id', userId).eq('active', true).single();
-    setActiveMed(medData || null);
-    const { data: injData } = await sb.from('injection_logs').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(10);
-    setInjLogs(injData || []);
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const { data: mealsData } = await sb.from('meals').select('*').eq('user_id', userId).eq('meal_date', today).order('created_at', { ascending: true });
+      setMeals(mealsData || []);
+      const { data: msgData } = await sb.from('chat_messages').select('*').eq('user_id', userId).order('created_at', { ascending: true }).limit(50);
+      setMessages((msgData || []).map(m => ({ role: m.role, content: m.content })));
+      const { data: fastData } = await sb.from('fasting_sessions').select('*').eq('user_id', userId).eq('completed', false).single();
+      setFastActive(fastData || null);
+      const { data: fastHist } = await sb.from('fasting_sessions').select('*').eq('user_id', userId).eq('completed', true).order('started_at', { ascending: false }).limit(10);
+      setFastHistory(fastHist || []);
+      const { data: photoData } = await sb.from('progress_photos').select('*').eq('user_id', userId).order('taken_at', { ascending: false });
+      setPhotoList(photoData || []);
+      const { data: medData } = await sb.from('medications').select('*').eq('user_id', userId).eq('active', true).single();
+      setActiveMed(medData || null);
+      const { data: injData } = await sb.from('injection_logs').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(10);
+      setInjLogs(injData || []);
+    } catch (err) { console.error('Dashboard load error:', err); }
   };
 
   // Auth
@@ -430,15 +432,15 @@ function App() {
   const startFasting = async () => {
     const targetHours = parseInt(fastProtocol.split(':')[0]);
     const { data } = await sb.from('fasting_sessions').insert({
-      user_id: user.id, protocol: fastProtocol, start_time: new Date().toISOString(),
-      target_hours: targetHours, status: 'active'
+      user_id: user.id, protocol: fastProtocol, started_at: new Date().toISOString(),
+      target_hours: targetHours
     }).select().single();
     setFastActive(data);
   };
 
   const stopFasting = async () => {
     if (!fastActive) return;
-    await sb.from('fasting_sessions').update({ end_time: new Date().toISOString(), status: 'completed' }).eq('id', fastActive.id);
+    await sb.from('fasting_sessions').update({ ended_at: new Date().toISOString(), completed: true }).eq('id', fastActive.id);
     setFastActive(null);
     loadDashboardData(user.id);
   };
@@ -446,7 +448,7 @@ function App() {
   useEffect(() => {
     if (!fastActive) return;
     const timer = setInterval(() => {
-      const elapsed = (new Date() - new Date(fastActive.start_time)) / (1000 * 60 * 60);
+      const elapsed = (new Date() - new Date(fastActive.started_at)) / (1000 * 60 * 60);
       setFastTime({ elapsed, remaining: Math.max(0, fastActive.target_hours - elapsed) });
     }, 1000);
     return () => clearInterval(timer);
@@ -576,7 +578,7 @@ function App() {
       { title: 'Objectif', render: () => e('div', { className: 'form-group' },
           e('label', null, 'Quel est votre objectif?'),
           e('select', { className: 'select', value: obData.goal, onChange: ev => setObData({...obData, goal: ev.target.value}) },
-            e('option', { value: '' }, 'Choisir'), e('option', { value: 'lose_weight' }, 'Perdre du poids'), e('option', { value: 'maintain' }, 'Maintenir'), e('option', { value: 'gain_muscle' }, 'Gagner du muscle'), e('option', { value: 'general_health' }, 'Sant\u00e9 g\u00e9n\u00e9rale'))) },
+            e('option', { value: '' }, 'Choisir'), e('option', { value: 'lose' }, 'Perdre du poids'), e('option', { value: 'maintain' }, 'Maintenir'), e('option', { value: 'gain' }, 'Gagner du muscle'), e('option', { value: 'health' }, 'Sant\u00e9 g\u00e9n\u00e9rale'))) },
       { title: 'Poids cible', render: () => e('div', { className: 'form-group' },
           e('label', null, 'Poids cible (kg)'),
           e('input', { type: 'number', className: 'input', placeholder: '70', value: obData.targetWeight, onChange: ev => setObData({...obData, targetWeight: ev.target.value}) })) },
@@ -625,7 +627,7 @@ function App() {
             e('div', { style: { fontSize: 12, opacity: 0.9 } }, 'kcal')),
           e('div', { style: { textAlign: 'right' } },
             e('div', { style: { fontSize: 12, opacity: 0.9 } }, 'Objectif'),
-            e('div', { style: { fontSize: 16 } }, profile && profile.goal === 'lose_weight' ? '\u2193 Perte' : profile && profile.goal === 'gain_muscle' ? '\u2191 Muscle' : '\u27A1\uFE0F Maintien')))),
+            e('div', { style: { fontSize: 16 } }, profile && profile.goal === 'lose' ? '\u2193 Perte' : profile && profile.goal === 'gain' ? '\u2191 Muscle' : '\u27A1\uFE0F Maintien')))),
       e('div', { className: 'card' },
         e('div', { style: { marginBottom: 8 } }, "Calories Aujourd'hui"),
         e('div', { style: { fontSize: 24, fontWeight: 'bold', color: '#4fd1c5' } }, getTodayCalories(), ' / ', profile && profile.tdee ? profile.tdee : 0, ' kcal'),
@@ -736,8 +738,8 @@ function App() {
         fastHistory.length > 0 && e('div', { className: 'card' },
           e('h3', { style: { marginBottom: 12 } }, 'Historique'),
           fastHistory.map(f => {
-            const el = (new Date(f.end_time) - new Date(f.start_time)) / (1000 * 60 * 60);
-            return e('div', { key: f.id, className: 'injection-log' }, e('strong', null, f.protocol), ' \u2022 ', el.toFixed(1), 'h \u2022 ', new Date(f.start_time).toLocaleDateString('fr-FR'));
+            const el = (new Date(f.ended_at) - new Date(f.started_at)) / (1000 * 60 * 60);
+            return e('div', { key: f.id, className: 'injection-log' }, e('strong', null, f.protocol), ' \u2022 ', el.toFixed(1), 'h \u2022 ', new Date(f.started_at).toLocaleDateString('fr-FR'));
           }))
       ) : e('div', { className: 'card' },
         e('div', { style: { textAlign: 'center', marginBottom: 24 } },
