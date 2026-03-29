@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VitalCore v2.0</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://onpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- Babel standalone removed - pre-compiled -->
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -677,12 +677,17 @@ function App() {
 
   // Load user on mount
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const session = sb.auth.session();
-      if (session) {
-        setUser(session.user);
-        loadProfile(session.user.id);
-      } else {
+    const timer = setTimeout(async () => {
+      try {
+        const { data } = await sb.auth.getSession();
+        if (data?.session) {
+          setUser(data.session.user);
+          loadProfile(data.session.user.id);
+        } else {
+          setSc('welcome');
+        }
+      } catch(e) {
+        console.error('Auth error:', e);
         setSc('welcome');
       }
     }, 2000);
@@ -759,10 +764,10 @@ function App() {
     if (error) {
       setAuthErr(error.message);
     } else {
-      const session = sb.auth.session();
-      if (session) {
-        setUser(session.user);
-        loadProfile(session.user.id);
+      const { data: sd } = await sb.auth.getSession();
+      if (sd?.session) {
+        setUser(sd.session.user);
+        loadProfile(sd.session.user.id);
       }
     }
   };
@@ -882,7 +887,7 @@ function App() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${sb.auth.session()?.access_token}`
+            'Authorization': `Bearer ${(await sb.auth.getSession()).data?.session?.access_token}`
           },
           body: JSON.stringify({
             image_base64: base64
@@ -918,7 +923,7 @@ function App() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sb.auth.session()?.access_token}`
+          'Authorization': `Bearer ${(await sb.auth.getSession()).data?.session?.access_token}`
         },
         body: JSON.stringify({
           message: chatInput,
@@ -1033,7 +1038,7 @@ function App() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sb.auth.session()?.access_token}`
+          'Authorization': `Bearer ${(await sb.auth.getSession()).data?.session?.access_token}`
         },
         body: JSON.stringify({
           user_id: user.id,
@@ -1268,7 +1273,7 @@ function App() {
         value: "active"
       }, "Actif"), /*#__PURE__*/React.createElement("option", {
         value: "very_active"
-      }, "Tr\xE8s actif")))
+      }, "Tr\xE8n actif")))
     }, {
       title: 'MÃ©dicament GLP-1',
       render: () => /*#__PURE__*/React.createElement("div", {
@@ -1315,7 +1320,7 @@ function App() {
       }, "Vegan"), /*#__PURE__*/React.createElement("option", {
         value: "mediterranean"
       }, "M\xE9diterran\xE9en"), /*#__PURE__*/React.createElement("option", {
-        value: "gluten_free"
+        value: "gl]ten_free"
       }, "Sans gluten")))
     }];
     const step = steps[obStep];
@@ -1527,7 +1532,7 @@ function App() {
         fontSize: 13,
         color: '#64748b'
       }
-    }, meals.length, "/3 repas utilis\xE9s \xB7", /##__PURE__*/React.createElement("span", {
+    }, meals.length, "/3 repas utilis\xE9s \xB7", /*#__PURE__*/React.createElement("span", {
       style: {
         cursor: 'pointer',
         color: '#4fd1c5',
@@ -1549,7 +1554,7 @@ function App() {
       className: "card"
     }, /*#__PURE__*/React.createElement("div", {
       className: "form-group"
-    }, /##__PURE__*/React.createElement("label", null, "Nom du repas"), /*#__PURE__*/React.createElement("input", {
+    }, /*#__PURE__*/React.createElement("label", null, "Nom du repas"), /*#__PURE__*/React.createElement("input", {
       type: "text",
       className: "input",
       placeholder: "Ex: Poulet r\xF4ti",
@@ -1557,7 +1562,7 @@ function App() {
       onChange: e => setFoodName(e.target.value)
     })), /*#__PURE__*/React.createElement("div", {
       className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Calories"), /!#__PURE__*/React.createElement("input", {
+    }, /*#__PURE__*/React.createElement("label", null, "Calories"), /*#__PURE__*/React.createElement("input", {
       type: "number",
       className: "input",
       placeholder: "500",
@@ -1573,7 +1578,7 @@ function App() {
       onChange: e => setProtein(e.target.value)
     })), /*#__PURE__*/React.createElement("div", {
       className: "form-group"
-    }, /##__PURE__*/React.createElement("label", null, "Glucides (g)"), /*#__PURE__*/React.createElement("input", {
+    }, /*#__PURE__*/React.createElement("label", null, "Glucides (g)"), /*#__PURE__*/React.createElement("input", {
       type: "number",
       className: "input",
       placeholder: "50",
@@ -1581,7 +1586,7 @@ function App() {
       onChange: e => setCarbs(e.target.value)
     })), /*#__PURE__*/React.createElement("div", {
       className: "form-group"
-    }, /##__PURE__*/React.createElement("label", null, "Graisses (g)"), /*#__PURE__*/React.createElement("input", {
+    }, /*#__PURE__*/React.createElement("label", null, "Graisses (g)"), /*#__PURE__*/React.createElement("input", {
       type: "number",
       className: "input",
       placeholder: "15",
@@ -1590,7 +1595,7 @@ function App() {
     })), /*#__PURE__*/React.createElement("button", {
       className: "btn btn-block",
       onClick: handleAddMeal
-    }, "Ajouter le repas")), /##__PURE__*/React.createElement("div", {
+    }, "Ajouter le repas")), /*#__PURE__*/React.createElement("div", {
       className: "card"
     }, /*#__PURE__*/React.createElement("h3", {
       style: {
@@ -1610,7 +1615,7 @@ function App() {
       className: "macro-value"
     }, getTodayProtein().toFixed(0)), /*#__PURE__*/React.createElement("div", {
       className: "macro-label"
-    }, "Prot\xE9ine")), /*#__PURE__$/React.createElement("div", {
+    }, "Prot\xE9ine")), /*#__PURE__*/React.createElement("div", {
       className: "macro-box"
     }, /*#__PURE__*/React.createElement("div", {
       className: "macro-value"
@@ -1707,12 +1712,12 @@ function App() {
       style: {
         marginBottom: 12
       }
-    }, /*#__PURE__*/React.createElement("div", {
+    }, /##__PURE__*/React.createElement("div", {
       style: {
         fontSize: 18,
         fontWeight: 'bold'
       }
-    }, profile?.full_name || 'Utilisateur'), /!#__PURE__*/React.createElement("div", {
+    }, profile?.full_name || 'Utilisateur'), /##__PURE__*/React.createElement("div", {
       style: {
         fontSize: 14,
         opacity: 0.9
@@ -1724,11 +1729,11 @@ function App() {
         borderRadius: 4,
         fontSize: 12,
         fontWeight: 600,
-        display: 'inline-block'
+        display: 'inline-block"
       }
     }, profile?.subscription_plan === 'premium' ? 'â­ Premium' : 'Gratuit')), /*#__PURE__*/React.createElement("div", {
       className: "card"
-    }, /!#__PURE__*/React.createElement("h3", {
+    }, /##__PURE__*/React.createElement("h3", {
       style: {
         marginBottom: 16
       }
@@ -1774,7 +1779,7 @@ function App() {
     }, profile?.tdee, " kcal/jour")), /*#__PURE__*/React.createElement("button", {
       className: "btn btn-block",
       onClick: () => setSubView('journal')
-    }, "\uD83D\uDCD4 Journal"), /!#__PURE__*/React.createElement("button", {
+    }, "\uD83D\uDCD4 Journal"), /##__PURE__*/React.createElement("button", {
       className: "btn btn-secondary btn-block",
       onClick: () => setSubView('payment')
     }, "\uD83D\uDCB3 Abonnement"), /##__PURE__*/React.createElement("button", {
@@ -1788,7 +1793,7 @@ function App() {
       onClick: e => e.stopPropagation()
     }, /*#__PURE__*/React.createElement("h2", null, "\uD83D\uDCD4 Journal"), /##__PURE__*/React.createElement("div", {
       className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Humeur (1-5)"), /!#__PURE__*/React.createElement("select", {
+    }, /*#__PURE__*/React.createElement("label", null, "Humeur (1-5)"), /##__PURE__*/React.createElement("select", {
       className: "select",
       value: mood,
       onChange: e => setMood(e.target.value)
@@ -1796,7 +1801,7 @@ function App() {
       value: ""
     }, "S\xE9lectionner"), /##__PURE__*/React.createElement("option", {
       value: "1"
-    }, "\uD83D\uDE1E Triste"), /!#__PURE__*/React.createElement("option", {
+    }, "\uD83D\uDE1E Triste"), /##__PURE__*/React.createElement("option", {
       value: "2"
     }, "\uD83D\uDE1E Mauvais"), /*#__PURE__*/React.createElement("option", {
       value: "3"
@@ -1806,7 +1811,7 @@ function App() {
       value: "5"
     }, "\uD83D\uDE04 Excellent"))), profile?.subscription_plan === 'premium' && /*#__PURE__*/React.createElement("div", {
       className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Notes"), /*#__PURE__*/React.createElement("textarea", {
+    }, /##__PURE__*/React.createElement("label", null, "Notes"), /*#__PURE__*/React.createElement("textarea", {
       className: "input",
       placeholder: "Vos pens\xE9es...",
       value: journalNote,
@@ -1821,10 +1826,10 @@ function App() {
     }, "Fermer"))), subView === 'payment' && /*#__PURE__*/React.createElement("div", {
       className: "modal-overlay",
       onClick: () => setSubView(null)
-    }, /*#__PURE__*/React.createElement("div", {
+    }, /##__PURE__*/React.createElement("div", {
       className: "modal",
       onClick: e => e.stopPropagation()
-    }, /*#__PURE__*/React.createElement("h2", null, "\uD83D\uDCB3 Abonnement"), /*#__PURE__*/React.createElement("p", null, "Plan actuel: ", /*#__PURE__*/React.createElement("strong", null, profile?.subscription_plan)), profile?.subscription_plan === 'free' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("h2", null, "\uD83D\uDCB3 Abonnement"), /*#__PURE__*/React.createElement("p", null, "Plan actuel: ", /##__PURE__*/React.createElement("strong", null, profile?.subscription_plan)), profile?.subscription_plan === 'free' && /##__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       className: "modal-price"
     }, "9.99\u20AC/mois"), /*#__PURE__*/React.createElement("button", {
       className: "btn btn-block",
@@ -1832,12 +1837,12 @@ function App() {
     }, "Upgrade \xE0 Premium")), /*#__PURE__*/React.createElement("button", {
       className: "btn btn-secondary btn-block",
       onClick: () => setSubView(null)
-    }, "Fermer")))), homeView === 'fasting' && /*#__PURE__*/React.createElement("div", {
+    }, "Fermer")))), homeView === 'fasting' && /##__PURE__*/React.createElement("div", {
       className: "content"
     }, /*#__PURE__*/React.createElement("button", {
       className: "back-btn",
       onClick: () => setHomeView('main')
-    }, "\u2190 Retour"), /*#__PURE__*/React.createElement("h2", {
+    }, "\u2190 Retour"), /##__PURE__*/React.createElement("h2", {
       style: {
         marginBottom: 24
       }
@@ -1850,7 +1855,7 @@ function App() {
       style: {
         marginBottom: 12
       }
-    }, "S\xE9lectionnez un protocole:"), /*#__PURE__*/React.createElement("div", {
+    }, "S\xE9lectionnez un protocole:"), /##__PURE__*/React.createElement("div", {
       className: "protocol-selector"
     }, /*#__PURE__*/React.createElement("button", {
       className: `protocol-btn ${fastProtocol === '16:8' ? 'active' : ''}`,
@@ -1858,7 +1863,7 @@ function App() {
     }, "16:8"), /*#__PURE__*/React.createElement("button", {
       className: `protocol-btn ${fastProtocol === '18:6' ? 'active' : ''}`,
       onClick: () => setFastProtocol('18:6')
-    }, "18:6"), /*#__PURE__*/React.createElement("button", {
+    }, "18:6"), /##__PURE__*/React.createElement("button", {
       className: `protocol-btn ${fastProtocol === '20:4' ? 'active' : ''}`,
       onClick: () => setFastProtocol('20:4')
     }, "20:4"), /*#__PURE__*/React.createElement("button", {
@@ -1867,7 +1872,7 @@ function App() {
     }, "OMAD")), /*#__PURE__*/React.createElement("button", {
       className: "btn btn-block",
       onClick: startFasting
-    }, "D\xE9marrer le je\xFBne")), fastHistory.length > 0 && /*#__PURE__*/React.createElement("div", {
+    }, "D\xE9marrer le je\xFBne")), fastHistory.length > 0 && /##__PURE__*/React.createElement("div", {
       className: "card"
     }, /*#__PURE__*/React.createElement("h3", {
       style: {
@@ -1977,7 +1982,7 @@ function App() {
       onChange: e => setPhotoWeight(e.target.value)
     })), /*#__PURE__*/React.createElement("div", {
       className: "form-group"
-    }, /*#__PURE__*/React.createElement("label", null, "Notes"), /*#__PURE__*/React.createElement("input", {
+    }, /*#__PURE__*/React.createElement("label", null, "Notes"), /##__PURE__*/React.createElement("input", {
       type: "text",
       className: "input",
       placeholder: "Ex: Apr\xE8s 1 mois",
@@ -1992,7 +1997,7 @@ function App() {
       onChange: handleUploadPhoto,
       accept: "image/*",
       className: "hidden-file"
-    })), photoList.length >= 2 && /*#__PURE__*/React.createElement("div", {
+    })), photoList.length >= 2 && /##__PURE__*/React.createElement("div", {
       className: "card"
     }, /*#__PURE__*/React.createElement("h3", {
       style: {
@@ -2002,21 +2007,21 @@ function App() {
       className: "comparison"
     }, /*#__PURE__*/React.createElement("div", {
       className: "comparison-photo"
-    }, /*#__PURE__*/React.createElement("img", {
+    }, /##__PURE__*/React.createElement("img", {
       src: photoList[photoList.length - 1].photo_url,
       alt: "avant"
-    }), /*#__PURE__*/React.createElement("div", {
+    }), /##__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: '#64748b',
         padding: 8
       }
-    }, "Avant")), /*#__PURE__*/React.createElement("div", {
+    }, "Avant")), /##__PURE__*/React.createElement("div", {
       className: "comparison-photo"
     }, /*#__PURE__*/React.createElement("img", {
       src: photoList[0].photo_url,
       alt: "apr\xE8s"
-    }), /*#__PURE__*/React.createElement("div", {
+    }), /##__PURE__*/React.createElement("div", {
       style: {
         fontSize: 12,
         color: '#64748b',
@@ -2024,11 +2029,11 @@ function App() {
       }
     }, "Apr\xE8s")))), photoList.length > 0 && /*#__PURE__*/React.createElement("div", {
       className: "card"
-    }, /*#__PURE__*/React.createElement("h3", {
+    }, /##__PURE__*/React.createElement("h3", {
       style: {
         marginBottom: 12
       }
-    }, "Galerie"), /*#__PURE__*/React.createElement("div", {
+    }, "Galerie"), /##__PURE__*/React.createElement("div", {
       className: "photo-grid"
     }, photoList.map(p => /*#__PURE__*/React.createElement("div", {
       key: p.id,
@@ -2038,12 +2043,12 @@ function App() {
       alt: "progress"
     }), /*#__PURE__*/React.createElement("div", {
       className: "photo-date"
-    }, new Date(p.created_at).toLocaleDateString('fr-FR'), p.weight_kg && ` Â· ${p.weight_kg}kg`)))))), homeView === 'glp1' && /*#__PURE__*/React.createElement("div", {
+    }, new Date(p.created_at).toLocaleDateString('fr-FR'), p.weight_kg && ` Â· ${p.weight_kg}kg`)))))), homeView === 'glp1' && /##__PURE__*/React.createElement("div", {
       className: "content"
     }, /*#__PURE__*/React.createElement("button", {
       className: "back-btn",
       onClick: () => setHomeView('main')
-    }, "\u2190 Retour"), /*#__PURE__*/React.createElement("h2", {
+    }, "\u2190 Retour"), /##__PURE__*/React.createElement("h2", {
       style: {
         marginBottom: 24
       }
@@ -2059,13 +2064,13 @@ function App() {
         fontWeight: 'bold',
         marginBottom: 12
       }
-    }, activeMed.medication_name), /*#__PURE__*/React.createElement("div", {
+    }, activeMed.medication_name), /##__PURE__*/React.createElement("div", {
       style: {
         fontSize: 14
       }
     }, "Prochaine injection:", ' ', new Date(activeMed.next_injection).toLocaleDateString('fr-FR'))), /*#__PURE__*/React.createElement("div", {
       className: "card"
-    }, /*#__PURE__*/React.createElement("h3", {
+    }, /##__PURE__*/React.createElement("h3", {
       style: {
         marginBottom: 16
       }
@@ -2073,7 +2078,7 @@ function App() {
       className: "form-group"
     }, /*#__PURE__*/React.createElement("label", null, "Site d'injection"), /*#__PURE__*/React.createElement("div", {
       className: "injection-site-grid"
-    }, ['Abdomen', 'Cuisse gauche', 'Cuisse droite', 'Bras gauche', 'Bras droit'].map(site => /*#__PURE__*/React.createElement("button", {
+    }, ['Abdomen', 'Cuisse gauche', 'Cuisse droite', 'Bras gauche', 'Bras droit'].map(site => /##__PURE__*/React.createElement("button", {
       key: site,
       className: `injection-btn ${injSite === site ? 'active' : ''}`,
       onClick: () => setInjSite(site)
@@ -2112,19 +2117,7 @@ function App() {
       }
     }, new Date(log.injection_date).toLocaleDateString('fr-FR')))))));
   }
-  Oe_showPremiumModal) {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "modal-overlay",
-      onClick: () => setShowPremiumModal(false)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "modal",
-      onClick: e => e.stopPropagation()
-    }, /*#__PURE__*/React.createElement("h2", null, "\u2728 VitalCore Premium"), /*#__PURE__*/React.createElement("p", {
-      style: {
-        marginBottom: 16,
-        color: '#64748b'
-      }
-    }, "D\xE9verrouillez toutes les fonctionnalit\xE9s avanc\xE9es."), /##__PURE__*/React.createElement("div", {
+  IdÌÐ]ÝAÉ•µ¥Õµ5½‘…°¤ì(€€€É•ÑÕÉ¸€¼¨}}AUI}|¨½I•…Ð¹É•…Ñ•±•µ•¹Ð ‰‘¥Øˆ°ì(€€€€€±…ÍÍ9…µ”è€‰µ½‘…°µ½Ù•É±…äˆ°(€€€€€½¹±¥¬è€ ¤€ôøÍ•ÑM¡½ÝAÉ•µ¥Õµ5½‘…°¡™…±Í”¤(€€€ô°€¼Œ}}AUI}|¨½I•…Ð¹É•…Ñ•±•µ•¹Ð ‰‘¥Øˆ°ì(€€€€€±…ÍÍ9…µ”è€‰µ½‘…°ˆ°(€€€€€½¹±¥¬è”€ôø”¹ÍÑ½ÁAÉ½Á……Ñ¥½¸ ¤(€€€ô°€¼¨}}AUI}|¨½I•…Ð¹É•…Ñ•±•µ•¹Ð ‰ Èˆ°¹Õ±°°€‰qÔÈÜÈàY¥Ñ…±½É”AÉ•µ¥Õ´ˆ¤°€¼Œ}}AUI}|¨½I•…Ð¹É•…Ñ•±•µ•¹Ð ‰Àˆ°ì(€€€€€ÍÑå±”èì(€€€€€€€µ…É¥¹	½ÑÑ½´è€ÄØ°(€€€€€€€½±½Èè€œŒØÐÜÐáˆœ(€€€€€ô(€€€ô°€‰qáåŒerrouillez toutes les fonctionnalit\xE9s avanc\xE9es."), /##__PURE__*/React.createElement("div", {
       className: "modal-price"
     }, "9.99\u20AC/mois"), /*#__PURE__*/React.createElement("div", {
       style: {
@@ -2133,7 +2126,7 @@ function App() {
         color: '#64748b',
         lineHeight: 1.6
       }
-    }, "\u2713 Repas illimit\xE9es", /##__PURE__*/React.createElement("br", null), "\u2713 Scan IA des repas", /*#__PURE__*/React.createElement("br", null), "\u2713 Je\xFBne intermittent", /*#__PURE__*/React.createElement("br", null), "\u2713 Photos de progression", /*#__PURE__*/React.createElement("br", null), "\u2713 Suivi GLP-1", /*#__PURE__*/React.createElement("br", null), "\u2713 Journal premium"), /*#__PURE__*/React.createElement("button", {
+    }, "\u2713 Repas illimit\xE9%s", /##__PURE__*/React.createElement("br", null), "\u2713 Scan IA des repas", /*#__PURE__*/React.createElement("br", null), "\u2713 Je\xFBne intermittent", /*#__PURE__*/React.createElement("br", null), "\u2713 Photos de progression", /*#__PURE__*/React.createElement("br", null), "\u2713 Suivi GLP-1", /*#__PURE__*/React.createElement("br", null), "\u2713 Journal premium"), /*#__PURE__*/React.createElement("button", {
       className: "btn btn-block",
       onClick: handleUpgrade
     }, "Upgrade Maintenant"), /*#__PURE__*/React.createElement("button", {
@@ -2141,7 +2134,7 @@ function App() {
       onClick: () => setShowPremiumModal(false)
     }, "Plus tard")));
   }
-  Xeturn null;
+  Return Null;
 }
 ReactDOM.render(/*#__PURE__*/React.createElement(App, null), document.getElementById('root'));</script>
 </body>
