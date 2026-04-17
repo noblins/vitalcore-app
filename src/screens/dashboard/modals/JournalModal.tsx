@@ -23,7 +23,7 @@ export default function JournalModal({ onClose }: { onClose: () => void }) {
   const save = async () => {
     if (!mood || !user) return
     const { error } = await sb.from('journal_entries').insert({
-      user_id: user.id, entry_date: todayISO(), mood: parseInt(mood), notes: note, energy: 3,
+      user_id: user.id, entry_date: todayISO(), mood: parseInt(mood), notes: note, energy: parseInt(mood),
     })
     if (!error) {
       setMsg('Entrée enregistrée ✓'); setMood(''); setNote('')

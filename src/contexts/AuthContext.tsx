@@ -45,6 +45,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }).catch(() => { clearTimeout(timeout); setLoading(false) })
 
     const { data: { subscription } } = sb.auth.onAuthStateChange(async (_event, session) => {
+      // INITIAL_SESSION is already handled by getSession above — skip to avoid double profile fetch
+      if (_event === 'INITIAL_SESSION') return
       try {
         if (session?.user) {
           setUser(session.user)
@@ -93,7 +95,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         options: { emailRedirectTo: 'https://vitalcore-app.vercel.app' },
       })
       if (signUpError) return { error: networkError(signUpError.message) }
-      if (!signUpData.user?.identities?.length) return { error: 'Un compte existe déjà avec cet email.' }
+      // identities === [] means Supabase masked an existing account (email already registered)
+      // Use strict === 0 to avoid false positives when identities is undefined
+      if (signUpData.user?.identities?.length === 0) return { error: 'Un compte existe déjà avec cet email.' }
 
       const { data: signInData, error: signInError } = await sb.auth.signInWithPassword({ email, password })
       if (signInError) {

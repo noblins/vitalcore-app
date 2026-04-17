@@ -41,6 +41,7 @@ export default function PhotosScreen({ data }: { data: DashboardHook }) {
       const { data: urlData } = sb.storage.from('photos').getPublicUrl(path)
       await sb.from('progress_photos').insert({
         user_id: user.id, photo_url: urlData.publicUrl,
+        taken_at: new Date().toISOString(),
         weight_kg: weight ? parseFloat(weight) : null, notes: note || null,
       })
       setWeight(''); setNote('')

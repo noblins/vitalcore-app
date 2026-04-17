@@ -12,7 +12,7 @@ export default function SplashScreen() {
       if (!user) navigate('/welcome', { replace: true })
       else if (!profile?.onboarding_completed && !(profile?.height_cm && profile?.weight_kg && profile?.goal)) navigate('/onboarding', { replace: true })
       else navigate('/dashboard', { replace: true })
-    }, 1200)
+    }, 300)
     return () => clearTimeout(t)
   }, [loading, user, profile, navigate])
 
