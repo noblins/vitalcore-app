@@ -1,0 +1,38 @@
+{
+  "name": "vitalcore-app",
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run --exclude src/__tests__/supabase-integration.test.ts",
+    "test:watch": "vitest --exclude src/__tests__/supabase-integration.test.ts",
+    "test:integration": "vitest run src/__tests__/supabase-integration.test.ts",
+    "test:all": "vitest run",
+    "test:coverage": "vitest run --coverage --exclude src/__tests__/supabase-integration.test.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/coverage-v8": "^4.1.4",
+    "autoprefixer": "^10.4.20",
+    "jsdom": "^29.0.2",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.11",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.2",
+    "vite-plugin-pwa": "^0.20.5",
+    "vitest": "^4.1.4"
+  }
+}

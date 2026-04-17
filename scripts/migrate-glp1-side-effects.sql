@@ -1,0 +1,5 @@
+-- Add side effects columns to injection_logs
+ALTER TABLE injection_logs
+  ADD COLUMN IF NOT EXISTS nausea  INTEGER NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS fatigue INTEGER NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS pain    INTEGER NOT NULL DEFAULT 0;

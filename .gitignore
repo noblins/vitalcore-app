@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+.DS_Store
+*.local
+.vercel/
+*.backup
+supabase/.temp/
+scripts/create-test-accounts.mjs
