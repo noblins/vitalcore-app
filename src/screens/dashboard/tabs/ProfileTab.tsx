@@ -1,17 +1,21 @@
 import { useState } from 'react'
 import { useAuth } from '../../../contexts/AuthContext'
 import { calcMacroTargets } from '../../../utils/calculations'
+import { usePWAInstall } from '../../../hooks/usePWAInstall'
 import Card from '../../../components/ui/Card'
 import Button from '../../../components/ui/Button'
 import JournalModal from '../modals/JournalModal'
 import PaymentModal from '../modals/PaymentModal'
 import MealSuggestModal from '../modals/MealSuggestModal'
+import InstallPromptModal from '../../../components/InstallPromptModal'
 import type { DashboardHook } from '../../../hooks/useDashboardData'
 
 export default function ProfileTab({ data }: { data: DashboardHook }) {
   const { profile, logout } = useAuth()
+  const pwa = usePWAInstall()
   const [showJournal, setShowJournal] = useState(false)
   const [showPayment, setShowPayment] = useState(false)
+  const [showInstall, setShowInstall] = useState(false)
   const [suggestMeal, setSuggestMeal] = useState<{ type: string; label: string; cal: number } | null>(null)
   const isPremium = profile?.subscription_plan === 'premium'
 
@@ -141,11 +145,17 @@ export default function ProfileTab({ data }: { data: DashboardHook }) {
       <div className="flex flex-col gap-3">
         <Button fullWidth onClick={() => setShowJournal(true)}>📔 Journal</Button>
         <Button fullWidth variant="secondary" onClick={() => setShowPayment(true)}>💳 Abonnement</Button>
+        {!pwa.isStandalone && (
+          <Button fullWidth variant="secondary" onClick={() => setShowInstall(true)}>
+            📲 Installer l'app sur l'écran d'accueil
+          </Button>
+        )}
         <Button fullWidth variant="ghost" onClick={logout}>Déconnexion</Button>
       </div>
 
       {showJournal && <JournalModal onClose={() => setShowJournal(false)} />}
       {showPayment && <PaymentModal onClose={() => setShowPayment(false)} />}
+      {showInstall && <InstallPromptModal onClose={() => setShowInstall(false)} />}
       {suggestMeal && (
         <MealSuggestModal
           mealType={suggestMeal.type}

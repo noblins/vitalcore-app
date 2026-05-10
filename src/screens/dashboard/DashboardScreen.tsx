@@ -1,8 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useDashboardData } from '../../hooks/useDashboardData'
+import { usePWAInstall } from '../../hooks/usePWAInstall'
 import BottomNav from '../../components/layout/BottomNav'
+import InstallPromptModal from '../../components/InstallPromptModal'
 import HomeTab from './tabs/HomeTab'
 import NutritionTab from './tabs/NutritionTab'
 import CoachTab from './tabs/CoachTab'
@@ -23,6 +25,16 @@ export default function DashboardScreen() {
   const location = useLocation()
   const data = useDashboardData(user?.id)
   const isFeature = FEATURE_PATHS.some(p => location.pathname.startsWith(p))
+
+  // Auto-prompt PWA install (only when relevant : not standalone, not snoozed,
+  // and after the user has had time to engage with the app).
+  const pwa = usePWAInstall()
+  const [showInstall, setShowInstall] = useState(false)
+  useEffect(() => {
+    if (pwa.isStandalone || pwa.isSnoozed) return
+    const t = setTimeout(() => setShowInstall(true), 30000) // 30 s after first dashboard load
+    return () => clearTimeout(t)
+  }, [pwa.isStandalone, pwa.isSnoozed])
 
   useEffect(() => { data.reload() }, [user?.id]) // eslint-disable-line
 
@@ -45,6 +57,7 @@ export default function DashboardScreen() {
         </Routes>
       </div>
       {!isFeature && <BottomNav />}
+      {showInstall && <InstallPromptModal onClose={() => setShowInstall(false)} />}
     </div>
   )
 }
