@@ -9,3 +9,4 @@ dist/
 *.backup
 supabase/.temp/
 scripts/create-test-accounts.mjs
+.mcp.json

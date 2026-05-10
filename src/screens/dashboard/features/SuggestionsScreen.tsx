@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext'
 import { sb, callEdge } from '../../../lib/supabase'
 import { todayISO, calcMacroTargets } from '../../../utils/calculations'
+import ScreenHeader from '../../../components/layout/ScreenHeader'
 import type { DashboardHook } from '../../../hooks/useDashboardData'
 import { Alert } from '../../../components/ui/Card'
 
@@ -77,6 +78,8 @@ export default function SuggestionsScreen({ data }: { data: DashboardHook }) {
         disliked_foods: p.disliked,
         exclude_names: allExcluded,
         count: 3,
+        diet: profile?.diet ?? 'standard',
+        goal: profile?.goal ?? 'maintain',
       })
       const json = await res.json().catch(() => ({ error: `HTTP ${res.status}` })) as Record<string, unknown>
       if (json.success) {
@@ -151,6 +154,8 @@ export default function SuggestionsScreen({ data }: { data: DashboardHook }) {
         disliked_foods: p.disliked,
         exclude_names: allExcluded,
         count: 1,
+        diet: profile?.diet ?? 'standard',
+        goal: profile?.goal ?? 'maintain',
       })
       const json = await res.json().catch(() => ({})) as Record<string, unknown>
       if (json.success) {
@@ -193,18 +198,21 @@ export default function SuggestionsScreen({ data }: { data: DashboardHook }) {
   const activeCal = targets ? Math.round(targets.targetCal * activeMt.pct) : null
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 flex items-center gap-3">
-        <button onClick={() => navigate('/dashboard/nutrition')} className="text-white/80 text-xl leading-none">←</button>
-        <div>
-          <h1 className="text-xl font-bold">Idées repas</h1>
-          <p className="text-xs opacity-80">Suggestions personnalisées selon votre régime</p>
-        </div>
-        <button onClick={() => setShowPrefs(p => !p)} className="ml-auto text-white/80 text-sm font-semibold bg-white/20 px-3 py-1.5 rounded-full">
-          ❤️ {prefs.liked.length}
-        </button>
-      </div>
+    <div className="min-h-dvh bg-slate-50 flex flex-col">
+      <ScreenHeader
+        title="Idées repas"
+        subtitle="Suggestions personnalisées selon votre régime"
+        back="/dashboard/nutrition"
+        rightSlot={
+          <button
+            onClick={() => setShowPrefs(p => !p)}
+            aria-label={`Préférences (${prefs.liked.length} aimés)`}
+            className="text-white/90 text-sm font-semibold bg-white/20 px-3 py-2 min-h-[44px] rounded-full active:bg-white/30"
+          >
+            ❤️ {prefs.liked.length}
+          </button>
+        }
+      />
 
       <div className="flex-1 overflow-y-auto">
 

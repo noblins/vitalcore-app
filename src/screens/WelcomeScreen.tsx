@@ -4,7 +4,7 @@ import Button from '../components/ui/Button'
 export default function WelcomeScreen() {
   const navigate = useNavigate()
   return (
-    <div className="max-w-[430px] mx-auto bg-white min-h-screen flex flex-col">
+    <div className="max-w-[430px] mx-auto bg-white min-h-dvh flex flex-col">
       <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 text-center">
         <h1 className="text-2xl font-bold mb-1">VitalCore</h1>
         <p className="text-sm opacity-90">Votre assistant santé et nutrition</p>

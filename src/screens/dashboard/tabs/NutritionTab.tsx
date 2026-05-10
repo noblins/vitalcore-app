@@ -116,63 +116,88 @@ export default function NutritionTab({ data }: { data: DashboardHook }) {
   }
 
   // ── Scan ─────────────────────────────────────────────────────────────────
+  const resizeImage = (file: File, maxPx = 1024): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const img = new Image()
+      const url = URL.createObjectURL(file)
+      img.onload = () => {
+        URL.revokeObjectURL(url)
+        const scale = Math.min(1, maxPx / Math.max(img.width, img.height))
+        const canvas = document.createElement('canvas')
+        canvas.width  = Math.round(img.width  * scale)
+        canvas.height = Math.round(img.height * scale)
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height)
+        resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1])
+      }
+      img.onerror = reject
+      img.src = url
+    })
+
   const handleScan = async (typeId: MealTypeId, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    e.target.value = ''
     if (activeMealType !== typeId) {
       setActiveMealType(typeId)
       setRows([newRow()])
     }
     setScanning(true)
-    const reader = new FileReader()
-    reader.onload = async (ev) => {
-      const b64 = ev.target?.result?.toString().split(',')[1] ?? ''
-      setScanPreview(ev.target?.result?.toString() ?? '')
-      setScanInfo(null)
-      try {
-        const token = await getFreshToken()
-        const res = await fetch(`${EDGE_URL}/analyze-meal-photo`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ image_base64: b64, media_type: file.type || 'image/jpeg' }),
-        })
-        const result = await res.json()
+    setScanInfo(null)
+    try {
+      const b64 = await resizeImage(file)
+      setScanPreview(`data:image/jpeg;base64,${b64}`)
+      const token = await getFreshToken()
+      if (!token) {
+        setMsg('Session expirée. Déconnectez-vous et reconnectez-vous.')
+        setTimeout(() => setMsg(''), 5000)
+        setScanning(false)
+        return
+      }
+      const res = await fetch(`${EDGE_URL}/analyze-meal-photo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ image_base64: b64, media_type: 'image/jpeg' }),
+      })
+      const result = await res.json()
 
-        if (!res.ok) {
-          if (res.status === 403) {
-            setMsg('⭐ Fonctionnalité réservée aux comptes Premium')
-            setTimeout(() => setMsg(''), 4000)
-          }
-          setScanning(false)
-          return
+      if (!res.ok) {
+        if (res.status === 403) {
+          setMsg('⭐ Scan IA réservé aux comptes Premium. Remplissez les valeurs manuellement ou passez Premium.')
+          setTimeout(() => setMsg(''), 8000)
+        } else {
+          setMsg(`Erreur analyse photo (${res.status}). Réessayez.`)
+          setTimeout(() => setMsg(''), 5000)
         }
+        setScanning(false)
+        return
+      }
 
-        // The function returns { success: true, analysis: { food_name, calories, ... } }
-        const a = result.analysis ?? result
-        setScanInfo({
-          details:     a.details,
-          suggestions: a.suggestions,
-          confidence:  a.confidence,
-        })
-        setRows(rs => {
-          const emptyIdx = rs.findIndex(r => !r.foodName)
-          const filled = {
-            ...rs[emptyIdx >= 0 ? emptyIdx : rs.length - 1],
-            foodName: a.food_name   ?? '',
-            calories: String(a.calories   ?? ''),
-            protein:  String(a.protein_g  ?? ''),
-            carbs:    String(a.carbs_g    ?? ''),
-            fat:      String(a.fat_g      ?? ''),
-            showMacros: true,
-          }
-          if (emptyIdx >= 0) return rs.map((r, i) => i === emptyIdx ? filled : r)
-          return [...rs, { ...filled, id: Math.random().toString(36).slice(2) }]
-        })
-      } catch (err) { console.error('Scan error:', err) }
-      setScanning(false)
+      const a = result.analysis ?? result
+      setScanInfo({
+        details:     a.details,
+        suggestions: a.suggestions,
+        confidence:  a.confidence,
+      })
+      setRows(rs => {
+        const emptyIdx = rs.findIndex(r => !r.foodName)
+        const filled = {
+          ...rs[emptyIdx >= 0 ? emptyIdx : rs.length - 1],
+          foodName: a.food_name   ?? '',
+          calories: String(a.calories   ?? ''),
+          protein:  String(a.protein_g  ?? ''),
+          carbs:    String(a.carbs_g    ?? ''),
+          fat:      String(a.fat_g      ?? ''),
+          showMacros: true,
+        }
+        if (emptyIdx >= 0) return rs.map((r, i) => i === emptyIdx ? filled : r)
+        return [...rs, { ...filled, id: Math.random().toString(36).slice(2) }]
+      })
+    } catch (err) {
+      console.error('Scan error:', err)
+      setMsg('Erreur lors de l\'analyse. Réessayez.')
+      setTimeout(() => setMsg(''), 5000)
     }
-    reader.readAsDataURL(file)
-    e.target.value = ''
+    setScanning(false)
   }
 
   const validCount = rows.filter(r => r.foodName.trim() && r.calories).length
@@ -181,7 +206,7 @@ export default function NutritionTab({ data }: { data: DashboardHook }) {
   return (
     <div className="p-4">
       {/* Header */}
-      <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 -mx-4 -mt-4 mb-4">
+      <div className="bg-gradient-to-br from-primary to-secondary text-white px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] -mx-4 -mt-4 mb-4">
         <div className="flex justify-between items-start mb-3">
           <div>
             <h1 className="text-xl font-bold">Nutrition</h1>
@@ -211,20 +236,36 @@ export default function NutritionTab({ data }: { data: DashboardHook }) {
 
       {msg && <Alert type="success">{msg}</Alert>}
 
-      {/* Suggestions shortcut */}
-      <button
-        onClick={() => navigate('/dashboard/suggestions')}
-        className="w-full flex items-center justify-between bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-2xl px-4 py-3 mb-4 active:scale-95 transition-transform"
-      >
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">💡</span>
-          <div className="text-left">
-            <p className="text-sm font-bold text-slate-800">Idées repas personnalisées</p>
-            <p className="text-xs text-slate-500">Suggestions basées sur votre régime</p>
+      {/* Shortcuts */}
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => navigate('/dashboard/suggestions')}
+          className="flex-1 flex items-center justify-between bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-2xl px-4 py-3 active:scale-95 transition-transform"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-xl">💡</span>
+            <div className="text-left">
+              <p className="text-sm font-bold text-slate-800">Idées repas</p>
+              <p className="text-xs text-slate-500">Personnalisées</p>
+            </div>
           </div>
-        </div>
-        <span className="text-primary font-bold text-lg">›</span>
-      </button>
+          <span className="text-primary font-bold text-lg">›</span>
+        </button>
+
+        <button
+          onClick={() => navigate('/dashboard/ecart')}
+          className="flex-1 flex items-center justify-between bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-2xl px-4 py-3 active:scale-95 transition-transform"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🍕</span>
+            <div className="text-left">
+              <p className="text-sm font-bold text-slate-800">Faire un écart</p>
+              <p className="text-xs text-slate-500">Analyser l'impact</p>
+            </div>
+          </div>
+          <span className="text-orange-500 font-bold text-lg">›</span>
+        </button>
+      </div>
 
       {/* Macro mini bars */}
       {targets && (
@@ -375,7 +416,7 @@ export default function NutritionTab({ data }: { data: DashboardHook }) {
                           className="flex-1 text-sm px-2.5 py-1.5 bg-slate-50 rounded-lg focus:outline-none focus:bg-white focus:ring-1 focus:ring-primary/30 min-w-0"
                         />
                         <input
-                          type="number"
+                          type="number" inputMode="decimal"
                           placeholder="kcal"
                           value={row.calories}
                           onChange={e => updateRow(row.id, { calories: e.target.value })}
@@ -404,7 +445,7 @@ export default function NutritionTab({ data }: { data: DashboardHook }) {
                             <div key={f.key}>
                               <p className={`text-[10px] font-semibold ${f.color} mb-1`}>{f.label}</p>
                               <input
-                                type="number"
+                                type="number" inputMode="decimal"
                                 step="0.1"
                                 placeholder="0"
                                 value={row[f.key]}

@@ -62,13 +62,7 @@ export default function CalendarTab({ data }: { data: DashboardHook }) {
   // ── Actions ────────────────────────────────────────────────────────────────
   const addWaterForDay = async (ml: number) => {
     if (!user || !selectedDay) return
-    const { data: existing } = await sb.from('water_logs')
-      .select('id, amount_ml').eq('user_id', user.id).eq('logged_date', selectedDay).maybeSingle()
-    if (existing) {
-      await sb.from('water_logs').update({ amount_ml: existing.amount_ml + ml }).eq('id', existing.id)
-    } else {
-      await sb.from('water_logs').insert({ user_id: user.id, amount_ml: ml, logged_date: selectedDay })
-    }
+    await sb.rpc('add_water', { p_amount_ml: ml, p_date: selectedDay })
     loadMonth(year, month)
     if (selectedDay === today) data.reload()
   }
@@ -98,7 +92,7 @@ export default function CalendarTab({ data }: { data: DashboardHook }) {
   return (
     <div className="p-4">
       {/* Header */}
-      <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 -mx-4 -mt-4 mb-4">
+      <div className="bg-gradient-to-br from-primary to-secondary text-white px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] -mx-4 -mt-4 mb-4">
         <h1 className="text-xl font-bold">Calendrier</h1>
         <p className="text-sm opacity-80">Suivi jour par jour</p>
       </div>
@@ -314,6 +308,7 @@ export default function CalendarTab({ data }: { data: DashboardHook }) {
                 <div className="flex gap-2">
                   <input
                     type="number"
+                    inputMode="decimal"
                     step="0.1"
                     placeholder="ex: 75.5"
                     value={weightInput}

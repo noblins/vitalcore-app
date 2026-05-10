@@ -7,6 +7,7 @@ import Card from '../../../components/ui/Card'
 import Button from '../../../components/ui/Button'
 import Input from '../../../components/ui/Input'
 import { Alert } from '../../../components/ui/Card'
+import ScreenHeader from '../../../components/layout/ScreenHeader'
 import type { DashboardHook } from '../../../hooks/useDashboardData'
 import type { WeightLog, BodyMeasurement } from '../../../types'
 
@@ -187,12 +188,8 @@ export default function WeightScreen({ data }: { data: DashboardHook }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 flex items-center gap-3">
-        <button onClick={() => navigate('/dashboard')} className="text-white/80 text-xl leading-none">←</button>
-        <h1 className="text-xl font-bold">Suivi du Corps</h1>
-      </div>
+    <div className="min-h-dvh bg-slate-50">
+      <ScreenHeader title="Suivi du Corps" back="/dashboard" />
 
       <div className="p-4 flex flex-col gap-4">
 
@@ -360,6 +357,7 @@ export default function WeightScreen({ data }: { data: DashboardHook }) {
                     </label>
                     <input
                       type="number"
+                      inputMode="decimal"
                       step="0.1"
                       placeholder={latestMeas[m.key] != null ? `${latestMeas[m.key]}` : '—'}
                       value={measInputs[m.key] ?? ''}

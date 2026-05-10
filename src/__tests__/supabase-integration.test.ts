@@ -10,13 +10,15 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-// Credentials are hardcoded in supabase.ts (not env vars)
-const SUPABASE_URL  = 'https://mnzvexnaemdetznxeeuo.supabase.co'
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uenZleG5hZW1kZXR6bnhlZXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MjQxMTksImV4cCI6MjA5MDIwMDExOX0.3GizLSrEKjqrMeL88V1CNyHw9_L0f13t5SA_jk9REq0'
+// Read from env (.env.test or shell). Never hardcode test credentials.
+const SUPABASE_URL  = process.env.VITE_SUPABASE_URL || ''
+const SUPABASE_ANON = process.env.VITE_SUPABASE_ANON_KEY || ''
+const TEST_EMAIL    = process.env.TEST_USER_EMAIL || ''
+const TEST_PASSWORD = process.env.TEST_USER_PASSWORD || ''
 
-// Test user credentials (from create-test-accounts.mjs)
-const TEST_EMAIL    = 'admin@vitalcore.app'
-const TEST_PASSWORD = 'Admin1234!'
+if (!SUPABASE_URL || !SUPABASE_ANON || !TEST_EMAIL || !TEST_PASSWORD) {
+  console.warn('⚠ Integration tests skipped: missing env (VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY/TEST_USER_EMAIL/TEST_USER_PASSWORD).')
+}
 
 let sb: SupabaseClient
 let userId: string

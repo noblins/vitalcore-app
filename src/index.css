@@ -7,22 +7,62 @@
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
   }
-  body {
+
+  html, body {
+    /* Use dynamic viewport units everywhere on mobile (iOS Safari URL bar, keyboard) */
+    height: 100%;
+    /* Prevent body bounce on iOS */
     overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
-  /* Prevent iOS zoom on input focus */
+
+  body {
+    /* Prevent horizontal scroll from accidental overflow */
+    overflow-x: hidden;
+  }
+
+  /* Prevent iOS Safari zoom on input focus (must be ≥ 16px) */
   input, select, textarea {
     font-size: 16px;
+  }
+
+  /* Larger tap target for buttons by default — Apple HIG / Material both say 44px+ */
+  button, a, [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* Honor user preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
 @layer utilities {
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  .safe-top {
-    padding-top: env(safe-area-inset-top);
-  }
+  /* Safe area insets — notch (iPhone), home indicator (iOS), Android edge */
+  .safe-top    { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-left   { padding-left: env(safe-area-inset-left); }
+  .safe-right  { padding-right: env(safe-area-inset-right); }
+  .safe-x      { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+  .safe-y      { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+
+  /* Dynamic viewport height — accounts for mobile browser chrome and on-screen keyboard.
+     Falls back to vh on browsers that don't support dvh. */
+  .h-dvh      { height: 100vh; height: 100dvh; }
+  .min-h-dvh  { min-height: 100vh; min-height: 100dvh; }
+  .max-h-dvh  { max-height: 100vh; max-height: 100dvh; }
+
+  /* Minimum tappable area — Apple HIG = 44pt, Material = 48dp */
+  .tap-target { min-width: 44px; min-height: 44px; }
+
+  /* Hide scrollbar visually but keep scrollable */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
 
 @keyframes typing-bounce {
@@ -35,3 +75,11 @@
 }
 .typing-dot:nth-child(2) { animation-delay: 0.2s; }
 .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: slide-up 0.25s ease-out;
+}

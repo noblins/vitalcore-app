@@ -35,27 +35,39 @@ export default function JournalModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center" onClick={onClose}>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="journal-modal-title"
+      className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center"
+      onClick={onClose}
+    >
       <div
-        className="bg-white rounded-t-3xl w-full max-w-[430px] p-6 max-h-[85vh] overflow-y-auto"
+        className="bg-white rounded-t-3xl w-full max-w-[430px] p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[85dvh] overflow-y-auto animate-slide-up"
         onClick={e => e.stopPropagation()}
       >
-        <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-5" />
-        <h2 className="text-xl font-bold text-slate-800 mb-4">📔 Journal</h2>
+        <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-5" aria-hidden />
+        <h2 id="journal-modal-title" className="text-xl font-bold text-slate-800 mb-4">📔 Journal</h2>
 
         {msg && <Alert type="success">{msg}</Alert>}
 
         {/* Mood selector */}
         <p className="text-sm font-semibold text-slate-700 mb-2">Comment vous sentez-vous?</p>
-        <div className="flex justify-center gap-3 mb-4">
+        <div role="radiogroup" aria-label="Humeur du jour" className="flex justify-center gap-2 mb-4">
           {[1, 2, 3, 4, 5].map(v => (
-            <button key={v}
-              className={`text-3xl p-2 rounded-xl border-2 transition-all ${
+            <button
+              key={v}
+              type="button"
+              role="radio"
+              aria-checked={mood === v.toString()}
+              aria-label={`Humeur ${v} sur 5`}
+              className={`text-3xl min-w-[56px] min-h-[56px] flex items-center justify-center rounded-xl border-2 transition-all active:scale-95 ${
                 mood === v.toString()
                   ? 'bg-blue-50 border-primary scale-110'
                   : 'border-transparent hover:border-slate-200'
               }`}
-              onClick={() => setMood(v.toString())}>
+              onClick={() => setMood(v.toString())}
+            >
               {moodEmoji(v)}
             </button>
           ))}

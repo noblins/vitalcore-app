@@ -135,7 +135,7 @@ export default function OnboardingScreen() {
   const progress = ((step + 1) / steps.length) * 100
 
   return (
-    <div className="max-w-[430px] mx-auto bg-white min-h-screen flex flex-col">
+    <div className="max-w-[430px] mx-auto bg-white min-h-dvh flex flex-col">
       <div className="p-6 flex flex-col gap-6 pt-10 flex-1">
         <div>
           <div className="w-full h-2 bg-slate-100 rounded-full mb-6 overflow-hidden">

@@ -38,8 +38,12 @@ export function Alert({ type, children }: { type: 'error' | 'success'; children:
   )
 }
 
-export function Spinner({ size = 8 }: { size?: number }) {
+export function Spinner({ size = 32 }: { size?: number }) {
+  // Use inline style — `w-${size}` would not be detected by Tailwind purge
   return (
-    <div className={`w-${size} h-${size} border-2 border-primary border-t-transparent rounded-full animate-spin`} />
+    <div
+      style={{ width: size, height: size }}
+      className="border-2 border-primary border-t-transparent rounded-full animate-spin"
+    />
   )
 }

@@ -13,8 +13,10 @@ import PhotosScreen from './features/PhotosScreen'
 import GLP1Screen from './features/GLP1Screen'
 import WeightScreen from './features/WeightScreen'
 import SuggestionsScreen from './features/SuggestionsScreen'
+import EcartScreen from './features/EcartScreen'
+import HydrationScreen from './features/HydrationScreen'
 
-const FEATURE_PATHS = ['/dashboard/fasting', '/dashboard/photos', '/dashboard/glp1', '/dashboard/weight', '/dashboard/suggestions']
+const FEATURE_PATHS = ['/dashboard/fasting', '/dashboard/photos', '/dashboard/glp1', '/dashboard/weight', '/dashboard/suggestions', '/dashboard/ecart', '/dashboard/hydration']
 
 export default function DashboardScreen() {
   const { user } = useAuth()
@@ -25,8 +27,8 @@ export default function DashboardScreen() {
   useEffect(() => { data.reload() }, [user?.id]) // eslint-disable-line
 
   return (
-    <div className="max-w-[430px] mx-auto bg-slate-50 min-h-screen relative">
-      <div className={isFeature ? '' : 'pb-[72px]'}>
+    <div className="max-w-[430px] mx-auto bg-slate-50 min-h-dvh relative">
+      <div className={isFeature ? '' : 'pb-[calc(72px+env(safe-area-inset-bottom))]'}>
         <Routes>
           <Route index element={<HomeTab data={data} />} />
           <Route path="nutrition" element={<NutritionTab data={data} />} />
@@ -38,6 +40,8 @@ export default function DashboardScreen() {
           <Route path="glp1" element={<GLP1Screen data={data} />} />
           <Route path="weight" element={<WeightScreen data={data} />} />
           <Route path="suggestions" element={<SuggestionsScreen data={data} />} />
+          <Route path="ecart" element={<EcartScreen data={data} />} />
+          <Route path="hydration" element={<HydrationScreen data={data} />} />
         </Routes>
       </div>
       {!isFeature && <BottomNav />}

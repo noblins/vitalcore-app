@@ -135,15 +135,26 @@ export default function MealSuggestModal({ mealType, mealLabel, targetCal, onClo
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 flex items-end justify-center" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white rounded-t-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="meal-suggest-title"
+      className="fixed inset-0 z-50 bg-black/60 flex items-end justify-center"
+      onClick={e => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-white rounded-t-3xl w-full max-w-[430px] max-h-[85dvh] flex flex-col animate-slide-up">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-100">
-          <div>
-            <p className="text-base font-bold text-slate-800">Suggestions · {mealLabel}</p>
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-slate-100">
+          <div className="flex-1 min-w-0">
+            <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-3" aria-hidden />
+            <p id="meal-suggest-title" className="text-base font-bold text-slate-800">Suggestions · {mealLabel}</p>
             <p className="text-xs text-slate-400">~{targetCal} kcal · 👍 garde, 👎 remplace, ➕ ajoute</p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl leading-none">✕</button>
+          <button
+            onClick={onClose}
+            aria-label="Fermer"
+            className="text-slate-400 hover:text-slate-600 text-xl leading-none min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2"
+          >✕</button>
         </div>
 
         {/* Content */}
@@ -211,7 +222,7 @@ export default function MealSuggestModal({ mealType, mealLabel, targetCal, onClo
           </div>
         </div>
 
-        <div className="p-5 border-t border-slate-100">
+        <div className="p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] border-t border-slate-100">
           <Button fullWidth variant="secondary" onClick={() => fetchSuggestions(excluded)} disabled={loading}>
             {loading ? 'Génération…' : '🔄 Nouvelles suggestions'}
           </Button>

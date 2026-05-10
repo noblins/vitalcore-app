@@ -94,22 +94,22 @@ export default function HomeTab({ data }: { data: DashboardHook }) {
 
   const goalLabel = profile?.goal === 'lose' ? '↓ Perte' : profile?.goal === 'gain' ? '↑ Muscle' : '→ Maintien'
 
+  const [addingWater, setAddingWater] = useState(false)
   const addWater = async (ml: number) => {
-    if (!user) return
-    const today = todayISO()
-    const { data: existing } = await sb.from('water_logs').select('id, amount_ml')
-      .eq('user_id', user.id).eq('logged_date', today).maybeSingle()
-    if (existing) {
-      await sb.from('water_logs').update({ amount_ml: existing.amount_ml + ml }).eq('id', existing.id)
-    } else {
-      await sb.from('water_logs').insert({ user_id: user.id, amount_ml: ml, logged_date: today })
+    if (!user || addingWater) return
+    setAddingWater(true)
+    try {
+      // Atomic RPC — was a race condition with read+update
+      await sb.rpc('add_water', { p_amount_ml: ml, p_date: todayISO() })
+      await reload()
+    } finally {
+      setAddingWater(false)
     }
-    await reload()
   }
 
   if (loading) return (
     <div className="p-4">
-      <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 -mx-4 -mt-4 mb-4">
+      <div className="bg-gradient-to-br from-primary to-secondary text-white px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] -mx-4 -mt-4 mb-4">
         <h1 className="text-xl font-bold">VitalCore</h1>
         <p className="text-sm opacity-80">Votre assistant santé</p>
       </div>
@@ -127,7 +127,7 @@ export default function HomeTab({ data }: { data: DashboardHook }) {
   return (
     <div className="p-4">
       {/* Header */}
-      <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 -mx-4 -mt-4 mb-4">
+      <div className="bg-gradient-to-br from-primary to-secondary text-white px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] -mx-4 -mt-4 mb-4">
         <h1 className="text-xl font-bold">VitalCore</h1>
         <p className="text-sm opacity-80">Votre assistant santé</p>
       </div>
@@ -253,7 +253,15 @@ export default function HomeTab({ data }: { data: DashboardHook }) {
             <span className="text-xl">💧</span>
             <p className="text-sm font-semibold text-slate-700">Hydratation</p>
           </div>
-          <p className="text-sm font-bold text-blue-600">{waterLitres}L / {waterGoalL}L</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-bold text-blue-600">{waterLitres}L / {waterGoalL}L</p>
+            <button
+              onClick={() => navigate('/dashboard/hydration')}
+              className="text-xs text-blue-400 hover:text-blue-600 font-semibold"
+            >
+              Historique →
+            </button>
+          </div>
         </div>
 
         <div className="relative h-5 bg-blue-50 rounded-full overflow-hidden mb-3 border border-blue-100">
@@ -293,8 +301,8 @@ export default function HomeTab({ data }: { data: DashboardHook }) {
             className="mt-2 text-xs text-slate-400 hover:text-red-400 transition-colors w-full text-center"
             onClick={async () => {
               if (!user) return
-              await sb.from('water_logs').update({ amount_ml: 0 })
-                .eq('user_id', user.id).eq('logged_date', todayISO())
+              if (!confirm('Réinitialiser l\'eau du jour ?')) return
+              await sb.rpc('reset_water', { p_date: todayISO() })
               await reload()
             }}
           >

@@ -22,12 +22,13 @@ export default function Button({
   size = 'md',
   fullWidth = false,
   className = '',
+  type,
   children,
   ...props
 }: ButtonProps) {
   return (
     <button
-      type="button"
+      type={type ?? 'button'}
       className={`
         ${VARIANTS[variant]} ${SIZES[size]}
         ${fullWidth ? 'w-full' : ''}

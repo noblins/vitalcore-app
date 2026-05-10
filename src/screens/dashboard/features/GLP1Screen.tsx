@@ -7,6 +7,7 @@ import Card from '../../../components/ui/Card'
 import Button from '../../../components/ui/Button'
 import Input, { Select } from '../../../components/ui/Input'
 import { Alert } from '../../../components/ui/Card'
+import ScreenHeader from '../../../components/layout/ScreenHeader'
 import type { DashboardHook } from '../../../hooks/useDashboardData'
 import type { InjectionLog, WeightLog } from '../../../types'
 
@@ -302,6 +303,7 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
 
   const stopMed = async () => {
     if (!activeMed) return
+    if (!confirm(`Arrêter le suivi ${activeMed.medication_name} ? Votre historique d'injections sera conservé.`)) return
     await sb.from('medications').update({ active: false }).eq('id', activeMed.id)
     setActiveMed(null)
     await reload()
@@ -318,19 +320,19 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
     `Dans ${daysUntilInj} jour${daysUntilInj > 1 ? 's' : ''}`
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 flex items-center gap-3">
-        <button onClick={() => navigate('/dashboard')} className="text-white/80 text-xl leading-none">←</button>
-        <div className="flex-1">
-          <h1 className="text-xl font-bold">Suivi GLP-1</h1>
-          {activeMed && <p className="text-xs opacity-80">{activeMed.medication_name} · {activeMed.dose_current}mg</p>}
-        </div>
-        {activeMed && (
-          <button onClick={() => setShowSettings(s => !s)}
-            className="text-white/80 text-lg">⚙️</button>
-        )}
-      </div>
+    <div className="min-h-dvh bg-slate-50">
+      <ScreenHeader
+        title="Suivi GLP-1"
+        subtitle={activeMed ? `${activeMed.medication_name} · ${activeMed.dose_current}mg` : undefined}
+        back="/dashboard"
+        rightSlot={activeMed ? (
+          <button
+            onClick={() => setShowSettings(s => !s)}
+            aria-label="Paramètres du médicament"
+            className="text-white/90 text-xl min-w-[44px] min-h-[44px] flex items-center justify-center active:bg-white/10 rounded-lg"
+          >⚙️</button>
+        ) : null}
+      />
 
       <div className="p-4 flex flex-col gap-4">
         {msg && <Alert type="success">{msg}</Alert>}

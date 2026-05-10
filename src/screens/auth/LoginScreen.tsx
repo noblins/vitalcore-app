@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import Button from '../../components/ui/Button'
@@ -12,34 +12,95 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [slowHint, setSlowHint] = useState(false)
+  const slowTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Show "slow connection" hint after 5s
+  useEffect(() => {
+    if (loading) {
+      slowTimer.current = setTimeout(() => setSlowHint(true), 5000)
+    } else {
+      setSlowHint(false)
+      if (slowTimer.current) clearTimeout(slowTimer.current)
+    }
+    return () => {
+      if (slowTimer.current) clearTimeout(slowTimer.current)
+    }
+  }, [loading])
 
   const handleLogin = async () => {
+    if (loading) return
     setError('')
+    setSlowHint(false)
     setLoading(true)
-    const result = await login(email, password)
-    setLoading(false)
-    if (result.error) setError(result.error)
-    else navigate('/dashboard', { replace: true })
+    try {
+      const result = await login(email, password)
+      if (result.error) {
+        setError(result.error)
+      } else {
+        navigate('/dashboard', { replace: true })
+      }
+    } catch (e: any) {
+      setError(e?.message || 'Erreur inattendue. Réessayez.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="max-w-[430px] mx-auto bg-white min-h-screen flex flex-col">
+    <div className="max-w-[430px] mx-auto bg-white min-h-dvh flex flex-col">
       <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 text-center">
         <h1 className="text-2xl font-bold">Connexion</h1>
       </div>
-      <div className="flex-1 flex flex-col gap-4 px-6 pt-8">
+      <form
+        className="flex-1 flex flex-col gap-4 px-6 pt-8"
+        onSubmit={e => { e.preventDefault(); handleLogin() }}
+      >
         {error && <Alert type="error">{error}</Alert>}
-        <Input label="Email" type="email" placeholder="votre@email.com" value={email}
-          onChange={e => setEmail(e.target.value)} autoComplete="email" />
-        <Input label="Mot de passe" type="password" placeholder="••••••••" value={password}
+        {slowHint && !error && (
+          <Alert type="error">
+            La connexion prend du temps. Vérifiez votre connexion internet.
+          </Alert>
+        )}
+        <Input
+          label="Email"
+          type="email"
+          inputMode="email"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          enterKeyHint="next"
+          placeholder="votre@email.com"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          autoComplete="email"
+          disabled={loading}
+          required
+        />
+        <Input
+          label="Mot de passe"
+          type="password"
+          enterKeyHint="go"
+          placeholder="••••••••"
+          value={password}
           onChange={e => setPassword(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleLogin()}
-          autoComplete="current-password" />
-        <Button fullWidth onClick={handleLogin} disabled={loading}>
+          autoComplete="current-password"
+          disabled={loading}
+          required
+        />
+        <Button type="submit" fullWidth disabled={loading}>
           {loading ? 'Connexion...' : 'Se Connecter'}
         </Button>
-        <Button fullWidth variant="ghost" onClick={() => navigate('/welcome')}>Retour</Button>
-      </div>
+        <Button
+          type="button"
+          fullWidth
+          variant="ghost"
+          onClick={() => navigate('/welcome')}
+          disabled={loading}
+        >
+          Retour
+        </Button>
+      </form>
     </div>
   )
 }

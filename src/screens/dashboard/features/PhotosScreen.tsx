@@ -6,6 +6,7 @@ import { sb } from '../../../lib/supabase'
 import Card from '../../../components/ui/Card'
 import Button from '../../../components/ui/Button'
 import Input from '../../../components/ui/Input'
+import ScreenHeader from '../../../components/layout/ScreenHeader'
 import type { DashboardHook } from '../../../hooks/useDashboardData'
 
 export default function PhotosScreen({ data }: { data: DashboardHook }) {
@@ -55,11 +56,8 @@ export default function PhotosScreen({ data }: { data: DashboardHook }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 flex items-center gap-3">
-        <button onClick={() => navigate('/dashboard')} className="text-white/80 text-xl leading-none">←</button>
-        <h1 className="text-xl font-bold">Progression Photos</h1>
-      </div>
+    <div className="min-h-dvh bg-slate-50">
+      <ScreenHeader title="Progression Photos" back="/dashboard" />
 
       <div className="p-4">
         {/* Upload form */}
@@ -83,11 +81,11 @@ export default function PhotosScreen({ data }: { data: DashboardHook }) {
             <p className="text-sm font-semibold text-slate-700 mb-3">Avant / Après</p>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <img src={photos[photos.length - 1].photo_url} className="w-full h-36 object-cover rounded-xl" alt="avant" />
+                <img src={photos[photos.length - 1].photo_url} className="w-full h-36 object-cover rounded-xl" alt="Photo avant" loading="lazy" decoding="async" />
                 <p className="text-xs text-slate-500 mt-1 text-center">Avant</p>
               </div>
               <div>
-                <img src={photos[0].photo_url} className="w-full h-36 object-cover rounded-xl" alt="après" />
+                <img src={photos[0].photo_url} className="w-full h-36 object-cover rounded-xl" alt="Photo après" loading="lazy" decoding="async" />
                 <p className="text-xs text-slate-500 mt-1 text-center">Après</p>
               </div>
             </div>
@@ -101,7 +99,13 @@ export default function PhotosScreen({ data }: { data: DashboardHook }) {
             <div className="grid grid-cols-2 gap-3">
               {photos.map(p => (
                 <div key={p.id} className="relative rounded-xl overflow-hidden aspect-square">
-                  <img src={p.photo_url} className="w-full h-full object-cover" alt="progress" />
+                  <img
+                    src={p.photo_url}
+                    className="w-full h-full object-cover"
+                    alt={`Photo de progression du ${new Date(p.taken_at).toLocaleDateString('fr-FR')}`}
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-2">
                     {new Date(p.taken_at).toLocaleDateString('fr-FR')}
                     {p.weight_kg ? ` · ${p.weight_kg}kg` : ''}

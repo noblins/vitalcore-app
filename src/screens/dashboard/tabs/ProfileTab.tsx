@@ -37,7 +37,7 @@ export default function ProfileTab({ data }: { data: DashboardHook }) {
 
   return (
     <div className="p-4">
-      <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 -mx-4 -mt-4 mb-4">
+      <div className="bg-gradient-to-br from-primary to-secondary text-white px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] -mx-4 -mt-4 mb-4">
         <h1 className="text-xl font-bold">Profil</h1>
       </div>
 

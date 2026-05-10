@@ -5,6 +5,7 @@ import { sb } from '../../../lib/supabase'
 import { formatHours } from '../../../utils/calculations'
 import Card from '../../../components/ui/Card'
 import Button from '../../../components/ui/Button'
+import ScreenHeader from '../../../components/layout/ScreenHeader'
 import type { DashboardHook } from '../../../hooks/useDashboardData'
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -74,24 +75,35 @@ export default function FastingScreen({ data }: { data: DashboardHook }) {
     return () => clearInterval(t)
   }, [fastActive])
 
+  const [starting, setStarting] = useState(false)
   const start = async () => {
-    if (!user) return
-    const { data: row } = await sb.from('fasting_sessions').insert({
-      user_id: user.id,
-      protocol,
-      started_at: new Date().toISOString(),
-      target_hours: parseInt(protocol),
-      completed: false,
-    }).select().single()
-    setFastActive(row)
-    setElapsed(0)
+    if (!user || starting || fastActive) return
+    setStarting(true)
+    try {
+      const { data: row } = await sb.from('fasting_sessions').insert({
+        user_id: user.id,
+        protocol,
+        started_at: new Date().toISOString(),
+        target_hours: parseInt(protocol),
+        completed: false,
+      }).select().single()
+      setFastActive(row)
+      setElapsed(0)
+    } finally {
+      setStarting(false)
+    }
   }
 
   const stop = async () => {
     if (!fastActive) return
+    const reachedGoal = elapsed >= fastActive.target_hours
+    const confirmMsg = reachedGoal
+      ? 'Terminer le jeûne ?'
+      : `Terminer le jeûne maintenant ? Vous êtes à ${formatHours(elapsed)} sur ${fastActive.target_hours}h.`
+    if (!confirm(confirmMsg)) return
     await sb.from('fasting_sessions').update({
       ended_at: new Date().toISOString(),
-      completed: elapsed >= fastActive.target_hours,
+      completed: reachedGoal,
     }).eq('id', fastActive.id)
     setFastActive(null)
     await reload()
@@ -129,17 +141,12 @@ export default function FastingScreen({ data }: { data: DashboardHook }) {
   const weekCount = fastHistory.filter(f => f.started_at.slice(0, 10) >= weekAgo).length
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-primary to-secondary text-white p-4 flex items-center gap-3">
-        <button onClick={() => navigate('/dashboard')} className="text-white/80 text-xl leading-none">←</button>
-        <div>
-          <h1 className="text-xl font-bold">Jeûne Intermittent</h1>
-          <p className="text-xs opacity-80">
-            {fastActive ? `Session en cours · ${fastActive.protocol}` : 'Choisissez votre protocole'}
-          </p>
-        </div>
-      </div>
+    <div className="min-h-dvh bg-slate-50">
+      <ScreenHeader
+        title="Jeûne Intermittent"
+        subtitle={fastActive ? `Session en cours · ${fastActive.protocol}` : 'Choisissez votre protocole'}
+        back="/dashboard"
+      />
 
       <div className="p-4 flex flex-col gap-4">
 
