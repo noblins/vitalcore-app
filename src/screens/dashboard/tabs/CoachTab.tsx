@@ -47,7 +47,7 @@ export default function CoachTab({ data }: { data: DashboardHook }) {
       const d = await res.json()
       const reply = d.reply ?? (
         d.error === 'limit_reached'
-          ? 'Vous avez atteint la limite de 20 messages/jour. Passez Premium pour continuer !'
+          ? 'Vous avez atteint la limite quotidienne de messages. Réessayez demain.'
           : d.error === 'Invalid token'
           ? 'Session expirée. Veuillez vous déconnecter et reconnecter.'
           : `Erreur: ${d.details ?? d.error ?? 'Inconnu'}`

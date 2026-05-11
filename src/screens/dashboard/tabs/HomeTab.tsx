@@ -4,7 +4,6 @@ import { useAuth } from '../../../contexts/AuthContext'
 import { sb } from '../../../lib/supabase'
 import { todayISO } from '../../../utils/calculations'
 import Card from '../../../components/ui/Card'
-import PremiumModal from '../modals/PremiumModal'
 import type { DashboardHook } from '../../../hooks/useDashboardData'
 
 const WATER_AMOUNTS = [200, 330, 500, 750]
@@ -42,7 +41,6 @@ function KpiCard({
 export default function HomeTab({ data }: { data: DashboardHook }) {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
-  const [showPremium, setShowPremium] = useState(false)
   const { meals, weightLogs, todayWater, weekWater, weekMeals, activeMed, loading, reload } = data
 
   // ── Today ──────────────────────────────────────────────────────────────────
@@ -50,7 +48,6 @@ export default function HomeTab({ data }: { data: DashboardHook }) {
   const todayProt  = meals.reduce((s, m) => s + (m.protein_g || 0), 0)
   const todayCarbs = meals.reduce((s, m) => s + (m.carbs_g   || 0), 0)
   const todayFat   = meals.reduce((s, m) => s + (m.fat_g     || 0), 0)
-  const isPremium  = profile?.subscription_plan === 'premium'
   const tdee       = profile?.tdee ?? 0
   const calPct     = tdee > 0 ? Math.min((todayCal / tdee) * 100, 100) : 0
 
@@ -135,15 +132,6 @@ export default function HomeTab({ data }: { data: DashboardHook }) {
       <p className="text-lg font-semibold text-slate-800 mb-4">
         Bonjour {profile?.full_name?.split(' ')[0] || 'Ami'} 👋
       </p>
-
-      {!isPremium && (
-        <div
-          className="bg-gradient-to-r from-amber-400 to-amber-500 text-white p-4 rounded-xl mb-4 text-center font-semibold cursor-pointer active:scale-95 transition-transform"
-          onClick={() => setShowPremium(true)}
-        >
-          ✨ Upgrade à Premium — 9.99€/mois
-        </div>
-      )}
 
       {/* ── KPI GLOBAUX ─────────────────────────────────────────────────────── */}
       <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Progression globale</p>
@@ -348,7 +336,6 @@ export default function HomeTab({ data }: { data: DashboardHook }) {
         </Card>
       </div>
 
-      {showPremium && <PremiumModal onClose={() => setShowPremium(false)} />}
     </div>
   )
 }

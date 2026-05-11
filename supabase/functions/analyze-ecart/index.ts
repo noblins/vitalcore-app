@@ -29,7 +29,8 @@ const GOAL_LABELS: Record<string, string> = {
   health: 'santé générale',
 };
 
-const FREE_DAILY_LIMIT = 5;
+// Generous daily cap (anti-abuse — app is free for everyone)
+const DAILY_LIMIT = 15;
 const MAX_DESCRIPTION_LEN = 500;
 
 Deno.serve(async (req: Request) => {
@@ -66,11 +67,11 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // ── Charge profil + rate limit en parallèle ─────────────────────────────
+    // ── Daily cap (anti-abuse, all users) ───────────────────────────────────
     const today = new Date().toISOString().slice(0, 10);
     const [profileRes, dailyCountRes] = await Promise.all([
       sb.from('profiles')
-        .select('subscription_plan, tdee, goal, diet')
+        .select('tdee, goal, diet')
         .eq('id', user.id).single(),
       sb.from('ai_usage_logs')
         .select('id', { count: 'exact', head: true })
@@ -80,10 +81,9 @@ Deno.serve(async (req: Request) => {
     ]);
 
     const profile = profileRes.data;
-    const isPremium = profile?.subscription_plan === 'premium';
 
-    if (!isPremium && (dailyCountRes.count ?? 0) >= FREE_DAILY_LIMIT) {
-      return new Response(JSON.stringify({ error: 'limit_reached', message: `Limite gratuite ${FREE_DAILY_LIMIT}/jour atteinte. Passez Premium pour analyser autant d'écarts que vous voulez.` }), {
+    if ((dailyCountRes.count ?? 0) >= DAILY_LIMIT) {
+      return new Response(JSON.stringify({ error: 'limit_reached', message: `Limite quotidienne de ${DAILY_LIMIT} analyses atteinte. Réessayez demain.` }), {
         status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }

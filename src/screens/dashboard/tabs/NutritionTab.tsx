@@ -161,13 +161,12 @@ export default function NutritionTab({ data }: { data: DashboardHook }) {
       const result = await res.json()
 
       if (!res.ok) {
-        if (res.status === 403) {
-          setMsg('⭐ Scan IA réservé aux comptes Premium. Remplissez les valeurs manuellement ou passez Premium.')
-          setTimeout(() => setMsg(''), 8000)
+        if (res.status === 429) {
+          setMsg('Limite quotidienne atteinte. Remplissez les valeurs manuellement.')
         } else {
           setMsg(`Erreur analyse photo (${res.status}). Réessayez.`)
-          setTimeout(() => setMsg(''), 5000)
         }
+        setTimeout(() => setMsg(''), 5000)
         setScanning(false)
         return
       }

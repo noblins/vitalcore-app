@@ -22,7 +22,8 @@ async function getAnthropicKey(sb: any): Promise<string> {
   return cachedApiKey || '';
 }
 
-const FREE_DAILY_LIMIT = 20;
+// Generous daily cap (anti-abuse, not a paywall — app is currently free for everyone)
+const DAILY_MSG_LIMIT = 100;
 
 const GOAL_LABELS: Record<string, string> = {
   lose: 'perdre du poids',
@@ -104,10 +105,9 @@ Deno.serve(async (req: Request) => {
     ]);
 
     const profile = profileRes.data;
-    const isPremium = profile?.subscription_plan === 'premium';
 
-    // ── Free tier limit ─────────────────────────────────────────────────────
-    if (!isPremium && (dailyCountRes.count ?? 0) >= FREE_DAILY_LIMIT) {
+    // ── Daily cap (anti-abuse — all users) ──────────────────────────────────
+    if ((dailyCountRes.count ?? 0) >= DAILY_MSG_LIMIT) {
       return new Response(JSON.stringify({ error: 'limit_reached' }), {
         status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

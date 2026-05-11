@@ -22,7 +22,8 @@ async function getAnthropicKey(sb: any): Promise<string> {
   return cachedApiKey || '';
 }
 
-const FREE_DAILY_LIMIT = 10;
+// Generous daily cap (anti-abuse — app is free for everyone)
+const DAILY_LIMIT = 30;
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -63,24 +64,18 @@ Deno.serve(async (req: Request) => {
     }
     const safeCount = Math.min(Math.max(parseInt(count) || 3, 1), 5);
 
-    // ── Rate limit + check Premium en parallèle ─────────────────────────────
+    // ── Daily cap (anti-abuse, all users) ───────────────────────────────────
     const today = new Date().toISOString().slice(0, 10);
-    const [profileRes, dailyCountRes] = await Promise.all([
-      sb.from('profiles')
-        .select('subscription_plan')
-        .eq('id', user.id).single(),
-      sb.from('ai_usage_logs')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('endpoint', 'suggest-meals')
-        .gte('created_at', `${today}T00:00:00`),
-    ]);
+    const { count: usedToday } = await sb.from('ai_usage_logs')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('endpoint', 'suggest-meals')
+      .gte('created_at', `${today}T00:00:00`);
 
-    const isPremium = profileRes.data?.subscription_plan === 'premium';
-    if (!isPremium && (dailyCountRes.count ?? 0) >= FREE_DAILY_LIMIT) {
+    if ((usedToday ?? 0) >= DAILY_LIMIT) {
       return new Response(JSON.stringify({
         error: 'limit_reached',
-        message: `Limite gratuite ${FREE_DAILY_LIMIT} suggestions/jour atteinte.`,
+        message: `Limite quotidienne de ${DAILY_LIMIT} suggestions atteinte. Réessayez demain.`,
       }), {
         status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

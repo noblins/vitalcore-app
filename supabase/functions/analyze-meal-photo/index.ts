@@ -37,11 +37,19 @@ Deno.serve(async (req: Request) => {
     const { image_base64, media_type } = await req.json();
     if (!image_base64) return new Response(JSON.stringify({ error: 'No image' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-    // Check premium
-    const { data: profile } = await sb.from('profiles').select('subscription_plan, diet, goal, tdee').eq('id', user.id).single();
-    const isPremium = profile && profile.subscription_plan === 'premium';
-    if (!isPremium) {
-      return new Response(JSON.stringify({ error: 'Premium required', reply: 'L\'analyse photo est une fonctionnalite Premium.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    // Daily cap (anti-abuse — all users)
+    const today = new Date().toISOString().slice(0, 10);
+    const [profileRes, dailyCountRes] = await Promise.all([
+      sb.from('profiles').select('diet, goal, tdee').eq('id', user.id).single(),
+      sb.from('ai_usage_logs').select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id).eq('endpoint', 'analyze-meal-photo')
+        .gte('created_at', `${today}T00:00:00`),
+    ]);
+    const profile = profileRes.data;
+    if ((dailyCountRes.count ?? 0) >= 20) {
+      return new Response(JSON.stringify({ error: 'limit_reached', message: 'Limite quotidienne de scans atteinte (20/jour).' }), {
+        status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const apiKey = await getAnthropicKey(sb);
@@ -90,6 +98,9 @@ Si tu ne peux pas identifier le plat, mets confidence a 'low' et estime au mieux
     } catch (e) {
       analysis = { food_name: 'Plat non identifie', calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0, fiber_g: 0, confidence: 'low', details: rawText, suggestions: '' };
     }
+
+    // Log usage for daily cap
+    await sb.from('ai_usage_logs').insert({ user_id: user.id, endpoint: 'analyze-meal-photo' });
 
     return new Response(JSON.stringify({ success: true, analysis }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (err) {
