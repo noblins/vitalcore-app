@@ -3,11 +3,14 @@ import { useAuth } from '../../../contexts/AuthContext'
 import { getFreshToken, EDGE_URL } from '../../../lib/supabase'
 import type { DashboardHook } from '../../../hooks/useDashboardData'
 
-const CHIPS = ['Mon poids', 'Que manger?', 'Mes calories', 'Conseils injection', 'Jeûne']
+const BASE_CHIPS = ['Mon poids', 'Que manger?', 'Mes calories', 'Jeûne']
+const GLP1_CHIPS = ['Conseils injection', 'Effets secondaires']
 
 export default function CoachTab({ data }: { data: DashboardHook }) {
   const { user } = useAuth()
-  const { messages, setMessages } = data
+  const { messages, setMessages, activeMed } = data
+  // Adapt suggested questions to the user's profile
+  const chips = activeMed ? [...BASE_CHIPS, ...GLP1_CHIPS] : BASE_CHIPS
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
   const endRef = useRef<HTMLDivElement>(null)
@@ -94,7 +97,7 @@ export default function CoachTab({ data }: { data: DashboardHook }) {
 
       {/* Chips */}
       <div className="px-4 py-2 flex flex-wrap gap-1.5 shrink-0">
-        {CHIPS.map(chip => (
+        {chips.map(chip => (
           <button key={chip}
             className="bg-slate-100 hover:bg-primary hover:text-white text-slate-700 text-xs px-3 py-2 rounded-full border border-slate-200 transition-colors active:scale-95"
             onClick={() => send(chip)}>

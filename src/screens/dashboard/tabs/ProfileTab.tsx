@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../contexts/AuthContext'
 import { calcMacroTargets } from '../../../utils/calculations'
 import { usePWAInstall } from '../../../hooks/usePWAInstall'
@@ -12,12 +13,14 @@ import type { DashboardHook } from '../../../hooks/useDashboardData'
 
 export default function ProfileTab({ data }: { data: DashboardHook }) {
   const { profile, logout } = useAuth()
+  const navigate = useNavigate()
   const pwa = usePWAInstall()
   const [showJournal, setShowJournal] = useState(false)
   const [showPayment, setShowPayment] = useState(false)
   const [showInstall, setShowInstall] = useState(false)
   const [suggestMeal, setSuggestMeal] = useState<{ type: string; label: string; cal: number } | null>(null)
   const isPremium = profile?.subscription_plan === 'premium'
+  const { activeMed } = data
 
   const targets = profile?.tdee
     ? calcMacroTargets(profile.tdee, profile.weight_kg ?? 70, profile.goal ?? 'maintain')
@@ -141,6 +144,41 @@ export default function ProfileTab({ data }: { data: DashboardHook }) {
           </div>
         </Card>
       )}
+
+      {/* GLP-1 — module conditionnel */}
+      <Card>
+        {activeMed ? (
+          <button
+            onClick={() => navigate('/dashboard/glp1')}
+            className="w-full flex items-center justify-between gap-3 text-left active:bg-slate-50 -m-4 p-4 rounded-xl transition-colors"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-xl shrink-0">💉</div>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-slate-800 truncate">Traitement GLP-1 actif</p>
+                <p className="text-xs text-slate-500 truncate">
+                  {activeMed.medication_name} · {activeMed.dose_current}{activeMed.dose_unit}
+                </p>
+              </div>
+            </div>
+            <span className="text-slate-300 text-xl shrink-0">›</span>
+          </button>
+        ) : (
+          <button
+            onClick={() => navigate('/dashboard/glp1')}
+            className="w-full flex items-center justify-between gap-3 text-left active:bg-slate-50 -m-4 p-4 rounded-xl transition-colors"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-xl shrink-0">💉</div>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-slate-800">Démarrer un traitement GLP-1</p>
+                <p className="text-xs text-slate-500">Ozempic, Mounjaro, Saxenda, Wegovy</p>
+              </div>
+            </div>
+            <span className="text-slate-300 text-xl shrink-0">›</span>
+          </button>
+        )}
+      </Card>
 
       <div className="flex flex-col gap-3">
         <Button fullWidth onClick={() => setShowJournal(true)}>📔 Journal</Button>

@@ -322,17 +322,20 @@ export default function HomeTab({ data }: { data: DashboardHook }) {
           <p className="text-sm text-blue-600">Objectif : {targetWeight}kg</p>
         </Card>
 
-        <div className="relative">
-          {injDue && (
-            <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full z-10 animate-pulse" />
-          )}
-          <Card feature onClick={() => navigate('/dashboard/glp1')}>
-            <h3 className="font-bold text-blue-800 mb-1">💉 GLP-1</h3>
-            <p className="text-sm text-blue-600">
-              {injDue ? '⚠️ Injection due !' : activeMed ? activeMed.medication_name : 'Suivi injections'}
-            </p>
-          </Card>
-        </div>
+        {/* GLP-1 module : visible only for users actively on a treatment */}
+        {activeMed && (
+          <div className="relative">
+            {injDue && (
+              <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full z-10 animate-pulse" />
+            )}
+            <Card feature onClick={() => navigate('/dashboard/glp1')}>
+              <h3 className="font-bold text-blue-800 mb-1">💉 GLP-1</h3>
+              <p className="text-sm text-blue-600">
+                {injDue ? '⚠️ Injection due !' : activeMed.medication_name}
+              </p>
+            </Card>
+          </div>
+        )}
 
         <Card feature onClick={() => navigate('/dashboard/photos')}>
           <h3 className="font-bold text-blue-800 mb-1">📸 Photos</h3>
