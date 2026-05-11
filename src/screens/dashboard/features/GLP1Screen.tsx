@@ -28,6 +28,22 @@ const TITRATION_WEEKS: Record<string, number[]> = {
   Saxenda:  [1, 1, 1, 1, 0],
   Wegovy:   [4, 4, 4, 4, 0],
 }
+type Frequency = 'daily' | 'weekly'
+const PROTOCOL_FREQUENCY: Record<string, Frequency> = {
+  Ozempic:  'weekly',
+  Mounjaro: 'weekly',
+  Saxenda:  'daily',
+  Wegovy:   'weekly',
+}
+function freqOf(medName: string | undefined): Frequency {
+  return medName ? (PROTOCOL_FREQUENCY[medName] ?? 'weekly') : 'weekly'
+}
+function freqLabel(freq: Frequency): string {
+  return freq === 'daily' ? 'Quotidien (1 injection/jour)' : 'Hebdomadaire (1 injection/semaine)'
+}
+function freqInterval(freq: Frequency): number {
+  return freq === 'daily' ? 1 : 7
+}
 const SITES = [
   { id: 'Abdomen gauche', label: 'Abd. G', emoji: '◐' },
   { id: 'Abdomen droit',  label: 'Abd. D', emoji: '◑' },
@@ -41,6 +57,7 @@ const DAY_JS: Record<string, number> = {
   Dimanche: 0, Lundi: 1, Mardi: 2, Mercredi: 3, Jeudi: 4, Vendredi: 5, Samedi: 6,
 }
 
+/** Next weekly injection — next occurrence of `dayName` (skipping today). */
 function nextInjDate(dayName: string): string {
   const today = new Date()
   const target = DAY_JS[dayName] ?? today.getDay()
@@ -51,12 +68,19 @@ function nextInjDate(dayName: string): string {
   return next.toISOString().slice(0, 10)
 }
 
-/** Next injection = lastInjection + 7 days. */
-function nextInjFromLast(lastInjISO: string): string {
+/** Next injection = lastInjection + interval (1 or 7 days). */
+function nextInjFromLast(lastInjISO: string, freq: Frequency): string {
   const last = new Date(lastInjISO + 'T12:00:00')
   const next = new Date(last)
-  next.setDate(last.getDate() + 7)
+  next.setDate(last.getDate() + freqInterval(freq))
   return next.toISOString().slice(0, 10)
+}
+
+/** Daily : next injection is tomorrow. */
+function tomorrowISO(): string {
+  const t = new Date()
+  t.setDate(t.getDate() + 1)
+  return t.toISOString().slice(0, 10)
 }
 
 /** Returns the French day name for an ISO date (e.g. "2026-05-11" → "Lundi"). */
@@ -272,6 +296,8 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
     return { steps, idx, requiredWeeks, weeksAtDose, canIncrease, nextDose: steps[idx + 1] ?? null }
   }, [activeMed, injLogs])
 
+  const currentFreq = freqOf(medName)
+
   // ── Setup validation ──────────────────────────────────────────────────────
   const lastInjValidation = useMemo(() => {
     if (setupMode !== 'started') return { valid: true, message: '' }
@@ -281,23 +307,34 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
       return { valid: false, message: 'La date ne peut pas être dans le futur.' }
     }
     const daysAgo = Math.floor((Date.now() - new Date(lastInjDate + 'T12:00:00').getTime()) / 86400000)
-    if (daysAgo > 14) {
+    // Thresholds adapt to frequency
+    const lateThreshold = currentFreq === 'daily' ? 1 : 7
+    const abandonThreshold = currentFreq === 'daily' ? 3 : 14
+    if (daysAgo > abandonThreshold) {
       return { valid: true, message: `⚠️ Dernière injection il y a ${daysAgo} jours. Reprogrammez votre traitement dès que possible.` }
     }
-    if (daysAgo > 7) {
+    if (daysAgo > lateThreshold) {
       return { valid: true, message: `⚠️ Injection en retard (il y a ${daysAgo} jours). La prochaine est due immédiatement.` }
     }
     return { valid: true, message: '' }
-  }, [setupMode, lastInjDate])
+  }, [setupMode, lastInjDate, currentFreq])
 
   const setupPreview = useMemo(() => {
     if (!medName) return null
+    if (currentFreq === 'daily') {
+      if (setupMode === 'first') {
+        return { day: 'Quotidien', next: todayISO(), freq: 'daily' as const }
+      }
+      if (!lastInjDate || !lastInjValidation.valid) return null
+      return { day: 'Quotidien', next: nextInjFromLast(lastInjDate, 'daily'), freq: 'daily' as const }
+    }
+    // weekly
     if (setupMode === 'first') {
-      return { day: medDay, next: nextInjDate(medDay) }
+      return { day: medDay, next: nextInjDate(medDay), freq: 'weekly' as const }
     }
     if (!lastInjDate || !lastInjValidation.valid) return null
-    return { day: dayNameFromDate(lastInjDate), next: nextInjFromLast(lastInjDate) }
-  }, [setupMode, medName, medDay, lastInjDate, lastInjValidation.valid])
+    return { day: dayNameFromDate(lastInjDate), next: nextInjFromLast(lastInjDate, 'weekly'), freq: 'weekly' as const }
+  }, [setupMode, medName, medDay, lastInjDate, lastInjValidation.valid, currentFreq])
 
   // ── Actions ───────────────────────────────────────────────────────────────
   const setupMed = async () => {
@@ -307,10 +344,15 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
       const startDose = (PROTOCOLS[medName]?.[0] ?? medDose) || '0.25'
       const startDate = setupMode === 'started' ? lastInjDate : todayISO()
 
+      // For daily protocols, store today's weekday as injection_day for legacy compat
+      const dayToStore = setupPreview.freq === 'daily'
+        ? DAYS_FR[(new Date().getDay() + 6) % 7]
+        : setupPreview.day
+
       const { data: row } = await sb.from('medications').insert({
         user_id: user.id, medication_name: medName,
         dose_current: startDose, dose_unit: 'mg',
-        injection_day: setupPreview.day,
+        injection_day: dayToStore,
         start_date: startDate,
         next_injection: setupPreview.next,
         active: true,
@@ -346,7 +388,11 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
       injection_site: injSite, notes: injNote || null,
       nausea, fatigue, pain,
     })
-    const nextInj = nextInjDate(activeMed.injection_day)
+    // Next injection : tomorrow for daily, next weekday for weekly
+    const activeFreq = freqOf(activeMed.medication_name)
+    const nextInj = activeFreq === 'daily'
+      ? tomorrowISO()
+      : nextInjDate(activeMed.injection_day)
     await sb.from('medications')
       .update({ next_injection: nextInj, dose_current: injDose })
       .eq('id', activeMed.id)
@@ -406,11 +452,19 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
         {showSettings && activeMed && (
           <Card>
             <p className="text-sm font-bold text-slate-700 mb-3">Paramètres</p>
-            <Select label="Jour d'injection" value={settingsDay} onChange={e => setSettingsDay(e.target.value)}>
-              {DAYS_FR.map(d => <option key={d} value={d}>{d}</option>)}
-            </Select>
+            {freqOf(activeMed.medication_name) === 'weekly' ? (
+              <Select label="Jour d'injection" value={settingsDay} onChange={e => setSettingsDay(e.target.value)}>
+                {DAYS_FR.map(d => <option key={d} value={d}>{d}</option>)}
+              </Select>
+            ) : (
+              <p className="text-xs text-slate-500 bg-slate-50 rounded-lg p-3">
+                🗓️ {activeMed.medication_name} est un traitement <strong>quotidien</strong> : une injection chaque jour, pas de jour fixe.
+              </p>
+            )}
             <div className="flex gap-2 mt-3">
-              <Button fullWidth onClick={saveSettings}>Enregistrer</Button>
+              {freqOf(activeMed.medication_name) === 'weekly' && (
+                <Button fullWidth onClick={saveSettings}>Enregistrer</Button>
+              )}
               <button onClick={stopMed}
                 className="flex-1 py-2.5 rounded-xl text-red-500 border border-red-200 text-sm font-semibold">
                 Arrêter
@@ -483,11 +537,29 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
                 </div>
               </div>
 
+              {/* Frequency info badge */}
+              {medName && (
+                <div className={`text-xs rounded-lg px-3 py-2 font-semibold flex items-center gap-2 ${
+                  currentFreq === 'daily' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-blue-50 text-blue-700 border border-blue-200'
+                }`}>
+                  <span aria-hidden>{currentFreq === 'daily' ? '🗓️' : '📆'}</span>
+                  <span>{freqLabel(currentFreq)}</span>
+                </div>
+              )}
+
               {/* Conditional inputs */}
               {setupMode === 'first' ? (
-                <Select label="Jour d'injection hebdomadaire" value={medDay} onChange={e => setMedDay(e.target.value)}>
-                  {DAYS_FR.map(d => <option key={d} value={d}>{d}</option>)}
-                </Select>
+                // Weekly only — let user pick their preferred day of week.
+                // Daily protocols don't need this — first dose is today.
+                currentFreq === 'weekly' ? (
+                  <Select label="Jour d'injection hebdomadaire" value={medDay} onChange={e => setMedDay(e.target.value)}>
+                    {DAYS_FR.map(d => <option key={d} value={d}>{d}</option>)}
+                  </Select>
+                ) : (
+                  <p className="text-xs text-slate-500 bg-slate-50 rounded-lg p-3">
+                    Votre première injection sera aujourd'hui, puis une injection chaque jour.
+                  </p>
+                )
               ) : (
                 <Input
                   label="Date de la dernière injection"
@@ -514,7 +586,9 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
                     {new Date(setupPreview.next + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
                   </p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Tous les <strong>{setupPreview.day.toLowerCase()}</strong> · cycle hebdomadaire
+                    {setupPreview.freq === 'daily'
+                      ? <>Une injection <strong>chaque jour</strong></>
+                      : <>Tous les <strong>{setupPreview.day.toLowerCase()}</strong> · cycle hebdomadaire</>}
                   </p>
                 </div>
               )}
@@ -522,7 +596,7 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
               {medName && (
                 <p className="text-xs text-slate-500 bg-slate-50 rounded-lg p-3">
                   Protocole {medName} : commencer à <strong>{PROTOCOLS[medName][0]}mg</strong>,
-                  puis monter progressivement ({TITRATION_WEEKS[medName]?.[0]} semaines par palier).
+                  puis monter progressivement ({TITRATION_WEEKS[medName]?.[0]} semaine{(TITRATION_WEEKS[medName]?.[0] ?? 0) > 1 ? 's' : ''} par palier).
                 </p>
               )}
 
