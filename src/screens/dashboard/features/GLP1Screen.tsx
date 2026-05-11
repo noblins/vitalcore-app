@@ -51,6 +51,20 @@ function nextInjDate(dayName: string): string {
   return next.toISOString().slice(0, 10)
 }
 
+/** Next injection = lastInjection + 7 days. */
+function nextInjFromLast(lastInjISO: string): string {
+  const last = new Date(lastInjISO + 'T12:00:00')
+  const next = new Date(last)
+  next.setDate(last.getDate() + 7)
+  return next.toISOString().slice(0, 10)
+}
+
+/** Returns the French day name for an ISO date (e.g. "2026-05-11" → "Lundi"). */
+function dayNameFromDate(dateISO: string): string {
+  const day = new Date(dateISO + 'T12:00:00').getDay()
+  return ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'][day]
+}
+
 function daysAgo(date: string): number {
   return Math.floor((Date.now() - new Date(date).getTime()) / 86400000)
 }
@@ -191,9 +205,11 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
   const { activeMed, setActiveMed, injLogs, weightLogs, reload } = data
 
   // Setup form
-  const [medName, setMedName]     = useState('')
-  const [medDose, setMedDose]     = useState('')
-  const [medDay, setMedDay]       = useState('Lundi')
+  const [medName, setMedName]       = useState('')
+  const [medDose, setMedDose]       = useState('')
+  const [medDay, setMedDay]         = useState('Lundi')
+  const [setupMode, setSetupMode]   = useState<'first' | 'started'>('first')
+  const [lastInjDate, setLastInjDate] = useState(() => todayISO())
 
   // Log form
   const [injSite, setInjSite]     = useState('')
@@ -256,20 +272,69 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
     return { steps, idx, requiredWeeks, weeksAtDose, canIncrease, nextDose: steps[idx + 1] ?? null }
   }, [activeMed, injLogs])
 
+  // ── Setup validation ──────────────────────────────────────────────────────
+  const lastInjValidation = useMemo(() => {
+    if (setupMode !== 'started') return { valid: true, message: '' }
+    if (!lastInjDate) return { valid: false, message: '' }
+    const today = todayISO()
+    if (lastInjDate > today) {
+      return { valid: false, message: 'La date ne peut pas être dans le futur.' }
+    }
+    const daysAgo = Math.floor((Date.now() - new Date(lastInjDate + 'T12:00:00').getTime()) / 86400000)
+    if (daysAgo > 14) {
+      return { valid: true, message: `⚠️ Dernière injection il y a ${daysAgo} jours. Reprogrammez votre traitement dès que possible.` }
+    }
+    if (daysAgo > 7) {
+      return { valid: true, message: `⚠️ Injection en retard (il y a ${daysAgo} jours). La prochaine est due immédiatement.` }
+    }
+    return { valid: true, message: '' }
+  }, [setupMode, lastInjDate])
+
+  const setupPreview = useMemo(() => {
+    if (!medName) return null
+    if (setupMode === 'first') {
+      return { day: medDay, next: nextInjDate(medDay) }
+    }
+    if (!lastInjDate || !lastInjValidation.valid) return null
+    return { day: dayNameFromDate(lastInjDate), next: nextInjFromLast(lastInjDate) }
+  }, [setupMode, medName, medDay, lastInjDate, lastInjValidation.valid])
+
   // ── Actions ───────────────────────────────────────────────────────────────
   const setupMed = async () => {
-    if (!medName || !user) return
+    if (!medName || !user || !setupPreview) return
     setLoading(true)
-    const startDose = (PROTOCOLS[medName]?.[0] ?? medDose) || '0.25'
-    const { data: row } = await sb.from('medications').insert({
-      user_id: user.id, medication_name: medName,
-      dose_current: startDose, dose_unit: 'mg',
-      injection_day: medDay, start_date: todayISO(),
-      next_injection: nextInjDate(medDay), active: true,
-    }).select().single()
-    setActiveMed(row)
-    setInjDose(startDose)
-    setLoading(false)
+    try {
+      const startDose = (PROTOCOLS[medName]?.[0] ?? medDose) || '0.25'
+      const startDate = setupMode === 'started' ? lastInjDate : todayISO()
+
+      const { data: row } = await sb.from('medications').insert({
+        user_id: user.id, medication_name: medName,
+        dose_current: startDose, dose_unit: 'mg',
+        injection_day: setupPreview.day,
+        start_date: startDate,
+        next_injection: setupPreview.next,
+        active: true,
+      }).select().single()
+
+      // If user has a known last injection, log it for history continuity
+      if (setupMode === 'started' && row) {
+        await sb.from('injection_logs').insert({
+          user_id: user.id,
+          medication_id: row.id,
+          injection_date: lastInjDate,
+          dose: startDose,
+          injection_site: 'Abdomen gauche', // default — user can edit later
+          notes: 'Injection antérieure renseignée à la configuration',
+          nausea: 0, fatigue: 0, pain: 0,
+        })
+      }
+
+      setActiveMed(row)
+      setInjDose(startDose)
+      if (setupMode === 'started') await reload()
+    } finally {
+      setLoading(false)
+    }
   }
 
   const logInj = async () => {
@@ -358,22 +423,115 @@ export default function GLP1Screen({ data }: { data: DashboardHook }) {
         {!activeMed ? (
           <Card>
             <p className="text-base font-semibold text-slate-800 mb-4">Configurer votre médicament</p>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               <Select label="Médicament" value={medName} onChange={e => setMedName(e.target.value)}>
                 <option value="">Sélectionner</option>
                 {Object.keys(PROTOCOLS).map(m => <option key={m} value={m}>{m}</option>)}
               </Select>
-              <Select label="Jour d'injection hebdomadaire" value={medDay} onChange={e => setMedDay(e.target.value)}>
-                {DAYS_FR.map(d => <option key={d} value={d}>{d}</option>)}
-              </Select>
+
+              {/* ── Setup mode : première fois vs déjà commencé ── */}
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                  Où en êtes-vous dans votre traitement ?
+                </p>
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSetupMode('first')}
+                    className={`p-3 rounded-xl border-2 text-left transition-all min-h-[60px] ${
+                      setupMode === 'first' ? 'border-primary bg-primary/5' : 'border-slate-200 bg-white active:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        aria-hidden
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          setupMode === 'first' ? 'border-primary' : 'border-slate-300'
+                        }`}
+                      >
+                        {setupMode === 'first' && <span className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                      </span>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-800">🆕 C'est ma première injection</p>
+                        <p className="text-xs text-slate-500">Je débute le traitement</p>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSetupMode('started')}
+                    className={`p-3 rounded-xl border-2 text-left transition-all min-h-[60px] ${
+                      setupMode === 'started' ? 'border-primary bg-primary/5' : 'border-slate-200 bg-white active:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        aria-hidden
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                          setupMode === 'started' ? 'border-primary' : 'border-slate-300'
+                        }`}
+                      >
+                        {setupMode === 'started' && <span className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                      </span>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-800">📅 J'ai déjà commencé</p>
+                        <p className="text-xs text-slate-500">Je connais la date de ma dernière injection</p>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Conditional inputs */}
+              {setupMode === 'first' ? (
+                <Select label="Jour d'injection hebdomadaire" value={medDay} onChange={e => setMedDay(e.target.value)}>
+                  {DAYS_FR.map(d => <option key={d} value={d}>{d}</option>)}
+                </Select>
+              ) : (
+                <Input
+                  label="Date de la dernière injection"
+                  type="date"
+                  value={lastInjDate}
+                  max={todayISO()}
+                  onChange={e => setLastInjDate(e.target.value)}
+                />
+              )}
+
+              {lastInjValidation.message && (
+                <p className={`text-xs rounded-lg p-3 ${
+                  lastInjValidation.valid ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-red-50 text-red-600 border border-red-200'
+                }`}>
+                  {lastInjValidation.message}
+                </p>
+              )}
+
+              {/* Preview : prochaine injection */}
+              {setupPreview && (
+                <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-xl p-3">
+                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Prochaine injection</p>
+                  <p className="text-sm font-bold text-slate-800">
+                    {new Date(setupPreview.next + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Tous les <strong>{setupPreview.day.toLowerCase()}</strong> · cycle hebdomadaire
+                  </p>
+                </div>
+              )}
+
               {medName && (
                 <p className="text-xs text-slate-500 bg-slate-50 rounded-lg p-3">
                   Protocole {medName} : commencer à <strong>{PROTOCOLS[medName][0]}mg</strong>,
                   puis monter progressivement ({TITRATION_WEEKS[medName]?.[0]} semaines par palier).
                 </p>
               )}
-              <Button fullWidth onClick={setupMed} disabled={!medName || loading}>
-                {loading ? 'Configuration...' : 'Configurer'}
+
+              <Button
+                fullWidth
+                onClick={setupMed}
+                disabled={!medName || loading || !setupPreview || (setupMode === 'started' && !lastInjValidation.valid)}
+              >
+                {loading ? 'Configuration...' : 'Configurer mon traitement'}
               </Button>
             </div>
           </Card>
