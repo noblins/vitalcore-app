@@ -55,7 +55,7 @@ export default function PremiumModal({ onClose }: { onClose: () => void }) {
         onClick={e => e.stopPropagation()}
       >
         <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-5" aria-hidden />
-        <h2 id="premium-modal-title" className="text-xl font-bold text-slate-800 mb-1">✨ VitalCore Premium</h2>
+        <h2 id="premium-modal-title" className="text-xl font-bold text-slate-800 mb-1">✨ Hirow Premium</h2>
         <p className="text-sm text-slate-500 mb-4">Déverrouillez toutes les fonctionnalités avancées.</p>
         <div className="text-4xl font-bold text-primary mb-4">
           9.99€<span className="text-base font-normal text-slate-400">/mois</span>

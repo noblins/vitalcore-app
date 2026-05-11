@@ -107,7 +107,7 @@ export default function HomeTab({ data }: { data: DashboardHook }) {
   if (loading) return (
     <div className="p-4">
       <div className="bg-gradient-to-br from-primary to-secondary text-white px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] -mx-4 -mt-4 mb-4">
-        <h1 className="text-xl font-bold">VitalCore</h1>
+        <h1 className="text-xl font-bold">Hirow</h1>
         <p className="text-sm opacity-80">Votre assistant santé</p>
       </div>
       <div className="grid grid-cols-2 gap-3 mb-4">
@@ -125,7 +125,7 @@ export default function HomeTab({ data }: { data: DashboardHook }) {
     <div className="p-4">
       {/* Header */}
       <div className="bg-gradient-to-br from-primary to-secondary text-white px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] -mx-4 -mt-4 mb-4">
-        <h1 className="text-xl font-bold">VitalCore</h1>
+        <h1 className="text-xl font-bold">Hirow</h1>
         <p className="text-sm opacity-80">Votre assistant santé</p>
       </div>
 

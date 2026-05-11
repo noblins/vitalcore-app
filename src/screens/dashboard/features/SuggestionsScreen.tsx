@@ -28,7 +28,7 @@ const MEAL_TYPES = [
 type MealId = typeof MEAL_TYPES[number]['id']
 
 // ── Preferences (localStorage) ────────────────────────────────────────────────
-const PREFS_KEY = (uid: string) => `vitalcore_food_prefs_${uid}`
+const PREFS_KEY = (uid: string) => `hirow_food_prefs_${uid}`
 
 interface Prefs { liked: string[]; disliked: string[] }
 

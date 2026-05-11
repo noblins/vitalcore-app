@@ -3,7 +3,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-const APP_URL = Deno.env.get("APP_URL") || "https://vitalcore-app.vercel.app";
+const APP_URL = Deno.env.get("APP_URL") || "https://hirow-app.vercel.app";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

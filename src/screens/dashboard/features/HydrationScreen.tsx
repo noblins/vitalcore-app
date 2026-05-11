@@ -7,7 +7,7 @@ import ScreenHeader from '../../../components/layout/ScreenHeader'
 import type { DashboardHook } from '../../../hooks/useDashboardData'
 
 const QUICK_AMOUNTS = [150, 200, 330, 500, 750, 1000]
-const GOAL_KEY = (uid: string) => `vitalcore_water_goal_${uid}`
+const GOAL_KEY = (uid: string) => `hirow_water_goal_${uid}`
 
 export default function HydrationScreen({ data }: { data: DashboardHook }) {
   const { user, profile } = useAuth()

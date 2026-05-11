@@ -10,7 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
 }
 
-const DISMISSED_KEY = 'vitalcore_install_dismissed_until'
+const DISMISSED_KEY = 'hirow_install_dismissed_until'
 const SNOOZE_DAYS = 7
 
 function isIOS(): boolean {

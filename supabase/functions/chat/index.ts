@@ -135,7 +135,7 @@ Deno.serve(async (req: Request) => {
       ? `Traitement GLP-1: ${medRes.data.medication_name} ${medRes.data.dose_current} ${medRes.data.dose_unit}`
       : '';
 
-    const systemPrompt = `Tu es VitalCore Coach, un assistant santé et nutrition IA expert et bienveillant. Tu accompagnes ${name}.
+    const systemPrompt = `Tu es Hirow Coach, un assistant santé et nutrition IA expert et bienveillant. Tu accompagnes ${name}.
 
 PROFIL:
 - Objectif: ${goalLabel}

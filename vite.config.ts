@@ -44,8 +44,8 @@ export default defineConfig(({ mode }) => {
           ],
         },
         manifest: {
-          name: 'VitalCore',
-          short_name: 'VitalCore',
+          name: 'Hirow',
+          short_name: 'Hirow',
           description: 'Votre assistant santé et nutrition',
           theme_color: '#4fd1c5',
           background_color: '#4fd1c5',

@@ -25,7 +25,7 @@ export default function LoadingScreen({ label = 'Chargement...', stuckAfterMs = 
   return (
     <div className="flex flex-col items-center justify-center px-6 gap-4"
       style={{ minHeight: '100dvh', background: 'linear-gradient(to bottom right, #4fd1c5, #3b82f6)' }}>
-      <span className="text-white text-3xl font-bold tracking-tight">VitalCore</span>
+      <span className="text-white text-3xl font-bold tracking-tight">Hirow</span>
       <div className="w-8 h-8 border-2 border-white/40 border-t-white rounded-full animate-spin" />
       <span className="text-white/80 text-sm">{label}</span>
 

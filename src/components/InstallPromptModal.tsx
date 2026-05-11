@@ -46,7 +46,7 @@ export default function InstallPromptModal({ onClose }: Props) {
           </div>
           <div>
             <h2 id="install-modal-title" className="text-lg font-bold text-slate-800">
-              Installer VitalCore
+              Installer Hirow
             </h2>
             <p className="text-xs text-slate-500">Comme une vraie app — sans la barre Safari</p>
           </div>
@@ -80,7 +80,7 @@ export default function InstallPromptModal({ onClose }: Props) {
               </li>
             </ol>
             <p className="text-xs text-slate-400 mt-3 italic">
-              Ouvrez ensuite VitalCore depuis l'icône d'écran d'accueil — la barre Safari disparaîtra.
+              Ouvrez ensuite Hirow depuis l'icône d'écran d'accueil — la barre Safari disparaîtra.
             </p>
           </div>
         ) : canPromptAndroid ? (

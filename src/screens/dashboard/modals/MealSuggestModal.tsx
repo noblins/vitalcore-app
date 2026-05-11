@@ -23,7 +23,7 @@ interface Props {
   onAdded: () => void
 }
 
-const PREFS_KEY = (uid: string) => `vitalcore_food_prefs_${uid}`
+const PREFS_KEY = (uid: string) => `hirow_food_prefs_${uid}`
 
 function loadPrefs(uid: string): { liked: string[]; disliked: string[] } {
   try { return JSON.parse(localStorage.getItem(PREFS_KEY(uid)) ?? '{}') } catch { return { liked: [], disliked: [] } }
